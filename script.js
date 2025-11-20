@@ -42,6 +42,7 @@ window.addEventListener('hashchange', () => {
 window.addEventListener('DOMContentLoaded', () => {
     const hash = window.location.hash.substring(1) || 'home';
     renderSection(hash);
+    renderTopics();
 });
 
         // --- Mobile Menu ---
@@ -348,34 +349,83 @@ function loginAs(role) {
     currentUserRole = role;
     document.getElementById('login-modal').classList.add('hidden');
 
-    // Update Admin UI Elements
+    // UI Elements to Toggle
     const adminControls = document.getElementById('admin-controls');
     const adminBadge = document.getElementById('admin-badge');
+    const adminDash = document.getElementById('admin-dashboard');
+    const peerInbox = document.getElementById('peer-inbox');
 
+    // Reset Views (Hide everything first)
+    adminControls.classList.add('hidden');
+    adminBadge.classList.add('hidden');
+    adminDash.classList.add('hidden');
+    peerInbox.classList.add('hidden');
+
+    // LOGIC: Apply permissions based on role
     if (role === 'admin') {
+        // Admin: See Dashboard, Badge, and Edit Controls
         adminControls.classList.remove('hidden');
         adminBadge.classList.remove('hidden');
-        showNotification("Admin Mode: You can now Edit content.", "success");
-        showSection('education');
+        adminDash.classList.remove('hidden');
+        
+        updateDashboard(); // Calculate stats
+        showSection('admin-dashboard'); // Jump to dashboard
+        showNotification("Admin Mode: Dashboard Loaded.", "success");
+    
     } else if (role === 'peer') {
-        adminControls.classList.add('hidden');
-        adminBadge.classList.add('hidden');
-        document.getElementById('peer-inbox').classList.remove('hidden'); // Enable the section
-        showSection('peer-inbox'); // Go there immediately
-        renderInbox(); // Load data
-        showNotification("Welcome, Mentor! Checking your inbox...", "success");
+        // Peer: See Inbox
+        peerInbox.classList.remove('hidden');
+        
+        renderInbox(); // Load messages
+        showSection('peer-inbox'); // Jump to inbox
+        showNotification("Welcome Mentor! Inbox synced.", "success");
+    
     } else {
-        adminControls.classList.add('hidden');
-        adminBadge.classList.add('hidden');
-        showNotification(`Welcome! Logged in as ${role}.`, "success");
+        // Student: Standard View
         showSection('home');
+        showNotification("Welcome! Logged in anonymously.", "success");
     }
 
-    // Re-render topics to show/hide delete buttons
+    // Re-render shared components (like Topics) to apply/remove delete buttons
     renderTopics();
 }
 
-// Initial Render on Load
-document.addEventListener('DOMContentLoaded', () => {
-    renderTopics();
-});
+
+
+// --- ANALYTICS LOGIC ---
+
+function updateDashboard() {
+    // 1. Count Active Topics
+    // This pulls directly from the array you created in Step 3
+    const topicCount = topicsData.length;
+    
+    // 2. Count Peer Requests (Total & Pending)
+    // This pulls directly from the array you created in Step 4
+    const totalRequests = peerMessages.length;
+    const pendingRequests = peerMessages.filter(m => m.status === 'pending').length;
+
+    // 3. Update HTML Elements
+    // Use a simple animation effect for numbers
+    animateValue("stat-topics", 0, topicCount, 1000);
+    animateValue("stat-requests", 0, totalRequests, 1000);
+    
+    document.getElementById('stat-requests-sub').textContent = `${pendingRequests} Pending actions`;
+}
+
+// Helper to animate numbers counting up
+function animateValue(id, start, end, duration) {
+    if (start === end) return;
+    const range = end - start;
+    let current = start;
+    const increment = end > start ? 1 : -1;
+    const stepTime = Math.abs(Math.floor(duration / range));
+    const obj = document.getElementById(id);
+    
+    const timer = setInterval(function() {
+        current += increment;
+        obj.innerHTML = current;
+        if (current == end) {
+            clearInterval(timer);
+        }
+    }, stepTime);
+}
