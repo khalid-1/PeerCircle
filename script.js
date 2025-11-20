@@ -38,12 +38,99 @@ window.addEventListener('hashchange', () => {
     renderSection(hash);
 });
 
-// Initialize on Load
-window.addEventListener('DOMContentLoaded', () => {
-    const hash = window.location.hash.substring(1) || 'home';
-    renderSection(hash);
+// --- AUTHENTICATION & PERSISTENCE ---
+
+// 1. Check for saved session on Page Load
+document.addEventListener('DOMContentLoaded', () => {
+    const savedRole = localStorage.getItem('dps_user_role');
+
+    if (savedRole) {
+        // If role is found, log them in silently (without the welcome toast)
+        loginAs(savedRole, true); 
+    } else {
+        // If no role, show the login modal
+        document.getElementById('login-modal').classList.remove('hidden');
+    }
+
+    // Initialize data
     renderTopics();
 });
+
+// 2. Login Function (Updated)
+// Added 'isAutoLogin' parameter to prevent spamming "Welcome" notifications on refresh
+function loginAs(role, isAutoLogin = false) {
+    // A. Save to Browser Storage
+    localStorage.setItem('dps_user_role', role);
+    currentUserRole = role;
+
+    // B. Hide Modal
+    document.getElementById('login-modal').classList.add('hidden');
+
+    // C. Update UI Elements
+    const adminControls = document.getElementById('admin-controls');
+    const adminBadge = document.getElementById('admin-badge');
+    const adminDash = document.getElementById('admin-dashboard');
+    const peerInbox = document.getElementById('peer-inbox');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // Show Logout Button
+    if (logoutBtn) logoutBtn.classList.remove('hidden');
+
+    // Reset Views
+    if(adminControls) adminControls.classList.add('hidden');
+    if(adminBadge) adminBadge.classList.add('hidden');
+    if(adminDash) adminDash.classList.add('hidden');
+    if(peerInbox) peerInbox.classList.add('hidden');
+
+    // D. Apply Permissions
+    if (role === 'admin') {
+        if(adminControls) adminControls.classList.remove('hidden');
+        if(adminBadge) adminBadge.classList.remove('hidden');
+        if(adminDash) adminDash.classList.remove('hidden');
+        
+        updateDashboard(); 
+        // Only jump to dashboard if it's a fresh login, not a refresh
+        if(!isAutoLogin) {
+            showSection('admin-dashboard');
+            showNotification("Admin Mode Active", "success");
+        } else {
+             // If refreshing, stay on current hash or go home
+             const hash = window.location.hash.substring(1) || 'admin-dashboard';
+             showSection(hash);
+        }
+    
+    } else if (role === 'peer') {
+        if(peerInbox) peerInbox.classList.remove('hidden');
+        
+        renderInbox();
+        if(!isAutoLogin) {
+            showSection('peer-inbox');
+            showNotification("Welcome Mentor", "success");
+        } else {
+             const hash = window.location.hash.substring(1) || 'peer-inbox';
+             showSection(hash);
+        }
+    
+    } else {
+        // Student
+        if(!isAutoLogin) {
+            showSection('home');
+            showNotification("Logged in anonymously", "success");
+        }
+    }
+
+    // E. Re-render content to show/hide Edit buttons
+    renderTopics();
+}
+
+// 3. Logout Function
+function logout() {
+    // Clear the storage
+    localStorage.removeItem('dps_user_role');
+    
+    // Reload the page to reset all states and show Login Modal
+    window.location.href = window.location.pathname; // This removes the #hash and reloads
+}
 
         // --- Mobile Menu ---
         function toggleMobileMenu() {
@@ -345,50 +432,7 @@ function deleteTopic(id) {
 // 4. Update Login Logic to Trigger Render
 // (Make sure to replace your previous 'loginAs' with this version)
 
-function loginAs(role) {
-    currentUserRole = role;
-    document.getElementById('login-modal').classList.add('hidden');
 
-    // UI Elements to Toggle
-    const adminControls = document.getElementById('admin-controls');
-    const adminBadge = document.getElementById('admin-badge');
-    const adminDash = document.getElementById('admin-dashboard');
-    const peerInbox = document.getElementById('peer-inbox');
-
-    // Reset Views (Hide everything first)
-    adminControls.classList.add('hidden');
-    adminBadge.classList.add('hidden');
-    adminDash.classList.add('hidden');
-    peerInbox.classList.add('hidden');
-
-    // LOGIC: Apply permissions based on role
-    if (role === 'admin') {
-        // Admin: See Dashboard, Badge, and Edit Controls
-        adminControls.classList.remove('hidden');
-        adminBadge.classList.remove('hidden');
-        adminDash.classList.remove('hidden');
-        
-        updateDashboard(); // Calculate stats
-        showSection('admin-dashboard'); // Jump to dashboard
-        showNotification("Admin Mode: Dashboard Loaded.", "success");
-    
-    } else if (role === 'peer') {
-        // Peer: See Inbox
-        peerInbox.classList.remove('hidden');
-        
-        renderInbox(); // Load messages
-        showSection('peer-inbox'); // Jump to inbox
-        showNotification("Welcome Mentor! Inbox synced.", "success");
-    
-    } else {
-        // Student: Standard View
-        showSection('home');
-        showNotification("Welcome! Logged in anonymously.", "success");
-    }
-
-    // Re-render shared components (like Topics) to apply/remove delete buttons
-    renderTopics();
-}
 
 
 

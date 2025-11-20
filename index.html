@@ -31,12 +31,17 @@
                 </div>
 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-8">
+                <div class="hidden md:flex space-x-8 items-center">
                     <button onclick="showSection('home')" class="nav-link text-teal-600 font-medium hover:text-teal-800 transition">Home</button>
                     <button onclick="showSection('education')" class="nav-link text-slate-500 font-medium hover:text-teal-600 transition">Education</button>
                     <button onclick="showSection('sessions')" class="nav-link text-slate-500 font-medium hover:text-teal-600 transition">Sessions</button>
                     <button onclick="showSection('selfhelp')" class="nav-link text-slate-500 font-medium hover:text-teal-600 transition">Self-Help</button>
+                    
                     <button onclick="showSection('chat')" class="px-4 py-2 bg-teal-600 text-white rounded-full font-medium hover:bg-teal-700 transition shadow-md shadow-teal-200">Peer Chat</button>
+
+                    <button id="logout-btn" onclick="logout()" class="hidden text-slate-400 hover:text-red-500 font-medium border-l pl-4 ml-4 transition" title="Logout / Change Role">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -55,6 +60,7 @@
             <a onclick="showSection('sessions'); toggleMobileMenu()" class="block py-3 px-4 text-slate-600 hover:bg-teal-50">Virtual Sessions</a>
             <a onclick="showSection('selfhelp'); toggleMobileMenu()" class="block py-3 px-4 text-slate-600 hover:bg-teal-50">Self-Help Tools</a>
             <a onclick="showSection('chat'); toggleMobileMenu()" class="block py-3 px-4 text-teal-600 font-semibold hover:bg-teal-50">Peer Chat</a>
+            <a onclick="logout()" class="block py-3 px-4 text-red-500 font-semibold hover:bg-red-50">Logout</a>
         </div>
     </nav>
 
