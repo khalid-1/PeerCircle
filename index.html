@@ -106,66 +106,41 @@
         </div>
 
         <!-- SECTION 2: EDUCATIONAL TOPICS -->
-        <div id="education" class="section-content">
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold text-slate-800 mb-2">Wellbeing Library</h2>
-                <p class="text-slate-500">Curated guides to help you navigate the nursing journey.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Topic Card 1 -->
-                <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
-                    <div class="h-3 bg-red-400"></div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="font-bold text-xl text-slate-800">Stress & Burnout</h3>
-                            <i class="fas fa-fire text-red-400 text-xl"></i>
-                        </div>
-                        <p class="text-slate-600 text-sm mb-4">Identifying the signs of compassion fatigue and practical strategies to reset your nervous system.</p>
-                        <button onclick="openModal('modal-burnout')" class="text-teal-600 font-semibold text-sm group-hover:underline">Read Guide <i class="fas fa-arrow-right ml-1"></i></button>
-                    </div>
-                </div>
-
-                <!-- Topic Card 2 -->
-                <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
-                    <div class="h-3 bg-orange-400"></div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="font-bold text-xl text-slate-800">Exam Anxiety</h3>
-                            <i class="fas fa-pen-alt text-orange-400 text-xl"></i>
-                        </div>
-                        <p class="text-slate-600 text-sm mb-4">Techniques to handle NCLEX prep pressure and semester finals without panic.</p>
-                        <button onclick="openModal('modal-exams')" class="text-teal-600 font-semibold text-sm group-hover:underline">Read Guide <i class="fas fa-arrow-right ml-1"></i></button>
-                    </div>
-                </div>
-
-                <!-- Topic Card 3 -->
-                <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
-                    <div class="h-3 bg-blue-400"></div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="font-bold text-xl text-slate-800">Clinical Placement</h3>
-                            <i class="fas fa-user-nurse text-blue-400 text-xl"></i>
-                        </div>
-                        <p class="text-slate-600 text-sm mb-4">Navigating hospital hierarchies, dealing with difficult shifts, and debriefing safely.</p>
-                        <button class="text-teal-600 font-semibold text-sm group-hover:underline">Coming Soon</button>
-                    </div>
-                </div>
-
-                <!-- Topic Card 4 -->
-                <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
-                    <div class="h-3 bg-green-400"></div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="font-bold text-xl text-slate-800">Transition to Work</h3>
-                            <i class="fas fa-briefcase text-green-400 text-xl"></i>
-                        </div>
-                        <p class="text-slate-600 text-sm mb-4">From student to RN: What to expect in your first 6 months and how to find mentorship.</p>
-                        <button class="text-teal-600 font-semibold text-sm group-hover:underline">Coming Soon</button>
-                    </div>
-                </div>
-            </div>
+<div id="education" class="section-content">
+    <div class="mb-8 flex justify-between items-end">
+        <div>
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">Wellbeing Library</h2>
+            <p class="text-slate-500">Curated guides to help you navigate the nursing journey.</p>
         </div>
+        <div id="admin-badge" class="hidden bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+            <i class="fas fa-shield-alt mr-1"></i> Admin Mode
+        </div>
+    </div>
+
+    <div id="admin-controls" class="hidden bg-slate-100 p-6 rounded-xl border-2 border-dashed border-slate-300 mb-8 animate-[fadeIn_0.3s_ease-out]">
+        <h3 class="font-bold text-slate-700 mb-4"><i class="fas fa-plus-circle text-teal-600 mr-2"></i>Add New Topic</h3>
+        <form onsubmit="handleAddTopic(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <input type="text" id="new-topic-title" placeholder="Topic Title (e.g. Night Shift)" required class="px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none">
+            
+            <input type="text" id="new-topic-desc" placeholder="Short Description..." required class="md:col-span-2 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none">
+            
+            <select id="new-topic-color" class="px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none">
+                <option value="blue">Blue Theme</option>
+                <option value="red">Red Theme</option>
+                <option value="green">Green Theme</option>
+                <option value="orange">Orange Theme</option>
+                <option value="purple">Purple Theme</option>
+            </select>
+            
+            <button type="submit" class="md:col-span-4 bg-slate-800 text-white py-2 rounded-lg font-bold hover:bg-slate-700 transition">
+                Publish Topic
+            </button>
+        </form>
+    </div>
+
+    <div id="topics-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+</div>
 
         <!-- SECTION 3: VIRTUAL SESSIONS -->
         <div id="sessions" class="section-content">
@@ -407,7 +382,7 @@
                 <p class="text-sm text-slate-400">Supporting future nurses, one conversation at a time.</p>
             </div>
             <div class="text-sm text-slate-500">
-                &copy; 2023 Digital Peer Support Circles. Educational Demo.
+                &copy; 2025 Digital Peer Support Circles. Educational Demo. | Today's Date: Thursday, November 20, 2025
             </div>
         </div>
     </footer>
@@ -461,6 +436,27 @@
         </div>
     </div>
 
+<div id="login-modal" class="fixed inset-0 bg-slate-900 bg-opacity-90 z-[60] flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-md w-full p-8 text-center shadow-2xl">
+        <div class="bg-teal-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-teal-600 text-2xl">
+            <i class="fas fa-user-nurse"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">Welcome to PeerCircle</h2>
+        <p class="text-slate-500 mb-8">Please select your role to enter the demo.</p>
+        
+        <div class="space-y-3">
+            <button onclick="loginAs('student')" class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold hover:bg-teal-700 transition shadow-md">
+                I am a Student
+            </button>
+            <button onclick="loginAs('peer')" class="w-full bg-white border-2 border-teal-600 text-teal-700 py-3 rounded-lg font-bold hover:bg-teal-50 transition">
+                I am a Peer Mentor
+            </button>
+            <button onclick="loginAs('admin')" class="w-full text-slate-400 text-sm font-medium hover:text-slate-600 mt-4 underline">
+                Enter as Admin
+            </button>
+        </div>
+    </div>
+</div>
     <script src="script.js"></script>
 </body>
 </html>
