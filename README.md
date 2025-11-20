@@ -8,18 +8,19 @@ About the Project
 
 PeerCircle is a simple, front-end demo showcasing the concept of a wellbeing platform for BSN/MSN nursing students.
 The site includes:
-	•	Education Library – Topics like exam anxiety, burnout, and clinical stress
-	•	Virtual Wellbeing Sessions – Scheduled workshops via Zoom/Meet
-	•	Self-Help Toolkit – Breathing exercises, sleep hygiene, coping strategies
-	•	Peer Support (MVP) – A basic request form to connect with peer mentors
+
+- Education Library – Topics like exam anxiety, burnout, and clinical stress
+- Virtual Wellbeing Sessions – Scheduled workshops via Zoom/Meet
+- Self-Help Toolkit – Breathing exercises, sleep hygiene, coping strategies
+- Peer Support (MVP) – A basic request form to connect with peer mentors
 
 This version is optimized for presentations and academic project use.
 
 Tech Stack
-	•	HTML, CSS, JavaScript
-	•	Tailwind CSS
-	•	Font Awesome
-	•	GitHub Pages (hosting)
+- HTML, CSS, JavaScript
+- Tailwind CSS
+- Font Awesome
+- GitHub Pages (hosting)
 
 Status
 
