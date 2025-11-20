@@ -81,7 +81,7 @@ function closeModal(id) {
 }
 
 // ==========================================
-// 2. BREATHING APP LOGIC (RIPPLES)
+// 2. BREATHING APP LOGIC (DIRECTIONAL)
 // ==========================================
 
 let isBreathing = false;
@@ -94,43 +94,53 @@ function toggleBreathing() {
     const instruction = document.getElementById('breath-instruction');
 
     if (!isBreathing) {
-        // START
+        // --- START ---
         isBreathing = true;
         btn.textContent = "Stop Exercise";
         btn.classList.replace('bg-teal-600', 'bg-red-400');
         
-        // Add class to start CSS animations
-        widget.classList.add('breathing-active');
+        instruction.textContent = "Follow the waves...";
         
-        instruction.textContent = "Follow the rings...";
-        runBreathingCycle(); // Run immediately
-        breathingInterval = setInterval(runBreathingCycle, 4000); // Loop every 4 seconds
+        // Run the first cycle immediately
+        performBreathingCycle();
+        
+        // Set interval for full 8-second loop (4s In + 4s Out)
+        breathingInterval = setInterval(performBreathingCycle, 8000); 
+
     } else {
-        // STOP
+        // --- STOP ---
         isBreathing = false;
         clearInterval(breathingInterval);
         btn.textContent = "Start Exercise";
         btn.classList.replace('bg-red-400', 'bg-teal-600');
         
-        // Stop CSS animations
-        widget.classList.remove('breathing-active');
+        // Remove animation classes
+        widget.classList.remove('inhaling', 'exhaling');
         
         text.textContent = "Ready?";
         instruction.textContent = "Click Start";
     }
 }
 
-function runBreathingCycle() {
+function performBreathingCycle() {
     if(!isBreathing) return;
     
+    const widget = document.getElementById('breathing-widget');
     const text = document.getElementById('breath-text');
     
-    // Simple 4-second In/Out logic
+    // PHASE 1: INHALE (0s - 4s)
     text.textContent = "Breathe In";
+    widget.classList.remove('exhaling'); // Stop outward waves
+    widget.classList.add('inhaling');    // Start inward waves
     
+    // PHASE 2: EXHALE (4s - 8s)
     setTimeout(() => {
-        if(isBreathing) text.textContent = "Breathe Out";
-    }, 2000); // Change text halfway through the 4s cycle
+        if(isBreathing) {
+            text.textContent = "Breathe Out";
+            widget.classList.remove('inhaling'); // Stop inward waves
+            widget.classList.add('exhaling');    // Start outward waves
+        }
+    }, 4000); 
 }
 
 // ==========================================

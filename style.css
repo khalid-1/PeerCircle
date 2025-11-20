@@ -33,9 +33,8 @@ body {
             to { opacity: 1; transform: translateY(0); }
         }
 
-/* --- NEW BREATHING STYLES --- */
+/* --- DIRECTIONAL BREATHING ANIMATION --- */
 
-/* The Container - Fixed size so it never pushes text around */
 .breathing-widget {
     position: relative;
     width: 260px;
@@ -43,10 +42,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto 2rem auto; /* Centers it and adds space below */
+    margin: 0 auto 2rem auto;
 }
 
-/* The Core Circle (Stationary) */
+/* The Center Circle */
 .core-circle {
     width: 140px;
     height: 140px;
@@ -59,47 +58,75 @@ body {
     justify-content: center;
     box-shadow: 0 10px 25px rgba(20, 184, 166, 0.15);
     position: relative;
+    transition: transform 4s ease-in-out; /* Smooth core sizing */
 }
 
-/* The Ripples (Animated) */
+/* The Ripples */
 .ripple {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 140px;
-    height: 140px;
     border-radius: 50%;
     background-color: #2dd4bf; /* Teal-400 */
     opacity: 0;
     z-index: 0;
 }
 
-/* Animation Classes applied by JS */
-.breathing-active .ripple-1 {
-    animation: rippleEffect 4s infinite ease-in-out;
-    animation-delay: 0s;
+/* --- ANIMATION STATES --- */
+
+/* STATE 1: INHALE (Waves go IN) */
+.breathing-widget.inhaling .core-circle {
+    transform: scale(1.1); /* Core grows slightly as you fill lungs */
 }
-.breathing-active .ripple-2 {
-    animation: rippleEffect 4s infinite ease-in-out;
-    animation-delay: 1s; /* Starts later */
-}
-.breathing-active .ripple-3 {
-    animation: rippleEffect 4s infinite ease-in-out;
-    animation-delay: 2s; /* Starts even later */
+.breathing-widget.inhaling .ripple {
+    animation: rippleIn 4s infinite linear;
 }
 
-/* Keyframes: Expand and Fade */
-@keyframes rippleEffect {
+/* STATE 2: EXHALE (Waves go OUT) */
+.breathing-widget.exhaling .core-circle {
+    transform: scale(1.0); /* Core shrinks as you empty lungs */
+}
+.breathing-widget.exhaling .ripple {
+    animation: rippleOut 4s infinite linear;
+}
+
+/* Stagger the ripples so they look like continuous waves */
+.ripple-1 { animation-delay: 0s; }
+.ripple-2 { animation-delay: 1.3s; }
+.ripple-3 { animation-delay: 2.6s; }
+
+
+/* --- KEYFRAMES --- */
+
+/* Waves coming IN (Large to Small) */
+@keyframes rippleIn {
     0% {
-        width: 140px;
+        width: 260px;
+        height: 260px;
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.4; /* Fade in at edge */
+    }
+    100% {
+        width: 140px; /* Shrink to center */
+        height: 140px;
+        opacity: 0;
+    }
+}
+
+/* Waves going OUT (Small to Large) */
+@keyframes rippleOut {
+    0% {
+        width: 140px; /* Start at center */
         height: 140px;
         opacity: 0.6;
     }
     100% {
-        width: 280px; /* Expands outward */
+        width: 280px; /* Expand outward */
         height: 280px;
-        opacity: 0; /* Fades away */
+        opacity: 0;
     }
 }
 
