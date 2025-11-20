@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Peer Support Circles | Nursing Student Wellbeing</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9fa; /* Very light teal background */
+        }
+
+        /* Smooth transitions for sections */
+        .section-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        
+        .section-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Breathing Animation Circles */
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(#2dd4bf 0%, #99f6e4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 30px rgba(45, 212, 191, 0.4);
+            transition: transform 4s ease-in-out;
+        }
+
+        .breathing-circle.inhale {
+            transform: scale(1.3);
+        }
+
+        .breathing-circle.exhale {
+            transform: scale(1.0);
+        }
+        
+        .inner-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            flex-direction: column;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="text-slate-700 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm fixed w-full z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center cursor-pointer" onclick="showSection('home')">
+                    <div class="bg-teal-500 text-white p-2 rounded-lg mr-2">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <span class="font-bold text-xl text-teal-700 tracking-tight">PeerCircle</span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="showSection('home')" class="nav-link text-teal-600 font-medium hover:text-teal-800 transition">Home</button>
+                    <button onclick="showSection('education')" class="nav-link text-slate-500 font-medium hover:text-teal-600 transition">Education</button>
+                    <button onclick="showSection('sessions')" class="nav-link text-slate-500 font-medium hover:text-teal-600 transition">Sessions</button>
+                    <button onclick="showSection('selfhelp')" class="nav-link text-slate-500 font-medium hover:text-teal-600 transition">Self-Help</button>
+                    <button onclick="showSection('chat')" class="px-4 py-2 bg-teal-600 text-white rounded-full font-medium hover:bg-teal-700 transition shadow-md shadow-teal-200">Peer Chat</button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-500 hover:text-teal-600 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
+            <a onclick="showSection('home'); toggleMobileMenu()" class="block py-3 px-4 text-slate-600 hover:bg-teal-50">Home</a>
+            <a onclick="showSection('education'); toggleMobileMenu()" class="block py-3 px-4 text-slate-600 hover:bg-teal-50">Education Topics</a>
+            <a onclick="showSection('sessions'); toggleMobileMenu()" class="block py-3 px-4 text-slate-600 hover:bg-teal-50">Virtual Sessions</a>
+            <a onclick="showSection('selfhelp'); toggleMobileMenu()" class="block py-3 px-4 text-slate-600 hover:bg-teal-50">Self-Help Tools</a>
+            <a onclick="showSection('chat'); toggleMobileMenu()" class="block py-3 px-4 text-teal-600 font-semibold hover:bg-teal-50">Peer Chat</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow pt-20 pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+
+        <!-- SECTION 1: HOME -->
+        <div id="home" class="section-content active">
+            <div class="text-center py-12 md:py-20">
+                <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-teal-600 uppercase bg-teal-100 rounded-full">
+                    For Nursing Students, By Nursing Students
+                </div>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6 leading-tight">
+                    You care for patients. <br> <span class="text-teal-500">We care for you.</span>
+                </h1>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto mb-10">
+                    A safe digital space for BSN and MSN students to navigate academic stress, clinical placement anxiety, and the transition to professional practice.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                    <!-- Feature 1 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition cursor-pointer" onclick="showSection('education')">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Education Library</h3>
+                        <p class="text-sm text-slate-500">Resources on burnout, exam anxiety, and clinical challenges.</p>
+                    </div>
+                    
+                    <!-- Feature 2 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition cursor-pointer" onclick="showSection('sessions')">
+                        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Live Sessions</h3>
+                        <p class="text-sm text-slate-500">Join scheduled wellbeing workshops with counselors.</p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition cursor-pointer" onclick="showSection('chat')">
+                        <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Peer Support</h3>
+                        <p class="text-sm text-slate-500">Connect with senior students for guidance and chat.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: EDUCATIONAL TOPICS -->
+        <div id="education" class="section-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Wellbeing Library</h2>
+                <p class="text-slate-500">Curated guides to help you navigate the nursing journey.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Topic Card 1 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
+                    <div class="h-3 bg-red-400"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-bold text-xl text-slate-800">Stress & Burnout</h3>
+                            <i class="fas fa-fire text-red-400 text-xl"></i>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-4">Identifying the signs of compassion fatigue and practical strategies to reset your nervous system.</p>
+                        <button onclick="openModal('modal-burnout')" class="text-teal-600 font-semibold text-sm group-hover:underline">Read Guide <i class="fas fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Topic Card 2 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
+                    <div class="h-3 bg-orange-400"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-bold text-xl text-slate-800">Exam Anxiety</h3>
+                            <i class="fas fa-pen-alt text-orange-400 text-xl"></i>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-4">Techniques to handle NCLEX prep pressure and semester finals without panic.</p>
+                        <button onclick="openModal('modal-exams')" class="text-teal-600 font-semibold text-sm group-hover:underline">Read Guide <i class="fas fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Topic Card 3 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
+                    <div class="h-3 bg-blue-400"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-bold text-xl text-slate-800">Clinical Placement</h3>
+                            <i class="fas fa-user-nurse text-blue-400 text-xl"></i>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-4">Navigating hospital hierarchies, dealing with difficult shifts, and debriefing safely.</p>
+                        <button class="text-teal-600 font-semibold text-sm group-hover:underline">Coming Soon</button>
+                    </div>
+                </div>
+
+                <!-- Topic Card 4 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
+                    <div class="h-3 bg-green-400"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-bold text-xl text-slate-800">Transition to Work</h3>
+                            <i class="fas fa-briefcase text-green-400 text-xl"></i>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-4">From student to RN: What to expect in your first 6 months and how to find mentorship.</p>
+                        <button class="text-teal-600 font-semibold text-sm group-hover:underline">Coming Soon</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: VIRTUAL SESSIONS -->
+        <div id="sessions" class="section-content">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Virtual Wellbeing Sessions</h2>
+                    <p class="text-slate-500">Live workshops via Zoom/Google Meet.</p>
+                </div>
+                <div class="mt-4 md:mt-0 bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm">
+                    <i class="fas fa-calendar-alt text-teal-500 mr-2"></i> Current Month: <span class="font-semibold">November</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <!-- Header -->
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 grid grid-cols-1 md:grid-cols-12 gap-4 font-semibold text-slate-700">
+                    <div class="md:col-span-2">Date & Time</div>
+                    <div class="md:col-span-4">Topic</div>
+                    <div class="md:col-span-3">Facilitator</div>
+                    <div class="md:col-span-3 text-right">Action</div>
+                </div>
+
+                <!-- Session Row 1 -->
+                <div class="px-6 py-5 border-b border-slate-100 grid grid-cols-1 md:grid-cols-12 gap-4 items-center hover:bg-teal-50 transition">
+                    <div class="md:col-span-2 flex items-center">
+                        <div class="bg-teal-100 text-teal-700 font-bold rounded px-3 py-1 text-center mr-3">
+                            <div>NOV</div>
+                            <div class="text-xl">24</div>
+                        </div>
+                        <span class="text-sm text-slate-500">5:00 PM</span>
+                    </div>
+                    <div class="md:col-span-4">
+                        <h4 class="font-bold text-slate-800">Mindfulness for Nurses</h4>
+                        <p class="text-xs text-slate-500">Guided meditation & grounding techniques.</p>
+                    </div>
+                    <div class="md:col-span-3 flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold mr-2">SJ</div>
+                        <span class="text-sm">Sarah Jenkins (Counselor)</span>
+                    </div>
+                    <div class="md:col-span-3 text-right">
+                        <button onclick="showNotification('Registered for Mindfulness Session!', 'success')" class="bg-white border border-teal-500 text-teal-600 hover:bg-teal-500 hover:text-white px-4 py-1.5 rounded-md text-sm font-medium transition">Join Waitlist</button>
+                    </div>
+                </div>
+
+                <!-- Session Row 2 -->
+                <div class="px-6 py-5 border-b border-slate-100 grid grid-cols-1 md:grid-cols-12 gap-4 items-center hover:bg-teal-50 transition">
+                    <div class="md:col-span-2 flex items-center">
+                        <div class="bg-teal-100 text-teal-700 font-bold rounded px-3 py-1 text-center mr-3">
+                            <div>NOV</div>
+                            <div class="text-xl">28</div>
+                        </div>
+                        <span class="text-sm text-slate-500">6:30 PM</span>
+                    </div>
+                    <div class="md:col-span-4">
+                        <h4 class="font-bold text-slate-800">De-briefing Clinical Stress</h4>
+                        <p class="text-xs text-slate-500">Open floor discussion (Safe Space).</p>
+                    </div>
+                    <div class="md:col-span-3 flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold mr-2">MK</div>
+                        <span class="text-sm">Dr. M. Khan (Psychology)</span>
+                    </div>
+                    <div class="md:col-span-3 text-right">
+                        <button onclick="showNotification('Link sent to your email!', 'success')" class="bg-teal-600 text-white hover:bg-teal-700 px-4 py-1.5 rounded-md text-sm font-medium transition">Register Now</button>
+                    </div>
+                </div>
+                
+                <!-- Empty State Placeholder -->
+                <div class="px-6 py-8 text-center text-slate-400 text-sm">
+                    <i class="fas fa-mug-hot text-2xl mb-2 block"></i>
+                    More sessions for December coming soon.
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: SELF HELP -->
+        <div id="selfhelp" class="section-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Self-Help Toolkit</h2>
+                <p class="text-slate-500">Quick tools you can use anytime, anywhere.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Breathing Exercise Module -->
+                <div class="bg-white rounded-xl shadow-md p-8 flex flex-col items-center justify-center text-center border-t-4 border-teal-400">
+                    <h3 class="text-xl font-bold mb-2 text-slate-700">Box Breathing</h3>
+                    <p class="text-slate-500 text-sm mb-8">Follow the circle to regulate your nervous system.</p>
+                    
+                    <div id="breathing-container" class="breathing-circle mb-8">
+                        <div class="inner-circle">
+                            <span id="breath-text" class="text-xl font-bold text-teal-600">Ready?</span>
+                            <span id="breath-timer" class="text-sm text-slate-400 mt-1"></span>
+                        </div>
+                    </div>
+
+                    <button id="breath-btn" onclick="toggleBreathing()" class="bg-teal-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-700 transition shadow-lg">
+                        Start Exercise
+                    </button>
+                </div>
+
+                <!-- Resources & Checklists -->
+                <div class="space-y-6">
+                    <!-- Sleep Hygiene -->
+                    <div class="bg-indigo-50 rounded-xl p-6 border border-indigo-100">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-indigo-200 p-2 rounded-lg mr-3 text-indigo-700"><i class="fas fa-moon"></i></div>
+                            <h3 class="font-bold text-lg text-indigo-900">Sleep Hygiene Checklist</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-700">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> No screens 30 mins before bed</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Room temperature cool (18-20°C)</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Avoid caffeine after 2 PM</li>
+                        </ul>
+                    </div>
+
+                    <!-- Quick Coping Tips Accordion -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b font-semibold">5-Minute Coping Strategies</div>
+                        <div class="divide-y divide-slate-100">
+                            <details class="group p-4 cursor-pointer">
+                                <summary class="flex justify-between items-center font-medium text-slate-700 list-none">
+                                    <span><i class="fas fa-walking mr-2 text-teal-500"></i> The 5-4-3-2-1 Method</span>
+                                    <span class="transition group-open:rotate-180"><i class="fas fa-chevron-down"></i></span>
+                                </summary>
+                                <p class="text-slate-600 text-sm mt-3 pl-6">
+                                    Acknowledge 5 things you see, 4 you can touch, 3 you hear, 2 you can smell, and 1 you can taste. Good for panic attacks.
+                                </p>
+                            </details>
+                            <details class="group p-4 cursor-pointer">
+                                <summary class="flex justify-between items-center font-medium text-slate-700 list-none">
+                                    <span><i class="fas fa-pencil-alt mr-2 text-teal-500"></i> Brain Dump</span>
+                                    <span class="transition group-open:rotate-180"><i class="fas fa-chevron-down"></i></span>
+                                </summary>
+                                <p class="text-slate-600 text-sm mt-3 pl-6">
+                                    Set a timer for 3 minutes. Write down everything worrying you. Once it's on paper, it's out of your active memory.
+                                </p>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: PEER CHAT (MVP) -->
+        <div id="chat" class="section-content">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-3">Connect with a Peer Supporter</h2>
+                    <p class="text-slate-500 max-w-2xl mx-auto">
+                        Sometimes you just need to talk to someone who understands the nursing school grind. 
+                        Our peer supporters are trained senior students.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2">
+                    
+                    <!-- Info Side -->
+                    <div class="bg-teal-600 p-8 md:p-12 text-white flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold mb-4">How it works</h3>
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-start">
+                                <div class="bg-teal-500 p-1 rounded mt-1 mr-3"><i class="fas fa-check text-xs"></i></div>
+                                <span class="text-teal-50 text-sm">Fill out the request form.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="bg-teal-500 p-1 rounded mt-1 mr-3"><i class="fas fa-check text-xs"></i></div>
+                                <span class="text-teal-50 text-sm">We match you with a peer based on your topic.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="bg-teal-500 p-1 rounded mt-1 mr-3"><i class="fas fa-check text-xs"></i></div>
+                                <span class="text-teal-50 text-sm">Receive a secure chat link via email within 24 hours.</span>
+                            </li>
+                        </ul>
+                        
+                        <div class="mt-auto">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-shield-alt mr-2"></i>
+                                <span class="font-bold">Confidential & Safe</span>
+                            </div>
+                            <p class="text-xs text-teal-200">This is not a crisis service. If you are in immediate danger, please contact emergency services.</p>
+                        </div>
+                    </div>
+
+                    <!-- Form Side -->
+                    <div class="p-8 md:p-12">
+                        <form id="bookingForm" onsubmit="handleBooking(event)">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">First Name (or Alias)</label>
+                                    <input type="text" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition" placeholder="e.g. Alex">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Year of Study</label>
+                                    <select class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none bg-white">
+                                        <option>BSN Year 1</option>
+                                        <option>BSN Year 2</option>
+                                        <option>BSN Year 3</option>
+                                        <option>BSN Year 4</option>
+                                        <option>MSN Student</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">I want to talk about...</label>
+                                    <select class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none bg-white">
+                                        <option>General Stress</option>
+                                        <option>Academic Struggles</option>
+                                        <option>Clinical Placement Issue</option>
+                                        <option>Just need to vent</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Preferred Contact Time</label>
+                                    <input type="text" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" placeholder="e.g. Evenings after 6pm">
+                                </div>
+
+                                <button type="submit" class="w-full bg-slate-800 text-white py-3 rounded-lg font-bold hover:bg-slate-700 transition mt-2">
+                                    Request Chat
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-300 py-8 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-hands-helping text-teal-400 mr-2"></i>
+                    <span class="font-bold text-white text-lg">PeerCircle</span>
+                </div>
+                <p class="text-sm text-slate-400">Supporting future nurses, one conversation at a time.</p>
+            </div>
+            <div class="text-sm text-slate-500">
+                &copy; 2023 Digital Peer Support Circles. Educational Demo.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification (Hidden by default) -->
+    <div id="notification" class="fixed bottom-4 right-4 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <div class="bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg flex items-center">
+            <i class="fas fa-check-circle text-teal-400 mr-3"></i>
+            <span id="notif-message">Action Successful</span>
+        </div>
+    </div>
+
+    <!-- Modal: Burnout Guide -->
+    <div id="modal-burnout" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 md:p-8 relative animate-[fadeIn_0.3s_ease-out]">
+            <button onclick="closeModal('modal-burnout')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Understanding Burnout</h2>
+            <div class="prose text-slate-600 text-sm space-y-3">
+                <p><strong>What is it?</strong> Nursing burnout is physical, mental, and emotional exhaustion. It causes a detachment from patients and a lack of accomplishment.</p>
+                <p><strong>The 3 Signs:</strong></p>
+                <ul class="list-disc pl-5">
+                    <li>Exhaustion: Feeling tired even after sleeping.</li>
+                    <li>Depersonalization: Feeling cynical towards patients.</li>
+                    <li>Inefficacy: Feeling like your work doesn't matter.</li>
+                </ul>
+                <p class="bg-teal-50 p-3 rounded border-l-4 border-teal-500"><strong>Tip:</strong> Don't skip your breaks. Even 10 minutes off the floor resets your cortisol levels.</p>
+            </div>
+            <div class="mt-6 text-right">
+                <button onclick="closeModal('modal-burnout')" class="px-4 py-2 bg-slate-100 text-slate-700 rounded hover:bg-slate-200">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Exams Guide -->
+    <div id="modal-exams" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 md:p-8 relative animate-[fadeIn_0.3s_ease-out]">
+            <button onclick="closeModal('modal-exams')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Conquering Exam Anxiety</h2>
+            <div class="prose text-slate-600 text-sm space-y-3">
+                <p>Nursing exams often require critical thinking, not just memorization. This causes high stress.</p>
+                <p><strong>Strategy: The "Stop Light" Method</strong></p>
+                <ul class="list-disc pl-5">
+                    <li><span class="text-green-600 font-bold">Green:</span> Answer questions you know immediately.</li>
+                    <li><span class="text-yellow-600 font-bold">Yellow:</span> Mark questions you need to think about for later.</li>
+                    <li><span class="text-red-600 font-bold">Red:</span> Questions you don't know. Don't panic, guess intelligently at the end.</li>
+                </ul>
+            </div>
+            <div class="mt-6 text-right">
+                <button onclick="closeModal('modal-exams')" class="px-4 py-2 bg-slate-100 text-slate-700 rounded hover:bg-slate-200">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Navigation Logic ---
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+
+            // Update Nav Active State (Optional Simple Visual)
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                if(btn.textContent.toLowerCase().includes(sectionId === 'home' ? 'home' : sectionId.substring(0,3))) {
+                    btn.classList.add('text-teal-600');
+                    btn.classList.remove('text-slate-500');
+                } else {
+                    btn.classList.remove('text-teal-600');
+                    btn.classList.add('text-slate-500');
+                }
+            });
+        }
+
+        // --- Mobile Menu ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+        // --- Breathing App Logic ---
+        let isBreathing = false;
+        let breathingInterval;
+
+        function toggleBreathing() {
+            const btn = document.getElementById('breath-btn');
+            const circle = document.getElementById('breathing-container');
+            const text = document.getElementById('breath-text');
+
+            if (!isBreathing) {
+                isBreathing = true;
+                btn.textContent = "Stop Exercise";
+                btn.classList.remove('bg-teal-600');
+                btn.classList.add('bg-red-400');
+                
+                runBreathingCycle();
+                breathingInterval = setInterval(runBreathingCycle, 8000); // 4s in + 4s out = 8s cycle loop (simplified)
+
+            } else {
+                isBreathing = false;
+                clearInterval(breathingInterval);
+                btn.textContent = "Start Exercise";
+                btn.classList.add('bg-teal-600');
+                btn.classList.remove('bg-red-400');
+                
+                // Reset UI
+                circle.classList.remove('inhale', 'exhale');
+                text.textContent = "Ready?";
+            }
+        }
+
+        function runBreathingCycle() {
+            const circle = document.getElementById('breathing-container');
+            const text = document.getElementById('breath-text');
+
+            // Inhale (4s)
+            text.textContent = "Breathe In...";
+            circle.className = "breathing-circle inhale";
+            
+            // Exhale (4s)
+            setTimeout(() => {
+                if(isBreathing) {
+                    text.textContent = "Breathe Out...";
+                    circle.className = "breathing-circle exhale";
+                }
+            }, 4000); 
+        }
+
+        // --- Modal Logic ---
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById(id).classList.add('flex');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        }
+
+        // --- Form Handling ---
+        function handleBooking(e) {
+            e.preventDefault();
+            // In a real app, this would send data to a backend
+            
+            // Reset form
+            document.getElementById('bookingForm').reset();
+            
+            // Show Notification
+            showNotification("Request Sent! A peer will email you shortly.", "success");
+        }
+
+        // --- Notification Logic ---
+        function showNotification(msg, type) {
+            const notif = document.getElementById('notification');
+            document.getElementById('notif-message').textContent = msg;
+            
+            notif.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                notif.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Initialize Home
+        showSection('home');
+
+    </script>
+</body>
+</html>
