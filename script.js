@@ -111,17 +111,102 @@ function runBreathingCycle() {
             document.getElementById(id).classList.remove('flex');
         }
 
-        // --- Form Handling ---
-        function handleBooking(e) {
-            e.preventDefault();
-            // In a real app, this would send data to a backend
-            
-            // Reset form
-            document.getElementById('bookingForm').reset();
-            
-            // Show Notification
-            showNotification("Request Sent! A peer will email you shortly.", "success");
-        }
+// --- PEER INBOX LOGIC ---
+
+// 1. The "Messages Database"
+let peerMessages = [
+    // Seed data so the inbox isn't empty on first login
+    {
+        id: 101,
+        name: "NervousStudent22",
+        year: "BSN Year 1",
+        topic: "Academic Struggles",
+        time: "Weekends",
+        status: "pending"
+    }
+];
+
+// 2. Handle Student Form Submission
+function handleBooking(e) {
+    e.preventDefault();
+    
+    // Gather data from the form inputs
+    // Note: In a real app, use specific IDs. Here assuming order or adding IDs to inputs is best.
+    // Let's assume you added IDs to your form inputs in HTML: id="req-name", "req-year", "req-topic", "req-time"
+    
+    // Fallback for demo if IDs aren't set yet:
+    const inputs = e.target.querySelectorAll('input, select');
+    
+    const newMessage = {
+        id: Date.now(),
+        name: inputs[0].value || "Anonymous",
+        year: inputs[1].value,
+        topic: inputs[2].value,
+        time: inputs[3].value,
+        status: "pending"
+    };
+
+    // Save to "Database"
+    peerMessages.push(newMessage);
+    
+    // Reset Form
+    e.target.reset();
+    
+    // Feedback
+    showNotification("Request Sent! A peer will check it soon.", "success");
+}
+
+// 3. Render the Inbox (For Peer Mentors)
+function renderInbox() {
+    const container = document.getElementById('inbox-container');
+    
+    // Filter for pending messages
+    const activeMessages = peerMessages.filter(msg => msg.status === 'pending');
+
+    if (activeMessages.length === 0) {
+        container.innerHTML = `
+            <div class="p-8 text-center text-slate-400">
+                <i class="fas fa-check-circle text-4xl mb-3 block text-teal-100"></i>
+                All caught up! No pending requests.
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = activeMessages.map(msg => `
+        <div class="grid grid-cols-12 px-6 py-4 items-center hover:bg-slate-50 transition">
+            <div class="col-span-3 font-medium text-slate-800">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-xs font-bold mr-2">
+                        ${msg.name.charAt(0).toUpperCase()}
+                    </div>
+                    ${msg.name}
+                </div>
+            </div>
+            <div class="col-span-2 text-sm text-slate-500">${msg.year}</div>
+            <div class="col-span-3">
+                <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-medium">
+                    ${msg.topic}
+                </span>
+            </div>
+            <div class="col-span-2 text-sm text-slate-500">${msg.time}</div>
+            <div class="col-span-2 text-right">
+                <button onclick="acceptRequest(${msg.id})" class="bg-teal-600 text-white hover:bg-teal-700 px-3 py-1 rounded text-sm font-medium shadow-sm transition">
+                    Accept
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function acceptRequest(id) {
+    // Find message and mark as 'accepted' (removes it from list)
+    const msgIndex = peerMessages.findIndex(m => m.id === id);
+    if(msgIndex > -1) {
+        peerMessages[msgIndex].status = 'accepted';
+        renderInbox();
+        showNotification("Request Accepted! Check your email for the chat link.", "success");
+    }
+}
 
         // --- Notification Logic ---
         function showNotification(msg, type) {
@@ -259,8 +344,6 @@ function deleteTopic(id) {
 // 4. Update Login Logic to Trigger Render
 // (Make sure to replace your previous 'loginAs' with this version)
 
-let currentUserRole = 'student';
-
 function loginAs(role) {
     currentUserRole = role;
     document.getElementById('login-modal').classList.add('hidden');
@@ -273,17 +356,23 @@ function loginAs(role) {
         adminControls.classList.remove('hidden');
         adminBadge.classList.remove('hidden');
         showNotification("Admin Mode: You can now Edit content.", "success");
+        showSection('education');
+    } else if (role === 'peer') {
+        adminControls.classList.add('hidden');
+        adminBadge.classList.add('hidden');
+        document.getElementById('peer-inbox').classList.remove('hidden'); // Enable the section
+        showSection('peer-inbox'); // Go there immediately
+        renderInbox(); // Load data
+        showNotification("Welcome, Mentor! Checking your inbox...", "success");
     } else {
         adminControls.classList.add('hidden');
         adminBadge.classList.add('hidden');
         showNotification(`Welcome! Logged in as ${role}.`, "success");
+        showSection('home');
     }
 
     // Re-render topics to show/hide delete buttons
     renderTopics();
-    
-    // Go to education section to show off the feature
-    showSection('education');
 }
 
 // Initial Render on Load
