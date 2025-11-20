@@ -2,6 +2,42 @@
 // 1. NAVIGATION & UI LOGIC
 // ==========================================
 
+// ==========================================
+// THEME TOGGLE LOGIC (Dark Mode)
+// ==========================================
+
+function initTheme() {
+    const themeIcon = document.getElementById('theme-icon');
+    if(!themeIcon) return;
+
+    // Check LocalStorage or System Preference
+    if (localStorage.getItem('dps_theme') === 'dark' || 
+       (!('dps_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+    } else {
+        document.documentElement.classList.remove('dark');
+        themeIcon.classList.replace('fa-sun', 'fa-moon');
+    }
+}
+
+function toggleTheme() {
+    const html = document.documentElement;
+    const icon = document.getElementById('theme-icon');
+    
+    if (html.classList.contains('dark')) {
+        // Switch to Light
+        html.classList.remove('dark');
+        localStorage.setItem('dps_theme', 'light');
+        icon.classList.replace('fa-sun', 'fa-moon'); // Show Moon (to go dark)
+    } else {
+        // Switch to Dark
+        html.classList.add('dark');
+        localStorage.setItem('dps_theme', 'dark');
+        icon.classList.replace('fa-moon', 'fa-sun'); // Show Sun (to go light)
+    }
+}
+
 // Handle showing specific sections
 function showSection(sectionId) {
     // Update URL hash (so back button works)
@@ -295,6 +331,8 @@ let currentUserRole = 'student';
 
 // A. Check for saved session on Page Load
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme(); // <--- ADD THIS LINE
+    
     const savedRole = localStorage.getItem('dps_user_role');
 
     // Render initial content
