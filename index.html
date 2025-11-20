@@ -30,6 +30,12 @@
 </head>
 <body class="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 transition-colors duration-300 flex flex-col min-h-screen">
 
+<div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-teal-400/20 dark:bg-teal-900/20 blur-[120px] opacity-50 mix-blend-multiply dark:mix-blend-normal animate-pulse"></div>
+    
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-400/20 dark:bg-indigo-900/20 blur-[120px] opacity-50 mix-blend-multiply dark:mix-blend-normal"></div>
+</div>
+
     <nav class="fixed w-full z-50 top-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/60 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
@@ -82,7 +88,7 @@
 
     <main class="flex-grow pt-28 pb-12 px-4 sm:px-6 lg:px-8 w-full">
         
-        <div class="max-w-7xl mx-auto bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-[2.5rem] shadow-xl border border-white/50 dark:border-slate-700/50 p-8 md:p-12 min-h-[80vh] transition-colors duration-300">
+        <div class="relative z-10 max-w-7xl mx-auto bg-white/60 dark:bg-slate-900/40 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl dark:shadow-teal-900/20 border border-white/50 dark:border-white/5 p-8 md:p-12 min-h-[80vh] transition-all duration-500">
             
             <div id="home" class="section-content active">
                 <div class="text-center py-12 md:py-20">

@@ -146,16 +146,16 @@ body {
         }
 /* --- DARK MODE OVERRIDES --- */
 
-/* In Dark Mode, make the breathing circle center dark */
+/* 1. Dark Breathing Circle */
 :is(.dark) .core-circle {
-    background-color: #1e293b; /* slate-800 */
+    background-color: #1e293b;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
-/* In Dark Mode, make the background pattern darker */
+/* 2. SMOOTH BACKGROUND (Vignette Effect) */
 :is(.dark) body {
-    background-color: #0f172a; /* slate-900 */
-    /* Optional: Darker gradient if you kept the gradient background */
-    background-image: none; 
+    /* Instead of a flat color, we use a radial gradient */
+    background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%);
+    background-attachment: fixed; /* Keeps the glow in place when scrolling */
 }
     
