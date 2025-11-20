@@ -275,54 +275,98 @@
             </div>
 
             <div id="chat" class="section-content hidden">
-                <div class="max-w-4xl mx-auto">
-                    <div class="text-center mb-10">
-                        <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-3">Connect with a Peer Supporter</h2>
-                        <p class="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-                            Sometimes you just need to talk to someone who understands the nursing school grind.
-                        </p>
-                    </div>
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-3">Connect with a Peer Supporter</h2>
+            <p class="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+                Sometimes you just need to talk to someone who understands the nursing school grind.
+            </p>
+        </div>
 
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-slate-100 dark:border-slate-700">
-                        <div class="bg-teal-600 p-8 md:p-12 text-white flex flex-col justify-center">
-                            <h3 class="text-2xl font-bold mb-4">How it works</h3>
-                            <ul class="space-y-4 mb-8">
-                                <li class="flex items-start"><span class="bg-teal-500 p-1 rounded mt-1 mr-3"><i class="fas fa-check text-xs"></i></span> <span class="text-teal-50 text-sm">Fill out the request form.</span></li>
-                                <li class="flex items-start"><span class="bg-teal-500 p-1 rounded mt-1 mr-3"><i class="fas fa-check text-xs"></i></span> <span class="text-teal-50 text-sm">Matched based on topic.</span></li>
-                                <li class="flex items-start"><span class="bg-teal-500 p-1 rounded mt-1 mr-3"><i class="fas fa-check text-xs"></i></span> <span class="text-teal-50 text-sm">Secure chat link via email.</span></li>
-                            </ul>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-slate-100 dark:border-slate-700">
+            
+            <div class="bg-teal-600 p-8 md:p-12 text-white flex flex-col justify-center">
+                <h3 class="text-2xl font-bold mb-6">How it works</h3>
+                <ul class="space-y-6 mb-8">
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 w-6 h-6 bg-teal-500 rounded flex items-center justify-center mt-0.5 mr-3 border border-teal-400">
+                            <i class="fas fa-check text-xs"></i>
                         </div>
-
-                        <div class="p-8 md:p-12">
-                            <form id="bookingForm" onsubmit="handleBooking(event)">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name (or Alias)</label>
-                                        <input type="text" required class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:ring-2 focus:ring-teal-500 outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Year</label>
-                                        <select class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:ring-2 focus:ring-teal-500 outline-none">
-                                            <option>BSN Year 1</option>
-                                            <option>BSN Year 2</option>
-                                            <option>BSN Year 3</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Topic</label>
-                                        <select class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg focus:ring-2 focus:ring-teal-500 outline-none">
-                                            <option>General Stress</option>
-                                            <option>Academic Struggles</option>
-                                            <option>Just need to vent</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit" class="w-full bg-slate-800 dark:bg-teal-600 text-white py-3 rounded-lg font-bold hover:bg-slate-700 transition mt-2">Request Chat</button>
-                                </div>
-                            </form>
+                        <span class="text-teal-50 text-sm leading-relaxed">Fill out the request form with your details.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 w-6 h-6 bg-teal-500 rounded flex items-center justify-center mt-0.5 mr-3 border border-teal-400">
+                            <i class="fas fa-check text-xs"></i>
                         </div>
+                        <span class="text-teal-50 text-sm leading-relaxed">We match you with a peer based on your topic.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 w-6 h-6 bg-teal-500 rounded flex items-center justify-center mt-0.5 mr-3 border border-teal-400">
+                            <i class="fas fa-check text-xs"></i>
+                        </div>
+                        <span class="text-teal-50 text-sm leading-relaxed">Receive a secure chat link via email within 24 hours.</span>
+                    </li>
+                </ul>
+                
+                <div class="mt-auto pt-6 border-t border-teal-500/30">
+                    <div class="flex items-center mb-2 text-teal-100 font-bold">
+                        <i class="fas fa-shield-alt mr-2"></i> Safe & Confidential
                     </div>
+                    <p class="text-xs text-teal-200 opacity-80">Not a crisis service. For emergencies, please contact local services.</p>
                 </div>
             </div>
+
+            <div class="p-8 md:p-12 relative">
+                <form id="bookingForm" onsubmit="handleBooking(event)">
+                    <div class="space-y-5">
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Name (or Alias)</label>
+                            <input type="text" required 
+                                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-slate-700 dark:text-white"
+                                placeholder="e.g. Alex">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Year of Study</label>
+                            <div class="relative">
+                                <select class="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-slate-700 dark:text-white cursor-pointer">
+                                    <option>BSN Year 1</option>
+                                    <option>BSN Year 2</option>
+                                    <option>BSN Year 3</option>
+                                    <option>BSN Year 4</option>
+                                    <option>MSN Student</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">I want to talk about...</label>
+                            <div class="relative">
+                                <select class="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-slate-700 dark:text-white cursor-pointer">
+                                    <option>General Stress</option>
+                                    <option>Academic Struggles</option>
+                                    <option>Clinical Placement Issue</option>
+                                    <option>Just need to vent</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-slate-800 dark:bg-teal-600 text-white py-3.5 rounded-lg font-bold hover:bg-slate-700 dark:hover:bg-teal-500 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 mt-4">
+                            Request Chat
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
             
             <div id="admin-dashboard" class="section-content hidden">
                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
