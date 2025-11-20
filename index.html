@@ -373,12 +373,16 @@
                     <h3 class="text-xl font-bold mb-2 text-slate-700">Box Breathing</h3>
                     <p class="text-slate-500 text-sm mb-8">Follow the circle to regulate your nervous system.</p>
                     
-                    <div id="breathing-container" class="breathing-circle mb-8">
-                        <div class="inner-circle">
-                            <span id="breath-text" class="text-xl font-bold text-teal-600">Ready?</span>
-                            <span id="breath-timer" class="text-sm text-slate-400 mt-1"></span>
-                        </div>
-                    </div>
+                    <div id="breathing-widget" class="breathing-widget">
+    <div class="ripple ripple-1"></div>
+    <div class="ripple ripple-2"></div>
+    <div class="ripple ripple-3"></div>
+
+    <div class="core-circle">
+        <span id="breath-text" class="text-xl font-bold text-teal-600">Ready?</span>
+        <span id="breath-instruction" class="text-xs text-slate-400 mt-1">Click Start</span>
+    </div>
+</div>
 
                     <button id="breath-btn" onclick="toggleBreathing()" class="bg-teal-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-700 transition shadow-lg">
                         Start Exercise

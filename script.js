@@ -81,7 +81,7 @@ function closeModal(id) {
 }
 
 // ==========================================
-// 2. BREATHING APP LOGIC
+// 2. BREATHING APP LOGIC (RIPPLES)
 // ==========================================
 
 let isBreathing = false;
@@ -89,42 +89,48 @@ let breathingInterval;
 
 function toggleBreathing() {
     const btn = document.getElementById('breath-btn');
-    const circle = document.getElementById('breathing-container');
+    const widget = document.getElementById('breathing-widget');
     const text = document.getElementById('breath-text');
+    const instruction = document.getElementById('breath-instruction');
 
     if (!isBreathing) {
+        // START
         isBreathing = true;
         btn.textContent = "Stop Exercise";
-        btn.classList.remove('bg-teal-600');
-        btn.classList.add('bg-red-400');
+        btn.classList.replace('bg-teal-600', 'bg-red-400');
         
-        runBreathingCycle();
-        breathingInterval = setInterval(runBreathingCycle, 8000); 
+        // Add class to start CSS animations
+        widget.classList.add('breathing-active');
+        
+        instruction.textContent = "Follow the rings...";
+        runBreathingCycle(); // Run immediately
+        breathingInterval = setInterval(runBreathingCycle, 4000); // Loop every 4 seconds
     } else {
+        // STOP
         isBreathing = false;
         clearInterval(breathingInterval);
         btn.textContent = "Start Exercise";
-        btn.classList.remove('bg-red-400');
-        btn.classList.add('bg-teal-600');
+        btn.classList.replace('bg-red-400', 'bg-teal-600');
         
-        circle.classList.remove('inhale', 'exhale');
+        // Stop CSS animations
+        widget.classList.remove('breathing-active');
+        
         text.textContent = "Ready?";
+        instruction.textContent = "Click Start";
     }
 }
 
 function runBreathingCycle() {
-    const circle = document.getElementById('breathing-container');
+    if(!isBreathing) return;
+    
     const text = document.getElementById('breath-text');
-
-    text.textContent = "Breathe In...";
-    circle.className = "breathing-circle inhale";
+    
+    // Simple 4-second In/Out logic
+    text.textContent = "Breathe In";
     
     setTimeout(() => {
-        if(isBreathing) {
-            text.textContent = "Breathe Out...";
-            circle.className = "breathing-circle exhale";
-        }
-    }, 4000); 
+        if(isBreathing) text.textContent = "Breathe Out";
+    }, 2000); // Change text halfway through the 4s cycle
 }
 
 // ==========================================
