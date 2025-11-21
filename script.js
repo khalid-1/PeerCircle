@@ -489,58 +489,49 @@ let peerMessages = [
 ];
 
 function handleBooking(e) {
-    e.preventDefault(); 
-    
-    const btn = document.getElementById('chat-submit-btn');
-    // Store original text to restore it later
-    const originalText = "Send Request"; 
+    e.preventDefault();
 
-    // 1. Disable Button & Show Spinner
-    btn.disabled = true;
-    btn.classList.add('opacity-75', 'cursor-not-allowed');
-    btn.innerHTML = `&lt;i class="fas fa-circle-notch fa-spin mr-2"&gt;&lt;/i&gt; Sending...`;
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
 
-    // 2. Simulate Network Delay
+    // Guard in case button isn't found
+    if (!submitBtn) {
+        console.warn('Submit button not found in booking form');
+    }
+
+    // Store original state and show loading state
+    const originalText = submitBtn ? submitBtn.textContent : '';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+        submitBtn.classList.add('opacity-70', 'cursor-wait');
+    }
+
+    // Collect form data
+    const inputs = form.querySelectorAll('input, select');
+    const newMessage = {
+        id: Date.now(),
+        name: inputs[0].value || 'Anonymous',
+        year: inputs[1].value,
+        topic: inputs[2].value,
+        time: 'Anytime',
+        status: 'pending'
+    };
+
+    // Push to in-memory inbox + update stats
+    peerMessages.push(newMessage);
+    updateDashboard();
+    form.reset();
+    showNotification('Request Sent! Peer will reply via email.', 'success');
+
+    // Simulate small delay, then restore button
     setTimeout(() => {
-        // Capture Data
-        const nameVal = document.getElementById('chat-name').value;
-        const yearVal = document.getElementById('chat-year').value;
-        const topicVal = document.getElementById('chat-topic').value;
-
-        const newMessage = {
-            id: Date.now(),
-            name: nameVal || "Anonymous",
-            year: yearVal,
-            topic: topicVal,
-            time: "Just now",
-            status: "pending"
-        };
-
-        peerMessages.push(newMessage);
-        updateDashboard(); 
-
-        // 3. SWAP CONTAINERS (Hide Form -&gt; Show Success)
-        const formContainer = document.getElementById('chat-form-container');
-        const successContainer = document.getElementById('chat-success-container');
-
-        if (formContainer && successContainer) {
-            formContainer.classList.add('hidden');
-            successContainer.classList.remove('hidden');
-            successContainer.classList.add('flex'); // Flex required for centering
-            
-            showNotification("Request Sent Successfully!", "success");
-        } else {
-            // Fallback if HTML is missing
-            console.error("Missing HTML containers");
-            alert("Request sent!");
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText || 'Send Request';
+            submitBtn.classList.remove('opacity-70', 'cursor-wait');
         }
-
-        // Reset button state (ready for next time)
-        btn.disabled = false;
-        btn.classList.remove('opacity-75', 'cursor-not-allowed');
-        btn.innerHTML = originalText;
-
-    }, 1500); 
+    }, 800);
 }
 
 function resetChatForm() {
