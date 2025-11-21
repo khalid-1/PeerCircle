@@ -492,20 +492,21 @@ function handleBooking(e) {
     e.preventDefault(); 
     
     const btn = document.getElementById('chat-submit-btn');
-    const originalText = btn.innerHTML;
+    const originalText = "Send Request"; // Hardcoded to ensure reset works
 
     // 1. Disable Button & Show Spinner
     btn.disabled = true;
     btn.classList.add('opacity-75', 'cursor-not-allowed');
     btn.innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Sending...`;
 
-    // 2. Simulate Network Delay (1.5 seconds)
-    setTimeout(() => {
-        // Capture Data
-        const nameVal = document.getElementById('chat-name').value;
-        const yearVal = document.getElementById('chat-year').value;
-        const topicVal = document.getElementById('chat-topic').value;
+    // 2. Capture Data NOW (to prevent errors if user leaves)
+    const nameVal = document.getElementById('chat-name').value;
+    const yearVal = document.getElementById('chat-year').value;
+    const topicVal = document.getElementById('chat-topic').value;
 
+    // 3. Simulate Network Delay
+    setTimeout(() => {
+        // Add to array
         const newMessage = {
             id: Date.now(),
             name: nameVal || "Anonymous",
@@ -514,33 +515,48 @@ function handleBooking(e) {
             time: "Just now",
             status: "pending"
         };
-
         peerMessages.push(newMessage);
+        
+        // Update Admin Dashboard if it exists
         updateDashboard(); 
 
-        // 3. HIDE Form / SHOW Success
-        document.getElementById('chat-form-container').classList.add('hidden');
-        document.getElementById('chat-success-container').classList.remove('hidden');
-        document.getElementById('chat-success-container').classList.add('flex'); // Flex needed for centering
+        // 4. UI Transition (SAFE CHECK)
+        const formContainer = document.getElementById('chat-form-container');
+        const successContainer = document.getElementById('chat-success-container');
 
-        // Reset button state (for next time)
+        if (formContainer && successContainer) {
+            formContainer.classList.add('hidden');
+            successContainer.classList.remove('hidden');
+            successContainer.classList.add('flex');
+            showNotification("Request Sent Successfully!", "success");
+        } else {
+            console.error("Error: Could not find chat-form-container or chat-success-container in HTML");
+            // Fallback if HTML is missing: just reset button
+            alert("Request Sent!");
+        }
+
+        // Reset button state (ready for next time)
         btn.disabled = false;
         btn.classList.remove('opacity-75', 'cursor-not-allowed');
         btn.innerHTML = originalText;
-        
-        showNotification("Request Sent Successfully!", "success");
 
-    }, 1500); // 1.5s delay
+    }, 1500); 
 }
 
 function resetChatForm() {
     // Clear inputs
-    document.getElementById('chat-name').value = "";
+    const nameInput = document.getElementById('chat-name');
+    if(nameInput) nameInput.value = "";
     
     // Swap containers back
-    document.getElementById('chat-success-container').classList.add('hidden');
-    document.getElementById('chat-success-container').classList.remove('flex');
-    document.getElementById('chat-form-container').classList.remove('hidden');
+    const formContainer = document.getElementById('chat-form-container');
+    const successContainer = document.getElementById('chat-success-container');
+    
+    if (formContainer && successContainer) {
+        successContainer.classList.add('hidden');
+        successContainer.classList.remove('flex');
+        formContainer.classList.remove('hidden');
+    }
 }
 
 function renderInbox() {
