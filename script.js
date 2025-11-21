@@ -207,16 +207,17 @@ function renderTopics() {
             ? `<button onclick="deleteTopic(${topic.id})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>` 
             : "";
 
+        // Updated Card HTML with Dark Mode classes
         const cardHTML = `
-            <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group relative animate-[fadeIn_0.3s_ease-out]">
+            <div class="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition group relative animate-[fadeIn_0.3s_ease-out]">
                 <div class="h-3 bg-${topic.color}-400"></div>
                 <div class="p-6">
                     ${adminControls}
                     <div class="flex justify-between items-start mb-4">
-                        <h3 class="font-bold text-xl text-slate-800">${topic.title}</h3>
+                        <h3 class="font-bold text-xl text-slate-800 dark:text-white">${topic.title}</h3>
                         <div class="text-${topic.color}-400 text-xl"><i class="fas ${topic.icon}"></i></div>
                     </div>
-                    <p class="text-slate-600 text-sm mb-4 min-h-[3rem]">${topic.desc}</p>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm mb-4 min-h-[3rem]">${topic.desc}</p>
                     ${buttonHTML}
                 </div>
             </div>`;
@@ -247,7 +248,7 @@ function deleteTopic(id) {
 }
 
 // ==========================================
-// 4. PEER CHAT & INBOX LOGIC
+// 4. PEER CHAT & INBOX LOGIC (MOBILE FIXED)
 // ==========================================
 
 let peerMessages = [
@@ -280,19 +281,46 @@ function renderInbox() {
     const activeMessages = peerMessages.filter(msg => msg.status === 'pending');
 
     if (activeMessages.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center text-slate-400">All caught up!</div>`;
+        container.innerHTML = `
+            <div class="p-12 text-center text-slate-400 dark:text-slate-500 flex flex-col items-center justify-center">
+                <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-300">
+                    <i class="fas fa-inbox text-3xl"></i>
+                </div>
+                <p>No new requests at the moment.</p>
+            </div>`;
         return;
     }
 
+    // Updated to use Flexbox instead of Grid for better mobile layout
     container.innerHTML = activeMessages.map(msg => `
-        <div class="grid grid-cols-1 md:grid-cols-12 px-6 py-4 items-center border-b border-slate-100 hover:bg-slate-50">
-            <div class="md:col-span-3 font-medium text-slate-800">${msg.name}</div>
-            <div class="md:col-span-2 text-sm text-slate-500">${msg.year}</div>
-            <div class="md:col-span-3"><span class="bg-slate-100 px-2 py-1 rounded text-xs">${msg.topic}</span></div>
-            <div class="md:col-span-2 text-sm text-slate-500">${msg.time}</div>
-            <div class="md:col-span-2 text-right">
-                <button onclick="acceptRequest(${msg.id})" class="bg-teal-600 text-white px-3 py-1 rounded text-sm">Accept</button>
+        <div class="flex flex-col md:flex-row gap-4 p-5 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition group">
+            
+            <div class="flex items-start gap-3 md:w-1/3">
+                <div class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex-shrink-0 flex items-center justify-center font-bold text-sm">
+                    ${msg.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 dark:text-white text-sm md:text-base">${msg.name}</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${msg.year}</p>
+                </div>
             </div>
+
+            <div class="md:w-1/4 flex items-center">
+                <span class="inline-block bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs px-2.5 py-1 rounded-md font-medium border border-slate-200 dark:border-slate-600">
+                    ${msg.topic}
+                </span>
+            </div>
+
+            <div class="flex-1 flex flex-row md:justify-end items-center justify-between gap-4">
+                <div class="text-xs text-slate-400 dark:text-slate-500 flex items-center">
+                    <i class="far fa-clock mr-1.5"></i> ${msg.time}
+                </div>
+                
+                <button onclick="acceptRequest(${msg.id})" class="bg-teal-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm hover:bg-teal-700 active:scale-95 transition ml-auto md:ml-0">
+                    Accept
+                </button>
+            </div>
+
         </div>`).join('');
 }
 
