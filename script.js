@@ -5,6 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     renderTopics();
+    renderSessions(); // <--- ADD THIS LINE
     
     const savedRole = localStorage.getItem('dps_user_role');
     if (savedRole) {
@@ -332,6 +333,144 @@ function deleteTopic(event, id) {
 }
 
 // ==========================================
+// VIRTUAL SESSIONS LOGIC
+// ==========================================
+
+// 1. Initial Data
+let sessionsData = [
+    { 
+        id: 1, 
+        title: "Mindfulness for Nurses", 
+        desc: "Guided meditation & grounding techniques.", 
+        date: "2025-11-24", 
+        time: "17:00", 
+        duration: "60",
+        host: "Sarah Jenkins", 
+        platform: "Zoom", 
+        tag: "Stress Relief", 
+        link: "#" 
+    },
+    { 
+        id: 2, 
+        title: "NCLEX Q&A Strategy", 
+        desc: "How to dissect difficult questions.", 
+        date: "2025-11-28", 
+        time: "18:30", 
+        duration: "90",
+        host: "Peer Mentor Mike", 
+        platform: "Microsoft Teams", 
+        tag: "Exam Prep", 
+        link: "#" 
+    }
+];
+
+// 2. Render Function
+function renderSessions() {
+    const container = document.getElementById('sessions-container');
+    if(!container) return;
+    
+    if(sessionsData.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-slate-400">No upcoming sessions scheduled.</div>`;
+        return;
+    }
+
+    container.innerHTML = sessionsData.map(session => {
+        // Format Date
+        const dateObj = new Date(session.date);
+        const day = dateObj.getDate();
+        const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
+        
+        // Platform Colors/Icons
+        let platIcon = 'fa-video';
+        let platColor = 'text-slate-500';
+        if(session.platform === 'Zoom') { platIcon = 'fa-video'; platColor = 'text-blue-500'; }
+        if(session.platform === 'Google Meet') { platIcon = 'fa-handshake'; platColor = 'text-green-500'; }
+        if(session.platform === 'Microsoft Teams') { platIcon = 'fa-users-rectangle'; platColor = 'text-indigo-500'; }
+
+        let adminControls = currentUserRole === 'admin' 
+            ? `<button onclick="deleteSession(${session.id})" class="text-slate-300 hover:text-red-500 ml-2 transition"><i class="fas fa-trash-alt"></i></button>` 
+            : "";
+
+        return `
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition items-center group">
+            
+            <div class="md:col-span-2 flex items-center gap-3">
+                <div class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl p-2 w-14 text-center border border-slate-200 dark:border-slate-600">
+                    <div class="text-[10px] uppercase tracking-wider">${month}</div>
+                    <div class="text-xl leading-none">${day}</div>
+                </div>
+                <div class="text-sm text-slate-500 dark:text-slate-400">
+                    ${session.time}<br>
+                    <span class="text-xs opacity-70">${session.duration}m</span>
+                </div>
+            </div>
+
+            <div class="md:col-span-4">
+                <h4 class="font-bold text-slate-800 dark:text-white text-lg">${session.title}</h4>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">${session.desc}</p>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">
+                    ${session.tag}
+                </span>
+            </div>
+
+            <div class="md:col-span-3 flex flex-col justify-center text-sm">
+                <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1">
+                    <i class="fas fa-user-circle mr-2 text-slate-400"></i> ${session.host}
+                </div>
+                <div class="flex items-center ${platColor}">
+                    <i class="fas ${platIcon} mr-2"></i> ${session.platform}
+                </div>
+            </div>
+
+            <div class="md:col-span-3 flex items-center justify-end gap-3">
+                <a href="${session.link}" target="_blank" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-bold hover:opacity-90 transition shadow-md">
+                    Join
+                </a>
+                ${adminControls}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// 3. Add Session Logic
+function handleAddSession(e) {
+    e.preventDefault();
+    
+    const newSession = {
+        id: Date.now(),
+        title: document.getElementById('new-session-title').value,
+        host: document.getElementById('new-session-host').value,
+        date: document.getElementById('new-session-date').value,
+        time: document.getElementById('new-session-time').value,
+        duration: document.getElementById('new-session-duration').value,
+        platform: document.getElementById('new-session-platform').value,
+        tag: document.getElementById('new-session-tag').value,
+        link: document.getElementById('new-session-link').value,
+        desc: document.getElementById('new-session-desc').value,
+    };
+
+    sessionsData.push(newSession);
+    renderSessions();
+    
+    // Update Analytics
+    if(document.getElementById('stat-sessions')) {
+        document.getElementById('stat-sessions').textContent = sessionsData.length;
+    }
+
+    e.target.reset();
+    document.getElementById('admin-add-session').classList.add('hidden');
+    showNotification("Session Scheduled Successfully!", "success");
+}
+
+function deleteSession(id) {
+    if(confirm("Cancel and delete this session?")) {
+        sessionsData = sessionsData.filter(s => s.id !== id);
+        renderSessions();
+        showNotification("Session cancelled.", "success");
+    }
+}
+
+// ==========================================
 // 5. INBOX & MESSAGES
 // ==========================================
 
@@ -445,6 +584,9 @@ function loginAs(role, isAutoLogin = false) {
         if(mobAdmin) mobAdmin.classList.remove('hidden');
         if(adminControls) adminControls.classList.remove('hidden');
         initAdminPickers();
+        if(document.getElementById('admin-session-controls')) {
+            document.getElementById('admin-session-controls').classList.remove('hidden');
+        }
         updateDashboard();
         if(!isAutoLogin) {
             showSection('admin-dashboard');
