@@ -1,35 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f9fa; /* Very light teal background */
-        }
+    font-family: 'Inter', sans-serif;
+    /* Removed fixed background color, using Tailwind classes in HTML */
+}
 
-        nav {
-            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent */
-            backdrop-filter: blur(10px); /* Blurs content behind it */
-        }
+/* Custom Input Styles for Forms */
+.input-field {
+    @apply w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-slate-700 dark:text-white;
+}
 
-        /* Smooth transitions for sections */
-        .section-content {
-            display: none;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-        
-        .section-content.active {
-            display: block;
-        }
+/* Smooth Section Transitions */
+.section-content {
+    display: none;
+    animation: fadeIn 0.4s ease-in-out;
+}
 
-        .hover\:shadow-md:hover {
-            transform: translateY(-4px); /* Moves up 4 pixels */
-            transition: all 0.3s ease;
-        }
+.section-content.active {
+    display: block;
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-/* --- DIRECTIONAL BREATHING ANIMATION --- */
-
+/* Breathing Widget Logic */
 .breathing-widget {
     position: relative;
     width: 260px;
@@ -37,10 +35,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto 2rem auto;
+    margin: 2rem auto;
 }
 
-/* The Center Circle */
 .core-circle {
     width: 140px;
     height: 140px;
@@ -53,104 +50,54 @@ body {
     justify-content: center;
     box-shadow: 0 10px 25px rgba(20, 184, 166, 0.15);
     position: relative;
-    transition: transform 4s ease-in-out; /* Smooth core sizing */
+    transition: transform 4s ease-in-out;
 }
 
-/* The Ripples */
 .ripple {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 50%;
-    background-color: #2dd4bf; /* Teal-400 */
+    background-color: #2dd4bf;
     opacity: 0;
     z-index: 0;
 }
 
-/* --- ANIMATION STATES --- */
-
-/* STATE 1: INHALE (Waves go IN) */
-.breathing-widget.inhaling .core-circle {
-    transform: scale(1.1); /* Core grows slightly as you fill lungs */
-}
-.breathing-widget.inhaling .ripple {
-    animation: rippleIn 4s infinite linear;
-}
-
-/* STATE 2: EXHALE (Waves go OUT) */
-.breathing-widget.exhaling .core-circle {
-    transform: scale(1.0); /* Core shrinks as you empty lungs */
-}
-.breathing-widget.exhaling .ripple {
-    animation: rippleOut 4s infinite linear;
-}
-
-/* Stagger the ripples so they look like continuous waves */
-.ripple-1 { animation-delay: 0s; }
-.ripple-2 { animation-delay: 1.3s; }
-.ripple-3 { animation-delay: 2.6s; }
-
-
-/* --- KEYFRAMES --- */
-
-/* Waves coming IN (Large to Small) */
-@keyframes rippleIn {
-    0% {
-        width: 260px;
-        height: 260px;
-        opacity: 0;
-    }
-    20% {
-        opacity: 0.4; /* Fade in at edge */
-    }
-    100% {
-        width: 140px; /* Shrink to center */
-        height: 140px;
-        opacity: 0;
-    }
-}
-
-/* Waves going OUT (Small to Large) */
-@keyframes rippleOut {
-    0% {
-        width: 140px; /* Start at center */
-        height: 140px;
-        opacity: 0.6;
-    }
-    100% {
-        width: 280px; /* Expand outward */
-        height: 280px;
-        opacity: 0;
-    }
-}
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
-/* --- DARK MODE OVERRIDES --- */
-
-/* 1. Dark Breathing Circle */
+/* Dark Mode Overrides */
 :is(.dark) .core-circle {
     background-color: #1e293b;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
-/* 2. SMOOTH BACKGROUND (Vignette Effect) */
 :is(.dark) body {
-    /* Instead of a flat color, we use a radial gradient */
     background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%);
-    background-attachment: fixed; /* Keeps the glow in place when scrolling */
+    background-attachment: fixed;
 }
-    
+
+/* Animation States */
+.breathing-widget.inhaling .core-circle { transform: scale(1.1); }
+.breathing-widget.inhaling .ripple { animation: rippleIn 4s infinite linear; }
+.breathing-widget.exhaling .core-circle { transform: scale(1.0); }
+.breathing-widget.exhaling .ripple { animation: rippleOut 4s infinite linear; }
+
+.ripple-1 { animation-delay: 0s; }
+.ripple-2 { animation-delay: 1.3s; }
+.ripple-3 { animation-delay: 2.6s; }
+
+@keyframes rippleIn {
+    0% { width: 260px; height: 260px; opacity: 0; }
+    20% { opacity: 0.4; }
+    100% { width: 140px; height: 140px; opacity: 0; }
+}
+
+@keyframes rippleOut {
+    0% { width: 140px; height: 140px; opacity: 0.6; }
+    100% { width: 280px; height: 280px; opacity: 0; }
+}
+
+/* Scrollbar Polish */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+:is(.dark) ::-webkit-scrollbar-thumb { background: #475569; }

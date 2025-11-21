@@ -9,150 +9,156 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class', // Enables manual toggling
+            darkMode: 'class',
             theme: {
                 extend: {
-                    colors: {
-                        slate: {
-                            850: '#1e293b', /* Custom dark shade */
-                        }
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { slate: { 850: '#1e293b' } }
                 }
             }
         }
     </script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 transition-colors duration-300 flex flex-col min-h-screen">
+<body class="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 transition-colors duration-300 flex flex-col min-h-screen font-sans">
 
-<div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-teal-400/20 dark:bg-teal-900/20 blur-[120px] opacity-50 mix-blend-multiply dark:mix-blend-normal animate-pulse"></div>
-    
-    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-400/20 dark:bg-indigo-900/20 blur-[120px] opacity-50 mix-blend-multiply dark:mix-blend-normal"></div>
-</div>
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-teal-400/20 dark:bg-teal-900/20 blur-[120px] opacity-50 mix-blend-multiply dark:mix-blend-normal animate-pulse"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-400/20 dark:bg-indigo-900/20 blur-[120px] opacity-50 mix-blend-multiply dark:mix-blend-normal"></div>
+    </div>
 
     <nav class="fixed w-full z-50 top-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/60 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 
-                <div class="flex items-center cursor-pointer" onclick="showSection('home')">
-                    <div class="bg-teal-500 text-white p-2 rounded-xl mr-3 shadow-sm">
+                <div class="flex items-center cursor-pointer group" onclick="showSection('home')">
+                    <div class="bg-teal-500 text-white p-2 rounded-xl mr-3 shadow-sm group-hover:scale-105 transition-transform">
                         <i class="fas fa-hands-helping text-lg"></i>
                     </div>
                     <span class="font-bold text-2xl text-slate-700 dark:text-white tracking-tight">PeerCircle</span>
                 </div>
 
-                <div class="hidden md:flex space-x-6 items-center">
-                    <button onclick="showSection('home')" class="nav-link text-slate-600 dark:text-slate-400 font-medium hover:text-teal-600 dark:hover:text-teal-400 transition">Home</button>
-                    <button onclick="showSection('education')" class="nav-link text-slate-600 dark:text-slate-400 font-medium hover:text-teal-600 dark:hover:text-teal-400 transition">Education</button>
-                    <button onclick="showSection('sessions')" class="nav-link text-slate-600 dark:text-slate-400 font-medium hover:text-teal-600 dark:hover:text-teal-400 transition">Sessions</button>
-                    <button onclick="showSection('selfhelp')" class="nav-link text-slate-600 dark:text-slate-400 font-medium hover:text-teal-600 dark:hover:text-teal-400 transition">Self-Help</button>
+                <div class="hidden md:flex space-x-1 lg:space-x-4 items-center">
+                    <button onclick="showSection('home')" class="nav-link px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition text-sm">Home</button>
+                    <button onclick="showSection('education')" class="nav-link px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition text-sm">Library</button>
+                    <button onclick="showSection('sessions')" class="nav-link px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition text-sm">Sessions</button>
+                    <button onclick="showSection('directory')" class="nav-link px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition text-sm">Mentors</button>
+                    <button onclick="showSection('selfhelp')" class="nav-link px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition text-sm">Toolkit</button>
                     
-                    <button onclick="showSection('chat')" class="px-6 py-2.5 bg-slate-800 dark:bg-teal-600 text-white rounded-full font-medium hover:bg-slate-700 dark:hover:bg-teal-700 transition shadow-md">Peer Chat</button>
+                    <button id="nav-admin-link" onclick="showSection('admin-dashboard')" class="hidden px-3 py-2 rounded-lg text-red-600 dark:text-red-400 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition text-sm border border-red-200 dark:border-red-900">Admin Panel</button>
+                    <button id="nav-peer-link" onclick="showSection('peer-inbox')" class="hidden px-3 py-2 rounded-lg text-indigo-600 dark:text-indigo-400 font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition text-sm border border-indigo-200 dark:border-indigo-900">Inbox <span class="ml-1 bg-indigo-600 text-white text-[10px] px-1.5 rounded-full">2</span></button>
 
-                    <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center ml-2">
-                        <i class="fas fa-moon" id="theme-icon"></i>
-                    </button>
+                    <button onclick="showSection('chat')" class="ml-2 px-5 py-2 bg-slate-800 dark:bg-teal-600 text-white rounded-full font-medium hover:bg-slate-700 dark:hover:bg-teal-500 transition shadow-md text-sm">Get Support</button>
 
-                    <button id="logout-btn" onclick="logout()" class="hidden text-slate-400 hover:text-red-500 ml-2 transition" title="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
+                    <div class="border-l border-slate-200 dark:border-slate-700 pl-3 ml-1 flex items-center space-x-1">
+                        <button onclick="toggleTheme()" class="w-9 h-9 rounded-full text-slate-500 dark:text-yellow-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-center">
+                            <i class="fas fa-moon" id="theme-icon"></i>
+                        </button>
+                        <button id="logout-btn" onclick="logout()" class="hidden w-9 h-9 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition flex items-center justify-center" title="Logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="md:hidden flex items-center space-x-4">
-                    <button onclick="toggleTheme()" class="text-slate-600 dark:text-yellow-400">
+                <div class="md:hidden flex items-center space-x-3">
+                    <button onclick="toggleTheme()" class="text-slate-600 dark:text-yellow-400 p-2">
                         <i class="fas fa-adjust"></i>
                     </button>
-
-                    <button id="mobile-menu-btn" class="text-slate-500 dark:text-slate-300 hover:text-teal-600 focus:outline-none">
+                    <button id="mobile-menu-btn" class="text-slate-700 dark:text-slate-200 focus:outline-none p-2">
                         <i class="fas fa-bars text-2xl"></i>
                     </button>
                 </div>
             </div>
         </div>
         
-        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 shadow-xl">
-            <a onclick="showSection('home'); toggleMobileMenu()" class="block py-3 px-6 text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800">Home</a>
-            <a onclick="showSection('education'); toggleMobileMenu()" class="block py-3 px-6 text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800">Education Topics</a>
-            <a onclick="showSection('sessions'); toggleMobileMenu()" class="block py-3 px-6 text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800">Virtual Sessions</a>
-            <a onclick="showSection('selfhelp'); toggleMobileMenu()" class="block py-3 px-6 text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800">Self-Help Tools</a>
-            <a onclick="showSection('chat'); toggleMobileMenu()" class="block py-3 px-6 text-teal-600 dark:text-teal-400 font-semibold hover:bg-teal-50 dark:hover:bg-slate-800">Peer Chat</a>
-            <a onclick="logout()" class="block py-3 px-6 text-red-500 font-semibold hover:bg-red-50 dark:hover:bg-red-900/20">Logout</a>
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 shadow-xl absolute w-full left-0">
+            <div class="py-2 space-y-1 px-4">
+                <a onclick="showSection('home'); toggleMobileMenu()" class="block py-3 px-4 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium">Home</a>
+                <a onclick="showSection('education'); toggleMobileMenu()" class="block py-3 px-4 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium">Library</a>
+                <a onclick="showSection('directory'); toggleMobileMenu()" class="block py-3 px-4 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium">Peer Mentors</a>
+                <a onclick="showSection('sessions'); toggleMobileMenu()" class="block py-3 px-4 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium">Sessions</a>
+                <a onclick="showSection('selfhelp'); toggleMobileMenu()" class="block py-3 px-4 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium">Self-Help</a>
+                
+                <a id="mobile-admin-link" onclick="showSection('admin-dashboard'); toggleMobileMenu()" class="hidden block py-3 px-4 rounded-lg text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 font-bold">Admin Dashboard</a>
+                <a id="mobile-peer-link" onclick="showSection('peer-inbox'); toggleMobileMenu()" class="hidden block py-3 px-4 rounded-lg text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 font-bold">Peer Inbox</a>
+
+                <a onclick="showSection('chat'); toggleMobileMenu()" class="block py-3 px-4 rounded-lg text-teal-600 dark:text-teal-400 font-bold bg-teal-50 dark:bg-teal-900/20 mt-2">Request Support</a>
+                <a onclick="logout()" class="block py-3 px-4 text-red-500 font-medium hover:bg-red-50 dark:hover:bg-red-900/20 border-t border-slate-100 dark:border-slate-800 mt-2">Logout</a>
+            </div>
         </div>
     </nav>
 
-    <main class="flex-grow pt-28 pb-12 px-4 sm:px-6 lg:px-8 w-full">
+    <main class="flex-grow pt-24 pb-8 px-4 sm:px-6 w-full">
         
-<div class="relative z-10 max-w-7xl mx-auto bg-white/60 dark:bg-slate-900/40 backdrop-blur-2xl rounded-3xl md:rounded-[2.5rem] overflow-hidden shadow-2xl dark:shadow-teal-900/20 border border-white/50 dark:border-white/5 p-5 md:p-12 min-h-[80vh] transition-all duration-500">
+        <div class="relative z-10 max-w-7xl mx-auto bg-white/80 dark:bg-slate-900/60 backdrop-blur-2xl rounded-3xl md:rounded-[2.5rem] overflow-hidden shadow-2xl dark:shadow-teal-900/20 border border-white/60 dark:border-white/10 p-5 md:p-10 min-h-[80vh] transition-all duration-500">
+            
             <div id="home" class="section-content active">
                 <div class="text-center py-12 md:py-20">
-                    <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-teal-600 dark:text-teal-300 uppercase bg-teal-100 dark:bg-teal-900/50 rounded-full">
+                    <div class="inline-flex items-center px-3 py-1 mb-6 text-xs font-bold tracking-wider text-teal-700 dark:text-teal-300 uppercase bg-teal-100 dark:bg-teal-900/40 rounded-full border border-teal-200 dark:border-teal-800">
+                        <span class="w-2 h-2 bg-teal-500 rounded-full mr-2 animate-pulse"></span>
                         For Nursing Students, By Nursing Students
                     </div>
-                    <h1 class="text-3xl md:text-5xl font-extrabold text-slate-800 dark:text-white mb-6 leading-tight">
-                        You care for patients. <br> <span class="text-teal-500 dark:text-teal-400">We care for you.</span>
+                    <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight tracking-tight">
+                        You care for patients. <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-teal-400">We care for you.</span>
                     </h1>
-                    <p class="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10">
-                        A safe digital space for BSN and MSN students to navigate academic stress, clinical placement anxiety, and the transition to professional practice.
+                    <p class="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+                        A safe, anonymous digital space for BSN and MSN students to navigate academic stress, clinical placement anxiety, and the transition to professional practice.
                     </p>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition cursor-pointer" onclick="showSection('education')">
-                            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">
-                                <i class="fas fa-book-open"></i>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-12 text-left">
+                        <div onclick="showSection('directory')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                            <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                <i class="fas fa-user-friends"></i>
                             </div>
-                            <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Education Library</h3>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Resources on burnout, exam anxiety, and clinical challenges.</p>
+                            <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Find a Mentor</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Connect with senior students who have been in your shoes.</p>
                         </div>
                         
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition cursor-pointer" onclick="showSection('sessions')">
-                            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">
-                                <i class="fas fa-video"></i>
+                        <div onclick="showSection('education')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                            <div class="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i class="fas fa-book-reader"></i>
                             </div>
-                            <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Live Sessions</h3>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Join scheduled wellbeing workshops with counselors.</p>
+                            <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Wellbeing Library</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Curated guides on burnout, exam anxiety, and resilience.</p>
                         </div>
 
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition cursor-pointer" onclick="showSection('chat')">
-                            <div class="w-12 h-12 bg-teal-100 dark:bg-teal-900/50 text-teal-600 dark:text-teal-300 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">
-                                <i class="fas fa-comments"></i>
+                        <div onclick="showSection('chat')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                            <div class="w-12 h-12 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                                <i class="fas fa-comment-medical"></i>
                             </div>
-                            <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Peer Support</h3>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Connect with senior students for guidance and chat.</p>
+                            <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Request Chat</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Safe, private, asynchronous support from trained peers.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div id="education" class="section-content hidden">
-                <div class="mb-8 flex justify-between items-end">
+                <div class="mb-8 flex flex-col md:flex-row justify-between items-end gap-4">
                     <div>
                         <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-2">Wellbeing Library</h2>
-                        <p class="text-slate-500 dark:text-slate-400">Curated guides to help you navigate the nursing journey.</p>
+                        <p class="text-slate-500 dark:text-slate-400">Practical guides for the nursing journey.</p>
                     </div>
-                    <div id="admin-badge" class="hidden bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                        <i class="fas fa-shield-alt mr-1"></i> Admin Mode
+                    <div id="admin-controls-btn" class="hidden">
+                        <button onclick="document.getElementById('admin-add-topic').classList.toggle('hidden')" class="bg-slate-800 dark:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90">
+                            <i class="fas fa-plus mr-2"></i>Manage Topics
+                        </button>
                     </div>
                 </div>
 
-                <div id="admin-controls" class="hidden bg-slate-100 dark:bg-slate-700/50 p-6 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 mb-8 animate-[fadeIn_0.3s_ease-out]">
-                    <h3 class="font-bold text-slate-700 dark:text-slate-200 mb-4"><i class="fas fa-plus-circle text-teal-600 dark:text-teal-400 mr-2"></i>Add New Topic</h3>
+                <div id="admin-add-topic" class="hidden bg-slate-50 dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 mb-8">
+                    <h3 class="font-bold text-slate-800 dark:text-white mb-4">Add New Topic</h3>
                     <form onsubmit="handleAddTopic(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <input type="text" id="new-topic-title" placeholder="Topic Title" required class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none">
-                        <input type="text" id="new-topic-desc" placeholder="Description..." required class="md:col-span-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none">
-                        <select id="new-topic-color" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none">
-                            <option value="blue">Blue Theme</option>
-                            <option value="red">Red Theme</option>
-                            <option value="green">Green Theme</option>
-                            <option value="orange">Orange Theme</option>
-                            <option value="purple">Purple Theme</option>
+                        <input type="text" id="new-topic-title" placeholder="Title" class="input-field">
+                        <input type="text" id="new-topic-desc" placeholder="Description" class="input-field md:col-span-2">
+                        <select id="new-topic-color" class="input-field">
+                            <option value="blue">Blue</option>
+                            <option value="teal">Teal</option>
+                            <option value="purple">Purple</option>
                         </select>
-                        <button type="submit" class="md:col-span-4 bg-slate-800 dark:bg-teal-600 text-white py-2 rounded-lg font-bold hover:bg-slate-700 dark:hover:bg-teal-500 transition">Publish Topic</button>
+                        <button type="submit" class="md:col-span-4 bg-teal-600 text-white py-2 rounded-lg font-bold hover:bg-teal-700">Publish</button>
                     </form>
                 </div>
 
@@ -160,49 +166,53 @@
                     </div>
             </div>
 
+            <div id="directory" class="section-content hidden">
+                <div class="mb-8 text-center max-w-2xl mx-auto">
+                    <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-3">Meet the Mentors</h2>
+                    <p class="text-slate-500 dark:text-slate-400">Senior students who have volunteered to support you. Filter by specialty or year.</p>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-2 mb-8">
+                    <button class="px-4 py-1.5 bg-teal-600 text-white rounded-full text-sm font-medium shadow-md">All</button>
+                    <button class="px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition">BSN Year 4</button>
+                    <button class="px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition">Clinical Support</button>
+                    <button class="px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition">Exam Prep</button>
+                </div>
+
+                <div id="mentors-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
+            </div>
+
             <div id="sessions" class="section-content hidden">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
                     <div>
-                        <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-2">Virtual Wellbeing Sessions</h2>
+                        <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-2">Virtual Sessions</h2>
                         <p class="text-slate-500 dark:text-slate-400">Live workshops via Zoom/Google Meet.</p>
                     </div>
-                    <div class="mt-4 md:mt-0 bg-white dark:bg-slate-700 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 text-sm text-slate-600 dark:text-slate-300">
-                        <i class="fas fa-calendar-alt text-teal-500 mr-2"></i> Current Month: <span class="font-semibold">November</span>
+                    <div class="mt-4 md:mt-0 bg-white dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-300 shadow-sm">
+                        <i class="fas fa-calendar-alt text-teal-500 mr-2"></i> November 2025
                     </div>
                 </div>
-
-                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <div class="bg-slate-50 dark:bg-slate-900/50 px-6 py-4 border-b border-slate-200 dark:border-slate-700 grid grid-cols-1 md:grid-cols-12 gap-4 font-semibold text-slate-700 dark:text-slate-300">
-                        <div class="md:col-span-2">Date & Time</div>
-                        <div class="md:col-span-4">Topic</div>
-                        <div class="md:col-span-3">Facilitator</div>
-                        <div class="md:col-span-3 text-right">Action</div>
-                    </div>
-
-                    <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700/50 grid grid-cols-1 md:grid-cols-12 gap-4 items-center hover:bg-teal-50 dark:hover:bg-slate-700/50 transition">
-                        <div class="md:col-span-2 flex items-center">
-                            <div class="bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 font-bold rounded px-3 py-1 text-center mr-3">
-                                <div>NOV</div>
-                                <div class="text-xl">24</div>
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden group hover:border-teal-500/50 transition-colors">
+                    <div class="p-6 flex flex-col md:flex-row gap-6 items-center">
+                        <div class="flex-shrink-0 text-center bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4 w-full md:w-24 border border-slate-100 dark:border-slate-600">
+                            <span class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Nov</span>
+                            <span class="block text-3xl font-black text-teal-600 dark:text-teal-400">24</span>
+                            <span class="block text-xs font-medium text-slate-400">5:00 PM</span>
+                        </div>
+                        <div class="flex-grow text-center md:text-left">
+                            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-1">Mindfulness for Nurses</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Guided meditation & grounding techniques for clinical stress.</p>
+                            <div class="flex items-center justify-center md:justify-start gap-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                    Stress Relief
+                                </span>
+                                <span class="text-xs text-slate-400 flex items-center"><i class="fas fa-user-circle mr-1"></i> Sarah Jenkins</span>
                             </div>
-                            <span class="text-sm text-slate-500 dark:text-slate-400">5:00 PM</span>
                         </div>
-                        <div class="md:col-span-4">
-                            <h4 class="font-bold text-slate-800 dark:text-white">Mindfulness for Nurses</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Guided meditation & grounding techniques.</p>
+                        <div class="flex-shrink-0">
+                            <button onclick="showNotification('Added to calendar', 'success')" class="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-bold hover:opacity-90 transition shadow-lg">Join</button>
                         </div>
-                        <div class="md:col-span-3 flex items-center">
-                            <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-slate-600 flex items-center justify-center text-xs font-bold mr-2 text-slate-600 dark:text-slate-200">SJ</div>
-                            <span class="text-sm text-slate-600 dark:text-slate-300">Sarah Jenkins</span>
-                        </div>
-                        <div class="md:col-span-3 text-right">
-                            <button onclick="showNotification('Registered!', 'success')" class="bg-white dark:bg-slate-700 border border-teal-500 text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white px-4 py-1.5 rounded-md text-sm font-medium transition">Join Waitlist</button>
-                        </div>
-                    </div>
-                    
-                    <div class="px-6 py-8 text-center text-slate-400 dark:text-slate-500 text-sm">
-                        <i class="fas fa-mug-hot text-2xl mb-2 block"></i>
-                        More sessions for December coming soon.
                     </div>
                 </div>
             </div>
@@ -210,13 +220,13 @@
             <div id="selfhelp" class="section-content hidden">
                 <div class="mb-8">
                     <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-2">Self-Help Toolkit</h2>
-                    <p class="text-slate-500 dark:text-slate-400">Quick tools you can use anytime, anywhere.</p>
+                    <p class="text-slate-500 dark:text-slate-400">Quick tools you can use anytime.</p>
                 </div>
-
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md p-8 flex flex-col items-center justify-center text-center border-t-4 border-teal-400 transition-colors duration-300">
-                        <h3 class="text-xl font-bold mb-2 text-slate-700 dark:text-white">Box Breathing</h3>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-8">Follow the waves to regulate your nervous system.</p>
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-400 to-blue-500"></div>
+                        <h3 class="text-xl font-bold mb-2 text-slate-800 dark:text-white">Box Breathing</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-8">Regulate your nervous system in 30 seconds.</p>
                         
                         <div id="breathing-widget" class="breathing-widget">
                             <div class="ripple ripple-1"></div>
@@ -224,38 +234,36 @@
                             <div class="ripple ripple-3"></div>
                             <div class="core-circle">
                                 <span id="breath-text" class="text-xl font-bold text-teal-600 dark:text-teal-400">Ready?</span>
-                                <span id="breath-instruction" class="text-xs text-slate-400 dark:text-slate-500 mt-1">Click Start</span>
+                                <span id="breath-instruction" class="text-xs text-slate-400 dark:text-slate-500 mt-1">Tap Start</span>
                             </div>
                         </div>
 
-                        <button id="breath-btn" onclick="toggleBreathing()" class="bg-teal-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-700 transition shadow-lg">
+                        <button id="breath-btn" onclick="toggleBreathing()" class="mt-6 bg-teal-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-700 transition shadow-lg hover:shadow-teal-500/30">
                             Start Exercise
                         </button>
                     </div>
-
                     <div class="space-y-6">
-                        <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-6 border border-indigo-100 dark:border-indigo-900/30">
+                        <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-800">
                             <div class="flex items-center mb-4">
-                                <div class="bg-indigo-200 dark:bg-indigo-800 p-2 rounded-lg mr-3 text-indigo-700 dark:text-indigo-200"><i class="fas fa-moon"></i></div>
-                                <h3 class="font-bold text-lg text-indigo-900 dark:text-indigo-100">Sleep Hygiene Checklist</h3>
+                                <div class="bg-indigo-100 dark:bg-indigo-800 p-2 rounded-lg mr-3 text-indigo-600 dark:text-indigo-300"><i class="fas fa-moon"></i></div>
+                                <h3 class="font-bold text-lg text-indigo-900 dark:text-indigo-100">Sleep Hygiene</h3>
                             </div>
-                            <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> No screens 30 mins before bed</li>
-                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Room temperature cool (18-20°C)</li>
-                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Avoid caffeine after 2 PM</li>
+                            <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                                <li class="flex items-center"><i class="fas fa-check-circle text-indigo-500 mr-3"></i> No screens 30 mins before bed</li>
+                                <li class="flex items-center"><i class="fas fa-check-circle text-indigo-500 mr-3"></i> Room temp cool (18-20°C)</li>
+                                <li class="flex items-center"><i class="fas fa-check-circle text-indigo-500 mr-3"></i> No caffeine after 2 PM</li>
                             </ul>
                         </div>
-
-                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                            <div class="p-4 bg-slate-50 dark:bg-slate-900/50 border-b dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-200">5-Minute Coping Strategies</div>
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <div class="p-4 bg-slate-50 dark:bg-slate-900/50 border-b dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-200">Quick Coping Strategies</div>
                             <div class="divide-y divide-slate-100 dark:divide-slate-700">
                                 <details class="group p-4 cursor-pointer">
                                     <summary class="flex justify-between items-center font-medium text-slate-700 dark:text-slate-300 list-none">
-                                        <span><i class="fas fa-walking mr-2 text-teal-500"></i> The 5-4-3-2-1 Method</span>
+                                        <span><i class="fas fa-walking mr-2 text-teal-500"></i> 5-4-3-2-1 Method</span>
                                         <span class="transition group-open:rotate-180"><i class="fas fa-chevron-down text-slate-400"></i></span>
                                     </summary>
-                                    <p class="text-slate-600 dark:text-slate-400 text-sm mt-3 pl-6">
-                                        Acknowledge 5 things you see, 4 touch, 3 hear, 2 smell, 1 taste. Good for panic.
+                                    <p class="text-slate-600 dark:text-slate-400 text-sm mt-3 pl-6 leading-relaxed">
+                                        Acknowledge 5 things you see, 4 you can touch, 3 you hear, 2 you can smell, and 1 you can taste.
                                     </p>
                                 </details>
                                 <details class="group p-4 cursor-pointer">
@@ -263,8 +271,8 @@
                                         <span><i class="fas fa-pencil-alt mr-2 text-teal-500"></i> Brain Dump</span>
                                         <span class="transition group-open:rotate-180"><i class="fas fa-chevron-down text-slate-400"></i></span>
                                     </summary>
-                                    <p class="text-slate-600 dark:text-slate-400 text-sm mt-3 pl-6">
-                                        Set timer for 3 mins. Write down everything worrying you.
+                                    <p class="text-slate-600 dark:text-slate-400 text-sm mt-3 pl-6 leading-relaxed">
+                                        Set a timer for 3 minutes. Write down everything worrying you on paper. Then rip it up.
                                     </p>
                                 </details>
                             </div>
@@ -274,203 +282,188 @@
             </div>
 
             <div id="chat" class="section-content hidden">
-    <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-10">
-            <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-3">Connect with a Peer Supporter</h2>
-            <p class="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-                Sometimes you just need to talk to someone who understands the nursing school grind.
-            </p>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-slate-100 dark:border-slate-700">
-            
-            <div class="bg-teal-600 p-8 md:p-12 text-white flex flex-col justify-center">
-                <h3 class="text-2xl font-bold mb-6">How it works</h3>
-                <ul class="space-y-6 mb-8">
-                    <li class="flex items-start">
-                        <div class="flex-shrink-0 w-6 h-6 bg-teal-500 rounded flex items-center justify-center mt-0.5 mr-3 border border-teal-400">
-                            <i class="fas fa-check text-xs"></i>
-                        </div>
-                        <span class="text-teal-50 text-sm leading-relaxed">Fill out the request form with your details.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <div class="flex-shrink-0 w-6 h-6 bg-teal-500 rounded flex items-center justify-center mt-0.5 mr-3 border border-teal-400">
-                            <i class="fas fa-check text-xs"></i>
-                        </div>
-                        <span class="text-teal-50 text-sm leading-relaxed">We match you with a peer based on your topic.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <div class="flex-shrink-0 w-6 h-6 bg-teal-500 rounded flex items-center justify-center mt-0.5 mr-3 border border-teal-400">
-                            <i class="fas fa-check text-xs"></i>
-                        </div>
-                        <span class="text-teal-50 text-sm leading-relaxed">Receive a secure chat link via email within 24 hours.</span>
-                    </li>
-                </ul>
-                
-                <div class="mt-auto pt-6 border-t border-teal-500/30">
-                    <div class="flex items-center mb-2 text-teal-100 font-bold">
-                        <i class="fas fa-shield-alt mr-2"></i> Safe & Confidential
+                <div class="max-w-4xl mx-auto">
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-3">Connect with a Peer</h2>
+                        <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+                            Matched based on your topic. Confidential. Asynchronous.
+                        </p>
                     </div>
-                    <p class="text-xs text-teal-200 opacity-80">Not a crisis service. For emergencies, please contact local services.</p>
+
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-slate-100 dark:border-slate-700">
+                        <div class="bg-teal-600 p-8 md:p-12 text-white flex flex-col justify-center relative overflow-hidden">
+                            <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
+                            <div class="relative z-10">
+                                <h3 class="text-2xl font-bold mb-6">How it works</h3>
+                                <ul class="space-y-6 mb-8">
+                                    <li class="flex items-start">
+                                        <div class="w-6 h-6 bg-teal-500 rounded flex-shrink-0 flex items-center justify-center mt-0.5 mr-3 border border-teal-400"><i class="fas fa-check text-xs"></i></div>
+                                        <span class="text-teal-50 text-sm leading-relaxed">Fill out the request form.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <div class="w-6 h-6 bg-teal-500 rounded flex-shrink-0 flex items-center justify-center mt-0.5 mr-3 border border-teal-400"><i class="fas fa-check text-xs"></i></div>
+                                        <span class="text-teal-50 text-sm leading-relaxed">Matched within 24 hours.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <div class="w-6 h-6 bg-teal-500 rounded flex-shrink-0 flex items-center justify-center mt-0.5 mr-3 border border-teal-400"><i class="fas fa-check text-xs"></i></div>
+                                        <span class="text-teal-50 text-sm leading-relaxed">Receive secure chat link via email.</span>
+                                    </li>
+                                </ul>
+                                <div class="pt-6 border-t border-teal-500/30">
+                                    <p class="text-xs text-teal-200 opacity-80">Not a crisis service. For emergencies, verify local protocols.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-8 md:p-12">
+                            <form onsubmit="handleBooking(event)" class="space-y-5">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Name / Alias</label>
+                                    <input type="text" required class="input-field" placeholder="e.g. Alex">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Year of Study</label>
+                                    <div class="relative">
+                                        <select class="input-field appearance-none cursor-pointer">
+                                            <option>BSN Year 1</option>
+                                            <option>BSN Year 2</option>
+                                            <option>BSN Year 3</option>
+                                            <option>BSN Year 4</option>
+                                            <option>MSN Student</option>
+                                        </select>
+                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="fas fa-chevron-down text-xs"></i></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Topic</label>
+                                    <div class="relative">
+                                        <select class="input-field appearance-none cursor-pointer">
+                                            <option>General Stress</option>
+                                            <option>Academic Struggles</option>
+                                            <option>Clinical Placement</option>
+                                            <option>Venting</option>
+                                        </select>
+                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="fas fa-chevron-down text-xs"></i></div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full bg-slate-800 dark:bg-teal-600 text-white py-3.5 rounded-lg font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">Send Request</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="p-8 md:p-12 relative">
-                <form id="bookingForm" onsubmit="handleBooking(event)">
-                    <div class="space-y-5">
-                        
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Name (or Alias)</label>
-                            <input type="text" required 
-                                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-slate-700 dark:text-white"
-                                placeholder="e.g. Alex">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Year of Study</label>
-                            <div class="relative">
-                                <select class="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-slate-700 dark:text-white cursor-pointer">
-                                    <option>BSN Year 1</option>
-                                    <option>BSN Year 2</option>
-                                    <option>BSN Year 3</option>
-                                    <option>BSN Year 4</option>
-                                    <option>MSN Student</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400">
-                                    <i class="fas fa-chevron-down text-xs"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">I want to talk about...</label>
-                            <div class="relative">
-                                <select class="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-slate-700 dark:text-white cursor-pointer">
-                                    <option>General Stress</option>
-                                    <option>Academic Struggles</option>
-                                    <option>Clinical Placement Issue</option>
-                                    <option>Just need to vent</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400">
-                                    <i class="fas fa-chevron-down text-xs"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="w-full bg-slate-800 dark:bg-teal-600 text-white py-3.5 rounded-lg font-bold hover:bg-slate-700 dark:hover:bg-teal-500 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 mt-4">
-                            Request Chat
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-            
             <div id="admin-dashboard" class="section-content hidden">
-                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-slate-800 dark:text-white">Admin Dashboard</h2>
+                    <p class="text-slate-500">Overview of platform activity.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Active Topics</p>
-                        <h3 id="stat-topics" class="text-3xl font-bold text-slate-800 dark:text-white mt-1">0</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Active Mentors</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white mt-2">12</h3>
                     </div>
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Topics Published</p>
+                        <h3 id="stat-topics" class="text-3xl font-bold text-slate-800 dark:text-white mt-2">0</h3>
                     </div>
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Pending Requests</p>
+                        <h3 id="stat-requests-sub" class="text-3xl font-bold text-teal-600 dark:text-teal-400 mt-2">0</h3>
+                    </div>
+                     <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Total Sessions</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white mt-2">8</h3>
+                    </div>
+                </div>
             </div>
+
             <div id="peer-inbox" class="section-content hidden">
-                <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-4">Inbox</h2>
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-slate-800 dark:text-white">My Inbox</h2>
+                    <p class="text-slate-500">Students matched with you.</p>
+                </div>
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                     <div id="inbox-container" class="divide-y divide-slate-100 dark:divide-slate-700"></div>
                 </div>
             </div>
 
-        </div> </main>
+        </div> 
+    </main>
 
-    <footer class="bg-slate-800 dark:bg-slate-900 text-slate-300 py-8 mt-auto border-t border-slate-700">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0 text-center md:text-left">
-                <span class="font-bold text-white text-lg block">PeerCircle</span>
-                <p class="text-sm text-slate-400">Supporting future nurses.</p>
+    <footer class="bg-slate-800 dark:bg-slate-950 text-slate-400 py-8 mt-auto border-t border-slate-700/50">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <span class="font-bold text-white text-lg block mb-1">PeerCircle</span>
+                <p class="text-xs">A Demo Project for Nursing Student Wellbeing.</p>
             </div>
-            <div class="text-sm text-slate-500">
-                &copy; 2025 Digital Peer Support Circles.
+            <div class="text-xs">
+                &copy; 2025 PeerCircle. Educational Use Only.
             </div>
         </div>
     </footer>
 
-    <div id="login-modal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-xl max-w-md w-full p-8 text-center shadow-2xl border border-slate-200 dark:border-slate-700">
-            <div class="bg-teal-100 dark:bg-teal-900/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-teal-600 dark:text-teal-400 text-2xl">
-                <i class="fas fa-user-nurse"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Welcome</h2>
-            <p class="text-slate-500 dark:text-slate-400 mb-8">Select your role for the demo.</p>
-            
-            <div class="space-y-3">
-                <button onclick="loginAs('student')" class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold hover:bg-teal-700 transition shadow-md">Student</button>
-                <button onclick="loginAs('peer')" class="w-full bg-white dark:bg-slate-700 border-2 border-teal-600 dark:border-teal-500 text-teal-700 dark:text-teal-300 py-3 rounded-lg font-bold hover:bg-teal-50 dark:hover:bg-slate-600 transition">Peer Mentor</button>
-                <button onclick="loginAs('admin')" class="w-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 mt-4 underline text-sm">Admin</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="notification" class="fixed bottom-4 right-4 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
-        <div class="bg-slate-800 dark:bg-slate-700 text-white px-6 py-3 rounded-lg shadow-lg flex items-center">
-            <i class="fas fa-check-circle text-teal-400 mr-3"></i>
+    <div id="notification" class="fixed bottom-6 right-6 transform translate-y-24 opacity-0 transition-all duration-300 z-[100]">
+        <div class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-xl shadow-2xl flex items-center font-medium">
+            <i class="fas fa-check-circle text-teal-400 dark:text-teal-600 mr-3"></i>
             <span id="notif-message">Success</span>
         </div>
     </div>
 
-    <div id="modal-burnout" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[70] p-4 transition-opacity duration-300">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl w-[90%] md:w-full max-w-lg max-h-[80vh] overflow-y-auto p-6 relative shadow-2xl border border-slate-200 dark:border-slate-700 animate-[fadeIn_0.2s_ease-out]">
-            <button onclick="closeModal('modal-burnout')" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:bg-red-100 hover:text-red-500 transition">
-                <i class="fas fa-times"></i>
-            </button>
-            
-            <div class="pr-8"> <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">Stress & Burnout</h2>
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-8 text-center shadow-2xl border border-slate-100 dark:border-slate-700">
+            <div class="bg-teal-50 dark:bg-teal-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-teal-600 dark:text-teal-400 text-2xl">
+                <i class="fas fa-user-nurse"></i>
             </div>
-            
-            <div class="prose prose-slate dark:prose-invert text-sm text-slate-600 dark:text-slate-300 leading-relaxed space-y-4">
-                <p>Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace stress. It is not your fault, and you are not alone.</p>
-                
-                <h4 class="font-bold text-slate-800 dark:text-white">Common Signs:</h4>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li>Dreading going to clinicals/work.</li>
-                    <li>Feeling irritable or cynical with patients.</li>
-                    <li>Physical fatigue even after sleeping.</li>
-                </ul>
-
-                <h4 class="font-bold text-slate-800 dark:text-white">Immediate Action:</h4>
-                <p>The "3-Minute Reset": Step into a supply room or break room. Drink a glass of water slowly. Do one cycle of box breathing. Remind yourself: "I am doing my best in a broken system."</p>
-            </div>
-            
-            <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end">
-                <button onclick="closeModal('modal-burnout')" class="px-6 py-2.5 bg-slate-800 dark:bg-teal-600 text-white rounded-lg font-medium hover:opacity-90 transition">Got it</button>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Welcome</h2>
+            <p class="text-slate-500 dark:text-slate-400 mb-8 text-sm">Select your role to begin the demo.</p>
+            <div class="space-y-3">
+                <button onclick="loginAs('student')" class="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition shadow-md shadow-teal-200 dark:shadow-none">Student</button>
+                <button onclick="loginAs('peer')" class="w-full bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-white py-3 rounded-xl font-bold hover:bg-slate-50 dark:hover:bg-slate-600 transition">Peer Mentor</button>
+                <button onclick="loginAs('admin')" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 mt-4 underline">Enter as Admin</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-exams" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[70] p-4 transition-opacity duration-300">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl w-[90%] md:w-full max-w-lg max-h-[80vh] overflow-y-auto p-6 relative shadow-2xl border border-slate-200 dark:border-slate-700 animate-[fadeIn_0.2s_ease-out]">
-            <button onclick="closeModal('modal-exams')" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:bg-red-100 hover:text-red-500 transition">
-                <i class="fas fa-times"></i>
-            </button>
-            
-            <div class="pr-8">
-                <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">Exam Anxiety</h2>
+    <div id="modal-burnout" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[70] p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 md:p-8 relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
+            <button onclick="closeModal('modal-burnout')" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i class="fas fa-times"></i></button>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4 pr-8">Stress & Burnout</h2>
+            <div class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-4 text-slate-600 dark:text-slate-300">
+                <p>Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace stress. It is not your fault.</p>
+                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-100 dark:border-red-900/30">
+                    <h4 class="font-bold text-red-700 dark:text-red-300 mb-2">Common Signs</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Dreading clinicals/work.</li>
+                        <li>Feeling cynical with patients.</li>
+                        <li>Physical fatigue after sleeping.</li>
+                    </ul>
+                </div>
+                <h4 class="font-bold text-slate-800 dark:text-white">Immediate Action: The "3-Minute Reset"</h4>
+                <p>Step into a supply room. Drink water slowly. Do one cycle of box breathing. Remind yourself: "I am doing my best."</p>
             </div>
-            
-            <div class="prose prose-slate dark:prose-invert text-sm text-slate-600 dark:text-slate-300 leading-relaxed space-y-4">
-                <p>The NCLEX and nursing finals are designed to test critical thinking, not just memory. Anxiety can block that critical thinking pathway.</p>
-                
-                <h4 class="font-bold text-slate-800 dark:text-white">The Stop Light Method:</h4>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li><span class="text-green-500 font-bold">Green:</span> You know the answer. Mark it, move on.</li>
-                    <li><span class="text-yellow-500 font-bold">Yellow:</span> You can narrow it down to two. Flag it (if allowed) or pick your gut instinct.</li>
-                    <li><span class="text-red-500 font-bold">Red:</span> No idea. Do not panic. Breathe. Guess C (or your strategy). Move on.</li>
-                </ul>
+            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
+                <button onclick="closeModal('modal-burnout')" class="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90">Close</button>
             </div>
-
-            <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end">
-                <button onclick="closeModal('modal-exams')" class="px-6 py-2.5 bg-slate-800 dark:bg-teal-600 text-white rounded-lg font-medium hover:opacity-90 transition">Close Guide</button>
+        </div>
+    </div>
+    
+    <div id="modal-exams" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[70] p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 md:p-8 relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
+            <button onclick="closeModal('modal-exams')" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i class="fas fa-times"></i></button>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4 pr-8">Exam Anxiety</h2>
+            <div class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-4 text-slate-600 dark:text-slate-300">
+                <p>The NCLEX tests critical thinking, not just memory. Anxiety blocks that pathway.</p>
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-100 dark:border-yellow-900/30">
+                    <h4 class="font-bold text-slate-800 dark:text-white mb-2">The Stop Light Method</h4>
+                    <ul class="space-y-2">
+                        <li><span class="font-bold text-green-600">Green:</span> Know it? Mark it, move on.</li>
+                        <li><span class="font-bold text-yellow-600">Yellow:</span> Narrowed to two? Pick your gut.</li>
+                        <li><span class="font-bold text-red-500">Red:</span> No idea? Don't panic. Guess. Move on.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
+                <button onclick="closeModal('modal-exams')" class="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90">Close</button>
             </div>
         </div>
     </div>
