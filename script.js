@@ -154,61 +154,218 @@ function renderMentors() {
 
 
 // ==========================================
-// 4. TOPICS & ADMIN LOGIC
+// 4. TOPICS & ADMIN LOGIC (ENHANCED)
 // ==========================================
 
-let topicsData = [
-    { id: 1, title: "Stress & Burnout", desc: "Identifying signs of fatigue.", color: "red", icon: "fa-fire", modalId: "modal-burnout" },
-    { id: 2, title: "Exam Anxiety", desc: "Handling NCLEX pressure.", color: "orange", icon: "fa-pen-alt", modalId: "modal-exams" },
-    { id: 3, title: "Clinical Placement", desc: "Navigating hospital shifts.", color: "blue", icon: "fa-user-nurse", modalId: null },
-    { id: 4, title: "Transition to Work", desc: "From student to RN.", color: "green", icon: "fa-briefcase", modalId: null }
+// 1. Predefined Assets
+const availableIcons = [
+    "fa-lightbulb", "fa-heart-pulse", "fa-brain", "fa-user-nurse", 
+    "fa-coffee", "fa-bed", "fa-stopwatch", "fa-users", "fa-book-open", "fa-hand-holding-heart"
 ];
 
+const availableColors = [
+    { name: "teal", hex: "bg-teal-500", light: "bg-teal-100", text: "text-teal-600" },
+    { name: "blue", hex: "bg-blue-500", light: "bg-blue-100", text: "text-blue-600" },
+    { name: "indigo", hex: "bg-indigo-500", light: "bg-indigo-100", text: "text-indigo-600" },
+    { name: "purple", hex: "bg-purple-500", light: "bg-purple-100", text: "text-purple-600" },
+    { name: "rose", hex: "bg-rose-500", light: "bg-rose-100", text: "text-rose-600" },
+    { name: "amber", hex: "bg-amber-500", light: "bg-amber-100", text: "text-amber-600" }
+];
+
+// 2. Enhanced Data Structure
+let topicsData = [
+    { 
+        id: 1, 
+        title: "Stress & Burnout", 
+        desc: "Identifying signs of fatigue and emotional exhaustion.", 
+        color: "rose", 
+        icon: "fa-heart-pulse", 
+        content: {
+            intro: "Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace stress.",
+            bullets: ["Dreading clinicals or work shifts.", "Feeling cynical or irritable with patients.", "Physical fatigue even after sleeping."],
+            action: "Step into a supply room. Drink water slowly. Do one cycle of box breathing."
+        }
+    },
+    { 
+        id: 2, 
+        title: "Exam Anxiety", 
+        desc: "Handling NCLEX pressure and test-taking panic.", 
+        color: "amber", 
+        icon: "fa-brain", 
+        content: {
+            intro: "The NCLEX tests critical thinking, not just memory. Anxiety blocks that pathway. You need to calm the amygdala to access the frontal cortex.",
+            bullets: ["Green Light: You know it. Mark it.", "Yellow Light: Narrowed to two. Trust your gut.", "Red Light: No idea. Breathe, guess, move on."],
+            action: "Use the Stop Light Method for every question."
+        }
+    },
+    { 
+        id: 3, 
+        title: "Clinical Placement", 
+        desc: "Navigating hospital hierarchy and shift anxiety.", 
+        color: "blue", 
+        icon: "fa-user-nurse", 
+        content: {
+            intro: "Your first clinical rotation can feel overwhelming. Remember that you are there to learn, not to be perfect.",
+            bullets: ["Ask questions when unsure—it shows safety awareness.", "Find a 'safe nurse' to shadow.", "Bring snacks and stay hydrated."],
+            action: "Introduce yourself to the charge nurse at the start of the shift."
+        }
+    }
+];
+
+// 3. Render Function
 function renderTopics() {
     const container = document.getElementById('topics-container');
     if(!container) return; 
     container.innerHTML = ""; 
 
     topicsData.forEach(topic => {
-        let buttonHTML = topic.modalId 
-            ? `<button onclick="openModal('${topic.modalId}')" class="text-teal-600 dark:text-teal-400 font-semibold text-sm hover:underline">Read Guide <i class="fas fa-arrow-right ml-1"></i></button>`
-            : `<button class="text-slate-400 font-semibold text-sm cursor-not-allowed">Coming Soon</button>`;
+        // Determine styles based on color name
+        const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
 
         let adminControls = currentUserRole === 'admin' 
-            ? `<button onclick="deleteTopic(${topic.id})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>` 
+            ? `<button onclick="deleteTopic(event, ${topic.id})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition z-20"><i class="fas fa-trash-alt"></i></button>` 
             : "";
 
+        // NOTE: onclick passes the topic ID to open the dynamic modal
         const cardHTML = `
-            <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative">
-                <div class="h-2 bg-${topic.color}-400"></div>
-                <div class="p-6">
+            <div onclick="openTopicModal(${topic.id})" class="cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative">
+                <div class="h-2 ${theme.hex}"></div> <div class="p-6">
                     ${adminControls}
                     <div class="flex justify-between items-start mb-3">
-                        <h3 class="font-bold text-lg text-slate-800 dark:text-white">${topic.title}</h3>
-                        <div class="text-${topic.color}-400 text-xl"><i class="fas ${topic.icon}"></i></div>
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-white group-hover:${theme.text} transition-colors">${topic.title}</h3>
+                        <div class="${theme.text} text-xl"><i class="fas ${topic.icon}"></i></div>
                     </div>
                     <p class="text-slate-600 dark:text-slate-300 text-sm mb-6 h-10 overflow-hidden">${topic.desc}</p>
-                    ${buttonHTML}
+                    <span class="text-xs font-bold ${theme.text} uppercase tracking-wider flex items-center">
+                        Read Guide <i class="fas fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform"></i>
+                    </span>
                 </div>
             </div>`;
         container.innerHTML += cardHTML;
     });
 }
 
+// 4. Dynamic Modal Logic (The "Universal Modal")
+function openTopicModal(id) {
+    const topic = topicsData.find(t => t.id === id);
+    if(!topic) return;
+
+    const modal = document.getElementById('modal-dynamic-topic');
+    const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
+
+    // Inject Colors
+    document.getElementById('modal-header-bar').className = `h-4 w-full ${theme.hex}`;
+    document.getElementById('modal-icon-box').className = `w-12 h-12 rounded-xl flex items-center justify-center text-xl ${theme.light} ${theme.text} dark:bg-opacity-20`;
+    
+    // Inject Content
+    document.getElementById('modal-icon').className = `fas ${topic.icon}`;
+    document.getElementById('modal-title').textContent = topic.title;
+    document.getElementById('modal-title').className = `text-2xl font-bold text-slate-800 dark:text-white`;
+    
+    // Handle Rich Content
+    const content = topic.content || { intro: topic.desc, bullets: [], action: "" };
+    
+    document.getElementById('modal-intro').textContent = content.intro;
+    
+    // Bullets
+    const bulletsList = document.getElementById('modal-bullets');
+    const bulletsContainer = document.getElementById('modal-bullets-container');
+    bulletsList.innerHTML = "";
+    if(content.bullets && content.bullets.length > 0) {
+        bulletsContainer.classList.remove('hidden');
+        content.bullets.forEach(b => {
+            const li = document.createElement('li');
+            li.textContent = b;
+            bulletsList.appendChild(li);
+        });
+    } else {
+        bulletsContainer.classList.add('hidden');
+    }
+
+    // Action Box
+    const actionBox = document.getElementById('modal-action-box');
+    if(content.action) {
+        actionBox.classList.remove('hidden');
+        actionBox.className = `p-4 rounded-xl border-l-4 mt-6 ${theme.light} border-${theme.name}-500 dark:bg-opacity-10`;
+        document.getElementById('modal-action-title').className = `font-bold mb-1 ${theme.text}`;
+        document.getElementById('modal-action-text').textContent = content.action;
+        document.getElementById('modal-action-text').className = "text-sm text-slate-700 dark:text-slate-300";
+    } else {
+        actionBox.classList.add('hidden');
+    }
+
+    // Show Modal
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+// 5. Admin Form Logic
+// Initialize Pickers when Admin Mode starts
+function initAdminPickers() {
+    // Render Icons
+    const iconContainer = document.getElementById('icon-selector');
+    if(iconContainer.innerHTML === "") { // Only render once
+        availableIcons.forEach(icon => {
+            const div = document.createElement('div');
+            div.className = `icon-option ${icon === 'fa-lightbulb' ? 'selected' : ''}`;
+            div.innerHTML = `<i class="fas ${icon}"></i>`;
+            div.onclick = () => {
+                document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                document.getElementById('selected-icon').value = icon;
+            };
+            iconContainer.appendChild(div);
+        });
+
+        // Render Colors
+        const colorContainer = document.getElementById('color-selector');
+        availableColors.forEach(c => {
+            const div = document.createElement('div');
+            div.className = `color-option ${c.hex} ${c.name === 'teal' ? 'selected' : ''}`;
+            div.onclick = () => {
+                document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                document.getElementById('selected-color').value = c.name;
+            };
+            colorContainer.appendChild(div);
+        });
+    }
+}
+
 function handleAddTopic(event) {
     event.preventDefault();
+    
     const title = document.getElementById('new-topic-title').value;
     const desc = document.getElementById('new-topic-desc').value;
-    const color = document.getElementById('new-topic-color').value;
-    topicsData.push({ id: Date.now(), title, desc, color, icon: "fa-lightbulb", modalId: null });
+    const color = document.getElementById('selected-color').value;
+    const icon = document.getElementById('selected-icon').value;
+    
+    const intro = document.getElementById('new-content-intro').value || desc;
+    const bulletsRaw = document.getElementById('new-content-bullets').value;
+    const action = document.getElementById('new-content-action').value;
+
+    // Parse bullets by new line
+    const bullets = bulletsRaw ? bulletsRaw.split('\n').filter(line => line.trim() !== '') : [];
+
+    const newTopic = { 
+        id: Date.now(), 
+        title, 
+        desc, 
+        color, 
+        icon, 
+        content: { intro, bullets, action }
+    };
+
+    topicsData.push(newTopic);
     renderTopics();
     updateDashboard();
     event.target.reset();
     document.getElementById('admin-add-topic').classList.add('hidden');
-    showNotification("New Topic Published!", "success");
+    showNotification("New Guide Published Successfully!", "success");
 }
 
-function deleteTopic(id) {
+function deleteTopic(event, id) {
+    event.stopPropagation(); // Prevent opening the modal when clicking delete
     if(confirm("Delete this topic?")) {
         topicsData = topicsData.filter(topic => topic.id !== id);
         renderTopics();
@@ -330,6 +487,7 @@ function loginAs(role, isAutoLogin = false) {
         if(navAdmin) navAdmin.classList.remove('hidden');
         if(mobAdmin) mobAdmin.classList.remove('hidden');
         if(adminControls) adminControls.classList.remove('hidden');
+        initAdminPickers();
         updateDashboard();
         if(!isAutoLogin) {
             showSection('admin-dashboard');

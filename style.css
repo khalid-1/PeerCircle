@@ -101,3 +101,19 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 :is(.dark) ::-webkit-scrollbar-thumb { background: #475569; }
+
+/* Icon Selector Styles */
+.icon-option {
+    @apply w-10 h-10 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-400 flex items-center justify-center cursor-pointer transition-all hover:bg-slate-100 dark:hover:bg-slate-600;
+}
+.icon-option.selected {
+    @apply bg-slate-800 dark:bg-white text-white dark:text-slate-900 ring-2 ring-offset-2 ring-slate-400 dark:ring-slate-500;
+}
+
+/* Color Selector Styles */
+.color-option {
+    @apply w-8 h-8 rounded-full cursor-pointer transition-transform hover:scale-110 ring-2 ring-transparent ring-offset-2 dark:ring-offset-slate-800;
+}
+.color-option.selected {
+    @apply scale-110 ring-slate-400 dark:ring-white;
+}

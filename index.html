@@ -148,17 +148,68 @@
                     </div>
                 </div>
 
-                <div id="admin-add-topic" class="hidden bg-slate-50 dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 mb-8">
-                    <h3 class="font-bold text-slate-800 dark:text-white mb-4">Add New Topic</h3>
-                    <form onsubmit="handleAddTopic(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <input type="text" id="new-topic-title" placeholder="Title" class="input-field">
-                        <input type="text" id="new-topic-desc" placeholder="Description" class="input-field md:col-span-2">
-                        <select id="new-topic-color" class="input-field">
-                            <option value="blue">Blue</option>
-                            <option value="teal">Teal</option>
-                            <option value="purple">Purple</option>
-                        </select>
-                        <button type="submit" class="md:col-span-4 bg-teal-600 text-white py-2 rounded-lg font-bold hover:bg-teal-700">Publish</button>
+                <div id="admin-add-topic" class="hidden bg-white dark:bg-slate-800 p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-slate-700 mb-8 shadow-lg animate-[fadeIn_0.3s_ease-out]">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-white">Create New Resource</h3>
+                        <button onclick="document.getElementById('admin-add-topic').classList.add('hidden')" class="text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button>
+                    </div>
+
+                    <form onsubmit="handleAddTopic(event)" class="space-y-6">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Topic Title</label>
+                                <input type="text" id="new-topic-title" placeholder="e.g. Night Shift Survival" required class="input-field">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Short Description (Card)</label>
+                                <input type="text" id="new-topic-desc" placeholder="e.g. Tips for staying awake and healthy." required class="input-field">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Select Icon</label>
+                                <div class="grid grid-cols-6 gap-2" id="icon-selector">
+                                    </div>
+                                <input type="hidden" id="selected-icon" value="fa-lightbulb">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Theme Color</label>
+                                <div class="flex flex-wrap gap-3" id="color-selector">
+                                    </div>
+                                <input type="hidden" id="selected-color" value="teal">
+                            </div>
+                        </div>
+
+                        <hr class="border-slate-100 dark:border-slate-700">
+
+                        <div>
+                            <h4 class="font-bold text-slate-800 dark:text-white mb-4"><i class="fas fa-pen-nib mr-2 text-teal-500"></i>Guide Content</h4>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Introduction Paragraph</label>
+                                    <textarea id="new-content-intro" rows="3" class="input-field" placeholder="Explain the concept..."></textarea>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Key Points (One per line)</label>
+                                    <textarea id="new-content-bullets" rows="3" class="input-field" placeholder="- First point
+- Second point
+- Third point"></textarea>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Actionable Tip (Colored Box)</label>
+                                    <input type="text" id="new-content-action" placeholder="e.g. Try the 4-7-8 breathing method right now." class="input-field">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-slate-800 dark:bg-white text-white dark:text-slate-900 py-3 rounded-xl font-bold hover:opacity-90 transition shadow-lg">
+                            Publish Topic
+                        </button>
                     </form>
                 </div>
 
@@ -464,6 +515,43 @@
             </div>
             <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
                 <button onclick="closeModal('modal-exams')" class="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-dynamic-topic" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[80] p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
+            
+            <div id="modal-header-bar" class="h-4 w-full bg-teal-500"></div>
+            
+            <button onclick="closeModal('modal-dynamic-topic')" class="absolute top-6 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i class="fas fa-times"></i></button>
+            
+            <div class="p-6 md:p-8 pt-4">
+                <div class="flex items-center gap-3 mb-6">
+                    <div id="modal-icon-box" class="w-12 h-12 rounded-xl bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center text-xl">
+                        <i id="modal-icon" class="fas fa-lightbulb"></i>
+                    </div>
+                    <h2 id="modal-title" class="text-2xl font-bold text-slate-800 dark:text-white">Topic Title</h2>
+                </div>
+
+                <div class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-6 text-slate-600 dark:text-slate-300">
+                    
+                    <p id="modal-intro">Introduction text goes here...</p>
+                    
+                    <div id="modal-bullets-container" class="hidden">
+                        <h4 class="font-bold text-slate-800 dark:text-white mb-2">Key Signs & Strategies</h4>
+                        <ul id="modal-bullets" class="list-disc pl-5 space-y-1"></ul>
+                    </div>
+
+                    <div id="modal-action-box" class="p-4 rounded-xl border border-l-4 hidden">
+                        <h4 id="modal-action-title" class="font-bold mb-1">Try This:</h4>
+                        <p id="modal-action-text">Actionable advice.</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
+                    <button onclick="closeModal('modal-dynamic-topic')" class="px-6 py-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-white rounded-lg font-medium hover:bg-slate-200 transition">Close</button>
+                </div>
             </div>
         </div>
     </div>
