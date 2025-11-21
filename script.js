@@ -13,6 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         document.getElementById('login-modal').classList.remove('hidden');
     }
+
+    const getSupportButton = document.querySelector('button[onclick="showSection(\'chat\')"]');
+    if (getSupportButton) {
+        getSupportButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            handleBooking(event);
+        });
+    }
 });
 
 function initTheme() {
