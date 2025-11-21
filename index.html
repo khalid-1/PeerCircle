@@ -76,7 +76,7 @@
             </div>
         </div>
         
-        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800">
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 shadow-xl">
             <a onclick="showSection('home'); toggleMobileMenu()" class="block py-3 px-6 text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800">Home</a>
             <a onclick="showSection('education'); toggleMobileMenu()" class="block py-3 px-6 text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800">Education Topics</a>
             <a onclick="showSection('sessions'); toggleMobileMenu()" class="block py-3 px-6 text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800">Virtual Sessions</a>
@@ -88,13 +88,13 @@
 
     <main class="flex-grow pt-28 pb-12 px-4 sm:px-6 lg:px-8 w-full">
         
-<div class="relative z-10 max-w-7xl mx-auto bg-white/60 dark:bg-slate-900/40 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl dark:shadow-teal-900/20 border border-white/50 dark:border-white/5 p-8 md:p-12 min-h-[80vh] transition-all duration-500">
+<div class="relative z-10 max-w-7xl mx-auto bg-white/60 dark:bg-slate-900/40 backdrop-blur-2xl rounded-3xl md:rounded-[2.5rem] overflow-hidden shadow-2xl dark:shadow-teal-900/20 border border-white/50 dark:border-white/5 p-5 md:p-12 min-h-[80vh] transition-all duration-500">
             <div id="home" class="section-content active">
                 <div class="text-center py-12 md:py-20">
                     <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-teal-600 dark:text-teal-300 uppercase bg-teal-100 dark:bg-teal-900/50 rounded-full">
                         For Nursing Students, By Nursing Students
                     </div>
-                    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 dark:text-white mb-6 leading-tight">
+                    <h1 class="text-3xl md:text-5xl font-extrabold text-slate-800 dark:text-white mb-6 leading-tight">
                         You care for patients. <br> <span class="text-teal-500 dark:text-teal-400">We care for you.</span>
                     </h1>
                     <p class="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10">
@@ -419,20 +419,59 @@
         </div>
     </div>
 
-    <div id="modal-burnout" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-xl max-w-lg w-full p-6 relative">
-            <button onclick="closeModal('modal-burnout')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">Burnout</h2>
-            <p class="text-slate-600 dark:text-slate-300 text-sm">Nursing burnout is physical and emotional exhaustion...</p>
-            <div class="mt-6 text-right"><button onclick="closeModal('modal-burnout')" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white rounded">Close</button></div>
+    <div id="modal-burnout" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[70] p-4 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-[90%] md:w-full max-w-lg max-h-[80vh] overflow-y-auto p-6 relative shadow-2xl border border-slate-200 dark:border-slate-700 animate-[fadeIn_0.2s_ease-out]">
+            <button onclick="closeModal('modal-burnout')" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:bg-red-100 hover:text-red-500 transition">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="pr-8"> <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">Stress & Burnout</h2>
+            </div>
+            
+            <div class="prose prose-slate dark:prose-invert text-sm text-slate-600 dark:text-slate-300 leading-relaxed space-y-4">
+                <p>Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace stress. It is not your fault, and you are not alone.</p>
+                
+                <h4 class="font-bold text-slate-800 dark:text-white">Common Signs:</h4>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Dreading going to clinicals/work.</li>
+                    <li>Feeling irritable or cynical with patients.</li>
+                    <li>Physical fatigue even after sleeping.</li>
+                </ul>
+
+                <h4 class="font-bold text-slate-800 dark:text-white">Immediate Action:</h4>
+                <p>The "3-Minute Reset": Step into a supply room or break room. Drink a glass of water slowly. Do one cycle of box breathing. Remind yourself: "I am doing my best in a broken system."</p>
+            </div>
+            
+            <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+                <button onclick="closeModal('modal-burnout')" class="px-6 py-2.5 bg-slate-800 dark:bg-teal-600 text-white rounded-lg font-medium hover:opacity-90 transition">Got it</button>
+            </div>
         </div>
     </div>
-    <div id="modal-exams" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-xl max-w-lg w-full p-6 relative">
-            <button onclick="closeModal('modal-exams')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">Exam Anxiety</h2>
-            <p class="text-slate-600 dark:text-slate-300 text-sm">Use the Stop Light Method for NCLEX questions...</p>
-            <div class="mt-6 text-right"><button onclick="closeModal('modal-exams')" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white rounded">Close</button></div>
+
+    <div id="modal-exams" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[70] p-4 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-[90%] md:w-full max-w-lg max-h-[80vh] overflow-y-auto p-6 relative shadow-2xl border border-slate-200 dark:border-slate-700 animate-[fadeIn_0.2s_ease-out]">
+            <button onclick="closeModal('modal-exams')" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:bg-red-100 hover:text-red-500 transition">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="pr-8">
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">Exam Anxiety</h2>
+            </div>
+            
+            <div class="prose prose-slate dark:prose-invert text-sm text-slate-600 dark:text-slate-300 leading-relaxed space-y-4">
+                <p>The NCLEX and nursing finals are designed to test critical thinking, not just memory. Anxiety can block that critical thinking pathway.</p>
+                
+                <h4 class="font-bold text-slate-800 dark:text-white">The Stop Light Method:</h4>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><span class="text-green-500 font-bold">Green:</span> You know the answer. Mark it, move on.</li>
+                    <li><span class="text-yellow-500 font-bold">Yellow:</span> You can narrow it down to two. Flag it (if allowed) or pick your gut instinct.</li>
+                    <li><span class="text-red-500 font-bold">Red:</span> No idea. Do not panic. Breathe. Guess C (or your strategy). Move on.</li>
+                </ul>
+            </div>
+
+            <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+                <button onclick="closeModal('modal-exams')" class="px-6 py-2.5 bg-slate-800 dark:bg-teal-600 text-white rounded-lg font-medium hover:opacity-90 transition">Close Guide</button>
+            </div>
         </div>
     </div>
 
