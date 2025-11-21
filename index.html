@@ -96,9 +96,22 @@
             
             <div id="home" class="section-content active">
                 <div class="text-center py-12 md:py-20">
-                    <div class="inline-flex items-center px-3 py-1 mb-6 text-xs font-bold tracking-wider text-teal-700 dark:text-teal-300 uppercase bg-teal-100 dark:bg-teal-900/40 rounded-full border border-teal-200 dark:border-teal-800">
-                        <span class="w-2 h-2 bg-teal-500 rounded-full mr-2 animate-pulse"></span>
-                        For Nursing Students, By Nursing Students
+                    <div
+                      class="inline-flex items-center justify-center
+                             px-3 py-1 mb-4 sm:mb-6
+                             text-[11px] sm:text-xs font-bold tracking-wide
+                             text-teal-700 dark:text-teal-300 uppercase
+                             bg-teal-100 dark:bg-teal-900/40
+                             rounded-full border border-teal-200 dark:border-teal-800
+                             max-w-xs sm:max-w-none mx-auto"
+                    >
+                        <!-- Hide the dot on very small screens, keep pulse on tablet/desktop -->
+                        <span class="hidden sm:inline-block w-2 h-2 bg-teal-500 rounded-full mr-2 animate-pulse"></span>
+                        
+                        <!-- Center the text so it looks good even when it wraps -->
+                        <span class="text-center">
+                          For Nursing Students, By Nursing Students
+                        </span>
                     </div>
                     <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight tracking-tight">
                         You care for patients. <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-teal-400">We care for you.</span>
@@ -230,8 +243,384 @@
                     <button class="px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition">Exam Prep</button>
                 </div>
 
-                <div id="mentors-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="mentors-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <!-- Meerah Ahmed Alansi -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Meerah Ahmed Alansi</h3>
+                          <p class="text-xs text-slate-500">BSN Year 4</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Happy to support with clinical placement anxiety and confidence on the ward."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Clinical Support</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Placement Anxiety</span>
                     </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Seham Mohammed Abuhatab -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Seham Mohammed Abuhatab</h3>
+                          <p class="text-xs text-slate-500">BSN Year 4</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Let’s talk about balancing life, studies, and clinicals without burning out."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Stress & Burnout</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Time Management</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Doaa Mohamed Sharafeldin -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Doaa Mohamed Sharafeldin</h3>
+                          <p class="text-xs text-slate-500">BSN Year 4</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Here for exam anxiety, study plans, and last-minute motivation."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Exam Prep</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Study Skills</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Khalid Said Islam -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Khalid Said Islam</h3>
+                          <p class="text-xs text-slate-500">BSN Year 4</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Happy to chat about tech tools, note-taking, and keeping organized."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Study Skills</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Time Management</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Amina Sulieman Yassin -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Amina Sulieman Yassin</h3>
+                          <p class="text-xs text-slate-500">BSN Year 4</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Let’s make pharmacology and pathophysiology feel less scary."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Pharmacology</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Pathophysiology</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Haya Hani Al Halabi -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Haya Hani Al Halabi</h3>
+                          <p class="text-xs text-slate-500">BSN Year 3</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Supporting you with first clinicals, communication, and reflective practice."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Clinical Support</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Communication</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Khalifa Khalid Alshehhi -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Khalifa Khalid Alshehhi</h3>
+                          <p class="text-xs text-slate-500">BSN Year 3</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Happy to discuss exam strategies and OSCE preparation."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Exam Prep</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">OSCE</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Abdalqader Abdou -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Abdalqader Abdou</h3>
+                          <p class="text-xs text-slate-500">BSN Year 3</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "We can work together on clinical reasoning and case-based thinking."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Clinical Reasoning</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Case Discussions</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Bushra Garallah Ali -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Bushra Garallah Ali</h3>
+                          <p class="text-xs text-slate-500">BSN Year 2</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Here for first-year nerves, basics, and building your confidence."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">First Year Support</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Foundations</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Ghofran G A Abuzour -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Ghofran G A Abuzour</h3>
+                          <p class="text-xs text-slate-500">BSN Year 2</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Happy to help with pharmacology flashcards and study routines."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Pharmacology</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Study Routines</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Leen Abdelhakim Toubeh -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Leen Abdelhakim Toubeh</h3>
+                          <p class="text-xs text-slate-500">BSN Year 2</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Let’s focus on building study habits that actually work for you."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Study Skills</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Motivation</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Raghad Mohammad -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Raghad Mohammad</h3>
+                          <p class="text-xs text-slate-500">BSN Year 2</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Here for stress management, grounding techniques, and check-ins."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Stress Management</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Coping Skills</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+
+                  <!-- Haneen Jamal Hjaila -->
+                  <article class="bg-white rounded-2xl border border-teal-100 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6">
+                    <header class="flex items-center justify-between mb-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                          <i class="fas fa-user-nurse text-slate-400"></i>
+                        </div>
+                        <div>
+                          <h3 class="font-semibold text-slate-800">Haneen Jamal Hjaila</h3>
+                          <p class="text-xs text-slate-500">BSN Year 2</p>
+                        </div>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </header>
+
+                    <p class="text-sm text-slate-600 italic mb-4">
+                      "Let’s work on confidence, presentations, and speaking up in class."
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Confidence</span>
+                      <span class="px-2 py-1 text-xs rounded-full bg-teal-50 text-teal-700">Presentations</span>
+                    </div>
+
+                    <button class="mt-auto w-full border border-teal-500 text-teal-700 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">
+                      Connect
+                    </button>
+                  </article>
+                </div>
             </div>
 
             <div id="sessions" class="section-content hidden">

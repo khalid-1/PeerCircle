@@ -5,7 +5,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     renderTopics();
-    renderMentors(); // Load mentors
     
     const savedRole = localStorage.getItem('dps_user_role');
     if (savedRole) {
@@ -108,48 +107,6 @@ function openModal(id) {
 function closeModal(id) {
     document.getElementById(id).classList.add('hidden');
     document.getElementById(id).classList.remove('flex');
-}
-
-// ==========================================
-// 3. MENTOR DIRECTORY LOGIC (NEW)
-// ==========================================
-
-const mentorsData = [
-    { name: "Sarah J.", role: "BSN Year 4", tags: ["Clinical", "Peds"], bio: "Happy to help with placement anxiety!", status: "online" },
-    { name: "Mike T.", role: "MSN Student", tags: ["Exam Prep", "Pharm"], bio: "NCLEX tutor and former ER nurse.", status: "offline" },
-    { name: "Priya K.", role: "BSN Year 3", tags: ["Burnout", "Balance"], bio: "Let's talk about work-life balance.", status: "online" },
-    { name: "Alex R.", role: "BSN Year 4", tags: ["ICU", "Tech"], bio: "Tech nerd and ICU hopeful.", status: "offline" },
-    { name: "Dana W.", role: "BSN Year 2", tags: ["Anatomy", "Stress"], bio: "Surviving first year together.", status: "online" },
-    { name: "James L.", role: "RN Mentor", tags: ["Career", "Transition"], bio: "Helping you transition to practice.", status: "online" },
-];
-
-function renderMentors() {
-    const container = document.getElementById('mentors-container');
-    if(!container) return;
-    
-    container.innerHTML = mentorsData.map(mentor => `
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:border-teal-500 transition-all group">
-            <div class="flex items-start justify-between mb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-xl">
-                        <i class="fas fa-user-nurse"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 dark:text-white">${mentor.name}</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">${mentor.role}</p>
-                    </div>
-                </div>
-                <span class="w-2 h-2 rounded-full ${mentor.status === 'online' ? 'bg-green-500' : 'bg-slate-300'}"></span>
-            </div>
-            <p class="text-sm text-slate-600 dark:text-slate-300 mb-4 italic">"${mentor.bio}"</p>
-            <div class="flex flex-wrap gap-2 mb-6">
-                ${mentor.tags.map(tag => `<span class="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-md">${tag}</span>`).join('')}
-            </div>
-            <button onclick="showSection('chat')" class="w-full py-2 border border-teal-600 text-teal-600 dark:text-teal-400 dark:border-teal-500 rounded-lg text-sm font-bold hover:bg-teal-600 hover:text-white transition-colors">
-                Connect
-            </button>
-        </div>
-    `).join('');
 }
 
 
