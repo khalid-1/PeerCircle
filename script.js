@@ -5,8 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     renderTopics();
-    renderSessions();
-    initPlatformSelector();
+    renderSessions(); // <--- ADD THIS LINE
     
     const savedRole = localStorage.getItem('dps_user_role');
     if (savedRole) {
@@ -345,7 +344,7 @@ let sessionsData = [
         desc: "Guided meditation & grounding techniques.", 
         date: "2025-11-24", 
         time: "17:00", 
-        duration: 60,
+        duration: "60",
         host: "Sarah Jenkins", 
         platform: "Zoom", 
         tag: "Stress Relief", 
@@ -357,7 +356,7 @@ let sessionsData = [
         desc: "How to dissect difficult questions.", 
         date: "2025-11-28", 
         time: "18:30", 
-        duration: 90,
+        duration: "90",
         host: "Peer Mentor Mike", 
         platform: "Microsoft Teams", 
         tag: "Exam Prep", 
@@ -455,7 +454,7 @@ function handleAddSession(e) {
         host: document.getElementById('new-session-host').value,
         date: document.getElementById('new-session-date').value,
         time: document.getElementById('new-session-time').value,
-        duration: parseInt(document.getElementById('new-session-duration').value, 10),
+        duration: document.getElementById('new-session-duration').value,
         platform: document.getElementById('new-session-platform').value,
         tag: document.getElementById('new-session-tag').value,
         link: document.getElementById('new-session-link').value,
@@ -471,7 +470,6 @@ function handleAddSession(e) {
     }
 
     e.target.reset();
-    initPlatformSelector();
     document.getElementById('admin-add-session').classList.add('hidden');
     showNotification("Session Scheduled Successfully!", "success");
 }
@@ -482,54 +480,6 @@ function deleteSession(id) {
         renderSessions();
         showNotification("Session cancelled.", "success");
     }
-}
-
-function formatDuration(minutes) {
-    const mins = parseInt(minutes, 10);
-    if (isNaN(mins)) return minutes;
-    const hours = Math.floor(mins / 60);
-    const remainder = mins % 60;
-    if (hours && remainder) return `${hours}h ${remainder}m`;
-    if (hours) return `${hours}h`;
-    return `${mins}m`;
-}
-
-function initPlatformSelector() {
-    const container = document.getElementById('platform-options');
-    const hiddenInput = document.getElementById('new-session-platform');
-    if(!container || !hiddenInput) return;
-
-    const options = Array.from(container.querySelectorAll('.platform-option'));
-    if(options.length === 0) return;
-
-    const setActive = (target) => {
-        options.forEach(option => {
-            option.classList.remove('active');
-            const check = option.querySelector('.platform-check');
-            if(check) check.classList.add('hidden');
-        });
-        target.classList.add('active');
-        const targetCheck = target.querySelector('.platform-check');
-        if(targetCheck) targetCheck.classList.remove('hidden');
-        hiddenInput.value = target.dataset.platform;
-    };
-
-    const activatePreset = () => {
-        const preset = options.find(option => option.dataset.platform === hiddenInput.value) || options[0];
-        if(preset) setActive(preset);
-    };
-
-    if(container.dataset.enhanced === 'true') {
-        activatePreset();
-        return;
-    }
-
-    options.forEach(option => {
-        option.addEventListener('click', () => setActive(option));
-    });
-
-    container.dataset.enhanced = 'true';
-    activatePreset();
 }
 
 // ==========================================
