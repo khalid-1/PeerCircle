@@ -5,7 +5,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     renderTopics();
-    renderSessions(); // <--- ADD THIS LINE
+    renderSessions();
+    initPlatformSelector();
     
     const savedRole = localStorage.getItem('dps_user_role');
     if (savedRole) {
@@ -344,7 +345,7 @@ let sessionsData = [
         desc: "Guided meditation & grounding techniques.", 
         date: "2025-11-24", 
         time: "17:00", 
-        duration: "60",
+        duration: 60,
         host: "Sarah Jenkins", 
         platform: "Zoom", 
         tag: "Stress Relief", 
@@ -356,7 +357,7 @@ let sessionsData = [
         desc: "How to dissect difficult questions.", 
         date: "2025-11-28", 
         time: "18:30", 
-        duration: "90",
+        duration: 90,
         host: "Peer Mentor Mike", 
         platform: "Microsoft Teams", 
         tag: "Exam Prep", 
@@ -365,6 +366,22 @@ let sessionsData = [
 ];
 
 // 2. Render Function
+// Helper to get Brand SVGs (No file upload needed, inline is faster)
+function getPlatformIcon(platform) {
+    if (platform === 'Google Meet') {
+        // The official multi-color Meet Camera Icon
+        return `<svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12z" fill="#fff" opacity="0"/><path d="M21 12l-4.2-3.6v2.7H13.2v1.8h3.6v2.7L21 12z" fill="#00832d"/><path d="M12 6c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6z" fill="#0066da"/><path d="M7.2 12l4.2 3.6v-2.7h3.6v-1.8h-3.6V8.4L7.2 12z" fill="#e94235"/><path d="M19.2 19.2L15 15.6V18a1.2 1.2 0 0 1-1.2 1.2H4.8A1.2 1.2 0 0 1 3.6 18V6a1.2 1.2 0 0 1 1.2-1.2h9.003c.662 0 1.197.538 1.197 1.2v2.4l4.2-3.6v14.4z" fill="none"/><g><path d="M19.2 19.2L15 15.6V18a1.2 1.2 0 0 1-1.2 1.2H4.8A1.2 1.2 0 0 1 3.6 18V6a1.2 1.2 0 0 1 1.2-1.2h9.003c.662 0 1.197.538 1.197 1.2v2.4l4.2-3.6v14.4z" fill="#00ac47"/><path d="M15 10.8v2.4l4.2 3.6V7.2L15 10.8z" fill="#00832d"/><path d="M9 12c0 1.657 1.343 3 3 3s3-1.343 3-3-1.343-3-3-3-3 1.343-3 3z" fill="#2684fc"/><path d="M3.6 18V6h9v12h-9z" fill="#ffba00"/><path d="M12.6 6H3.6a1.199 1.199 0 0 0-1.2 1.2v4.91l10.2-8.5V6z" fill="#0066da"/><path d="M12.6 18v-2.39l-10.2-8.5V18c0 .663.537 1.2 1.2 1.2h9c.662 0 1.2-.537 1.2-1.2z" fill="#00ac47"/></g></svg>`;
+    } 
+    else if (platform === 'Zoom') {
+        // Official Zoom Blue
+        return `<svg class="w-5 h-5 text-blue-500 fill-current" viewBox="0 0 24 24"><path d="M13.546 10.45l6.86-4.54a.75.75 0 0 1 1.16.63v10.92a.75.75 0 0 1-1.16.63l-6.86-4.54a.75.75 0 0 1-1.212.63l-7.77 5.18a1.5 1.5 0 0 1-2.25-1.248V5.898a1.5 1.5 0 0 1 2.25-1.248l7.77 5.18a.75.75 0 0 1 1.212.62z"/></svg>`;
+    } 
+    else {
+        // Microsoft Teams Purple
+        return `<svg class="w-5 h-5 text-indigo-600 fill-current" viewBox="0 0 24 24"><path d="M17.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"/><path d="M2.5 11.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Z"/><path d="M5 16.5a1.5 1.5 0 0 1 1.5-1.5h7a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 5 17.5v-1Z"/><path d="M12 17.5a1.5 1.5 0 0 1 1.5-1.5h7a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-7a1.5 1.5 0 0 1-1.5-1.5v-1Z"/></svg>`;
+    }
+}
+
 function renderSessions() {
     const container = document.getElementById('sessions-container');
     if(!container) return;
@@ -375,17 +392,12 @@ function renderSessions() {
     }
 
     container.innerHTML = sessionsData.map(session => {
-        // Format Date
         const dateObj = new Date(session.date);
         const day = dateObj.getDate();
         const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
         
-        // Platform Colors/Icons
-        let platIcon = 'fa-video';
-        let platColor = 'text-slate-500';
-        if(session.platform === 'Zoom') { platIcon = 'fa-video'; platColor = 'text-blue-500'; }
-        if(session.platform === 'Google Meet') { platIcon = 'fa-handshake'; platColor = 'text-green-500'; }
-        if(session.platform === 'Microsoft Teams') { platIcon = 'fa-users-rectangle'; platColor = 'text-indigo-500'; }
+        // Get the SVG Icon
+        const iconSVG = getPlatformIcon(session.platform);
 
         let adminControls = currentUserRole === 'admin' 
             ? `<button onclick="deleteSession(${session.id})" class="text-slate-300 hover:text-red-500 ml-2 transition"><i class="fas fa-trash-alt"></i></button>` 
@@ -417,8 +429,9 @@ function renderSessions() {
                 <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1">
                     <i class="fas fa-user-circle mr-2 text-slate-400"></i> ${session.host}
                 </div>
-                <div class="flex items-center ${platColor}">
-                    <i class="fas ${platIcon} mr-2"></i> ${session.platform}
+                <div class="flex items-center text-slate-500 dark:text-slate-400 font-medium">
+                    <span class="mr-2 flex items-center justify-center">${iconSVG}</span>
+                    ${session.platform}
                 </div>
             </div>
 
@@ -442,7 +455,7 @@ function handleAddSession(e) {
         host: document.getElementById('new-session-host').value,
         date: document.getElementById('new-session-date').value,
         time: document.getElementById('new-session-time').value,
-        duration: document.getElementById('new-session-duration').value,
+        duration: parseInt(document.getElementById('new-session-duration').value, 10),
         platform: document.getElementById('new-session-platform').value,
         tag: document.getElementById('new-session-tag').value,
         link: document.getElementById('new-session-link').value,
@@ -458,6 +471,7 @@ function handleAddSession(e) {
     }
 
     e.target.reset();
+    initPlatformSelector();
     document.getElementById('admin-add-session').classList.add('hidden');
     showNotification("Session Scheduled Successfully!", "success");
 }
@@ -468,6 +482,54 @@ function deleteSession(id) {
         renderSessions();
         showNotification("Session cancelled.", "success");
     }
+}
+
+function formatDuration(minutes) {
+    const mins = parseInt(minutes, 10);
+    if (isNaN(mins)) return minutes;
+    const hours = Math.floor(mins / 60);
+    const remainder = mins % 60;
+    if (hours && remainder) return `${hours}h ${remainder}m`;
+    if (hours) return `${hours}h`;
+    return `${mins}m`;
+}
+
+function initPlatformSelector() {
+    const container = document.getElementById('platform-options');
+    const hiddenInput = document.getElementById('new-session-platform');
+    if(!container || !hiddenInput) return;
+
+    const options = Array.from(container.querySelectorAll('.platform-option'));
+    if(options.length === 0) return;
+
+    const setActive = (target) => {
+        options.forEach(option => {
+            option.classList.remove('active');
+            const check = option.querySelector('.platform-check');
+            if(check) check.classList.add('hidden');
+        });
+        target.classList.add('active');
+        const targetCheck = target.querySelector('.platform-check');
+        if(targetCheck) targetCheck.classList.remove('hidden');
+        hiddenInput.value = target.dataset.platform;
+    };
+
+    const activatePreset = () => {
+        const preset = options.find(option => option.dataset.platform === hiddenInput.value) || options[0];
+        if(preset) setActive(preset);
+    };
+
+    if(container.dataset.enhanced === 'true') {
+        activatePreset();
+        return;
+    }
+
+    options.forEach(option => {
+        option.addEventListener('click', () => setActive(option));
+    });
+
+    container.dataset.enhanced = 'true';
+    activatePreset();
 }
 
 // ==========================================
