@@ -13,14 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         document.getElementById('login-modal').classList.remove('hidden');
     }
-
-    const getSupportButton = document.querySelector('button[onclick="showSection(\'chat\')"]');
-    if (getSupportButton) {
-        getSupportButton.addEventListener('click', (event) => {
-            event.preventDefault();
-            handleBooking(event);
-        });
-    }
 });
 
 function initTheme() {
@@ -373,20 +365,18 @@ let sessionsData = [
 ];
 
 // 2. Render Function
-// Helper to get Brand SVGs (Cleaned & Fixed)
+// Helper to get Brand SVGs (Using your uploaded files)
 function getPlatformIcon(platform) {
     if (platform === 'Google Meet') {
-        // Official Multi-colored Meet Camera
-        return `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 12C24 5.37 18.63 0 12 0S0 5.37 0 12s5.37 12 12 12 12-5.37 12-12z" fill="white" fill-opacity="0.01"/><path d="M21 12l-4.2-3.6v2.7H13.2v1.8h3.6v2.7L21 12z" fill="#00832d"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" fill="#0066da"/><path d="M7.2 12l4.2 3.6v-2.7h3.6v-1.8h-3.6V8.4L7.2 12z" fill="#e94235"/><g><path d="M19.2 19.2L15 15.6V18a1.2 1.2 0 0 1-1.2 1.2H4.8A1.2 1.2 0 0 1 3.6 18V6a1.2 1.2 0 0 1 1.2-1.2h9c.66 0 1.2.54 1.2 1.2v2.4l4.2-3.6v14.4z" fill="#00ac47"/><path d="M15 10.8v2.4l4.2 3.6V7.2L15 10.8z" fill="#00832d"/><path d="M9 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" fill="#2684fc"/><path d="M3.6 18V6h9v12h-9z" fill="#ffba00"/><path d="M12.6 6H3.6a1.2 1.2 0 0 0-1.2 1.2v4.9l10.2-8.5V6z" fill="#0066da"/><path d="M12.6 18v-2.4l-10.2-8.5V18c0 .66.54 1.2 1.2 1.2h9c.66 0 1.2-.54 1.2-1.2z" fill="#00ac47"/></g></svg>`;
+        return `<img src="google-meet.svg" class="w-5 h-5 object-contain" alt="Google Meet">`;
     } 
     else if (platform === 'Zoom') {
-        // Official Zoom Blue
-        return `<svg class="w-5 h-5 text-blue-500 fill-current" viewBox="0 0 24 24"><path d="M4.5 5.25A1.5 1.5 0 0 0 3 6.75v10.5a1.5 1.5 0 0 0 1.5 1.5h11.25a1.5 1.5 0 0 0 1.5-1.5V6.75a1.5 1.5 0 0 0-1.5-1.5H4.5Zm14.25 1.883l4.5-2.632v15.006l-4.5-2.632V7.133Z"/></svg>`;
+        return `<img src="zoom.svg" class="w-5 h-5 object-contain" alt="Zoom">`;
     } 
-    else {
-        // Microsoft Teams Purple
-        return `<svg class="w-5 h-5 text-indigo-600 fill-current" viewBox="0 0 24 24"><path d="M16.5 5.25h-9a1.5 1.5 0 0 0-1.5 1.5v10.5a1.5 1.5 0 0 0 1.5 1.5h9a1.5 1.5 0 0 0 1.5-1.5V6.75a1.5 1.5 0 0 0-1.5-1.5ZM5.25 10.5a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 0 1.5H6a.75.75 0 0 1-.75-.75ZM13.5 15a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5ZM8.25 9a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75Z"/></svg>`;
+    else if (platform === 'Microsoft Teams') {
+        return `<img src="microsoft-teams.svg" class="w-5 h-5 object-contain" alt="Teams">`;
     }
+    return '<i class="fas fa-video text-slate-400"></i>'; // Fallback
 }
 
 function renderSessions() {
@@ -499,20 +489,30 @@ let peerMessages = [
 ];
 
 function handleBooking(e) {
-    e.preventDefault();
-    const inputs = e.target.querySelectorAll('input, select');
+    e.preventDefault(); // Stop page reload
+    
+    // Get values using the specific IDs we just added
+    const nameVal = document.getElementById('chat-name').value;
+    const yearVal = document.getElementById('chat-year').value;
+    const topicVal = document.getElementById('chat-topic').value;
+
     const newMessage = {
         id: Date.now(),
-        name: inputs[0].value || "Anonymous",
-        year: inputs[1].value,
-        topic: inputs[2].value,
-        time: "Anytime",
+        name: nameVal || "Anonymous",
+        year: yearVal,
+        topic: topicVal,
+        time: "Just now",
         status: "pending"
     };
+
     peerMessages.push(newMessage);
-    updateDashboard();
+    updateDashboard(); // Refresh admin stats
+    
+    // Clear the form
     e.target.reset();
-    showNotification("Request Sent! Peer will reply via email.", "success");
+    
+    // Show success message
+    showNotification("Request Sent! A Peer will email you shortly.", "success");
 }
 
 function renderInbox() {

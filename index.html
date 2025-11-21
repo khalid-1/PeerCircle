@@ -94,7 +94,7 @@
         
         <div class="relative z-10 max-w-7xl mx-auto bg-white/80 dark:bg-slate-900/60 backdrop-blur-2xl rounded-3xl md:rounded-[2.5rem] overflow-hidden shadow-2xl dark:shadow-teal-900/20 border border-white/60 dark:border-white/10 p-5 md:p-10 min-h-[80vh] transition-all duration-500">
             
-            <div id="home" class="section-content">
+            <div id="home" class="section-content active">
                 <div class="text-center py-12 md:py-20">
                     <div
                       class="inline-flex items-center justify-center
@@ -827,39 +827,39 @@
                             </div>
                         </div>
                         <div class="p-8 md:p-12">
-                            <form onsubmit="handleBooking(event)" class="space-y-5">
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Name / Alias</label>
-                                    <input type="text" required class="input-field" placeholder="e.g. Alex">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Year of Study</label>
-                                    <div class="relative">
-                                        <select class="input-field appearance-none cursor-pointer">
-                                            <option>BSN Year 1</option>
-                                            <option>BSN Year 2</option>
-                                            <option>BSN Year 3</option>
-                                            <option>BSN Year 4</option>
-                                            <option>MSN Student</option>
-                                        </select>
-                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="fas fa-chevron-down text-xs"></i></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Topic</label>
-                                    <div class="relative">
-                                        <select class="input-field appearance-none cursor-pointer">
-                                            <option>General Stress</option>
-                                            <option>Academic Struggles</option>
-                                            <option>Clinical Placement</option>
-                                            <option>Venting</option>
-                                        </select>
-                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="fas fa-chevron-down text-xs"></i></div>
-                                    </div>
-                                </div>
-                                <button type="submit" class="w-full bg-slate-800 dark:bg-teal-600 text-white py-3.5 rounded-lg font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">Send Request</button>
-                            </form>
-                        </div>
+    <form onsubmit="handleBooking(event)" class="space-y-5">
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Name / Alias</label>
+            <input type="text" id="chat-name" required class="input-field" placeholder="e.g. Alex">
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Year of Study</label>
+            <div class="relative">
+                <select id="chat-year" class="input-field appearance-none cursor-pointer">
+                    <option>BSN Year 1</option>
+                    <option>BSN Year 2</option>
+                    <option>BSN Year 3</option>
+                    <option>BSN Year 4</option>
+                    <option>MSN Student</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="fas fa-chevron-down text-xs"></i></div>
+            </div>
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Topic</label>
+            <div class="relative">
+                <select id="chat-topic" class="input-field appearance-none cursor-pointer">
+                    <option>General Stress</option>
+                    <option>Academic Struggles</option>
+                    <option>Clinical Placement</option>
+                    <option>Venting</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="fas fa-chevron-down text-xs"></i></div>
+            </div>
+        </div>
+        <button type="submit" class="w-full bg-slate-800 dark:bg-teal-600 text-white py-3.5 rounded-lg font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">Send Request</button>
+    </form>
+</div>
                     </div>
                 </div>
             </div>
