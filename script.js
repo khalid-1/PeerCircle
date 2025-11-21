@@ -479,35 +479,90 @@ function logout() {
     window.location.reload();
 }
 
-// BREATHING LOGIC
+// ==========================================
+// BREATHING WIDGET LOGIC (Fixed & Scientific)
+// ==========================================
+
+let isBreathing = false;
+let breathingTimeouts = []; // To store timeouts so we can clear them on stop
+
 function toggleBreathing() {
     const btn = document.getElementById('breath-btn');
     const widget = document.getElementById('breathing-widget');
     const text = document.getElementById('breath-text');
+    const instruction = document.getElementById('breath-instruction');
     
     if (!isBreathing) {
+        // --- START BREATHING ---
         isBreathing = true;
-        btn.textContent = "Stop";
+        btn.textContent = "Stop Exercise";
         btn.classList.replace('bg-teal-600', 'bg-red-500');
-        widget.classList.add('inhaling');
-        text.textContent = "Inhale...";
-        breathingInterval = setInterval(() => {
-            if(widget.classList.contains('inhaling')) {
-                widget.classList.remove('inhaling');
-                widget.classList.add('exhaling');
-                text.textContent = "Exhale...";
-            } else {
-                widget.classList.remove('exhaling');
-                widget.classList.add('inhaling');
-                text.textContent = "Inhale...";
-            }
-        }, 4000);
+        btn.classList.replace('hover:bg-teal-700', 'hover:bg-red-600');
+        
+        // Start the first cycle immediately
+        runBreathingCycle(widget, text, instruction);
+        
     } else {
+        // --- STOP BREATHING ---
         isBreathing = false;
-        clearInterval(breathingInterval);
+        // Clear all scheduled steps
+        breathingTimeouts.forEach(clearTimeout);
+        breathingTimeouts = [];
+        
+        // Reset UI
         btn.textContent = "Start Exercise";
         btn.classList.replace('bg-red-500', 'bg-teal-600');
-        widget.classList.remove('inhaling', 'exhaling');
+        btn.classList.replace('hover:bg-red-600', 'hover:bg-teal-700');
+        
+        widget.className = 'breathing-widget'; // Remove all state classes
         text.textContent = "Ready?";
+        instruction.textContent = "Tap Start";
+        // Force a repaint to ensure ripples disappear instantly
+        void widget.offsetWidth; 
     }
+}
+
+// The 4-7-8 Cycle (+ 3s Rest) function
+function runBreathingCycle(widget, text, instruction) {
+    if (!isBreathing) return; // Stop if user clicked stop
+
+    // 1. INHALE (4s)
+    widget.className = 'breathing-widget inhaling';
+    text.textContent = "Inhale...";
+    instruction.textContent = "Breathe in slowly through nose (4s)";
+    
+    breathingTimeouts.push(setTimeout(() => {
+        if (!isBreathing) return;
+
+        // 2. HOLD (7s)
+        widget.className = 'breathing-widget holding';
+        text.textContent = "Hold...";
+        instruction.textContent = "Keep lungs full (7s)";
+
+        breathingTimeouts.push(setTimeout(() => {
+            if (!isBreathing) return;
+
+            // 3. EXHALE (8s)
+            widget.className = 'breathing-widget exhaling';
+            text.textContent = "Exhale...";
+            instruction.textContent = "Release slowly through mouth (8s)";
+
+            breathingTimeouts.push(setTimeout(() => {
+                if (!isBreathing) return;
+
+                // 4. REST (3s) - The "Break" you asked for
+                widget.className = 'breathing-widget resting';
+                text.textContent = "Rest...";
+                instruction.textContent = "Relax for a moment (3s)";
+
+                // Schedule next cycle after rest
+                breathingTimeouts.push(setTimeout(() => {
+                    if(isBreathing) runBreathingCycle(widget, text, instruction);
+                }, 3000)); // End of Rest (3s)
+
+            }, 8000)); // End of Exhale (8s)
+
+        }, 7000)); // End of Hold (7s)
+
+    }, 4000)); // End of Inhale (4s)
 }

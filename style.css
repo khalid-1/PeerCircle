@@ -27,7 +27,9 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Breathing Widget Logic */
+/* ==========================================
+   BREATHING WIDGET (Fixed & Scientific)
+   ========================================== */
 .breathing-widget {
     position: relative;
     width: 260px;
@@ -38,6 +40,7 @@ body {
     margin: 2rem auto;
 }
 
+/* The Main Central Circle */
 .core-circle {
     width: 140px;
     height: 140px;
@@ -48,53 +51,104 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 25px rgba(20, 184, 166, 0.15);
+    box-shadow: 0 10px 30px rgba(20, 184, 166, 0.2);
     position: relative;
-    transition: transform 4s ease-in-out;
+    /* Base transition for smooth state changes */
+    transition: all 0.5s ease-in-out;
 }
 
+/* Dark Mode Core Circle */
+:is(.dark) .core-circle {
+    background-color: #1e293b;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* The Ripples behind the circle */
 .ripple {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 50%;
-    background-color: #2dd4bf;
+    background-color: #2dd4bf; /* Teal-400 */
     opacity: 0;
     z-index: 0;
+    pointer-events: none;
 }
 
-/* Dark Mode Overrides */
-:is(.dark) .core-circle {
-    background-color: #1e293b;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+/* --- ANIMATION STATES (Controlled by JS) --- */
+
+/* 1. INHALE (4s) - Grows big */
+.breathing-widget.inhaling .core-circle {
+    animation: inhale 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.breathing-widget.inhaling .ripple {
+    animation: rippleOut 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-:is(.dark) body {
-    background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%);
-    background-attachment: fixed;
+/* 2. HOLD (7s) - Stays big, pulses slightly */
+.breathing-widget.holding .core-circle {
+    transform: scale(1.25); /* Keep it big */
+    animation: pulseHold 2s ease-in-out infinite;
+}
+.breathing-widget.holding .ripple {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1.5);
 }
 
-/* Animation States */
-.breathing-widget.inhaling .core-circle { transform: scale(1.1); }
-.breathing-widget.inhaling .ripple { animation: rippleIn 4s infinite linear; }
-.breathing-widget.exhaling .core-circle { transform: scale(1.0); }
-.breathing-widget.exhaling .ripple { animation: rippleOut 4s infinite linear; }
+/* 3. EXHALE (8s) - Shrinks back down */
+.breathing-widget.exhaling .core-circle {
+    animation: exhale 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.breathing-widget.exhaling .ripple {
+    animation: rippleIn 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
 
-.ripple-1 { animation-delay: 0s; }
-.ripple-2 { animation-delay: 1.3s; }
-.ripple-3 { animation-delay: 2.6s; }
+/* 4. REST (3s) - Back to normal */
+.breathing-widget.resting .core-circle {
+    transform: scale(1);
+}
+.breathing-widget.resting .ripple {
+    opacity: 0;
+}
 
+/* --- KEYFRAMES --- */
+
+@keyframes inhale {
+    from { transform: scale(1); }
+    to { transform: scale(1.25); }
+}
+
+@keyframes exhale {
+    from { transform: scale(1.25); }
+    to { transform: scale(1); }
+}
+
+@keyframes pulseHold {
+    0%, 100% { box-shadow: 0 10px 30px rgba(20, 184, 166, 0.3); }
+    50% { box-shadow: 0 15px 40px rgba(20, 184, 166, 0.5); }
+}
+:is(.dark) @keyframes pulseHold {
+    0%, 100% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); }
+    50% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8); }
+}
+
+/* Ripple goes OUT during inhale */
+@keyframes rippleOut {
+    0% { width: 140px; height: 140px; opacity: 0.6; }
+    100% { width: 300px; height: 300px; opacity: 0; }
+}
+
+/* Ripple comes IN during exhale */
 @keyframes rippleIn {
-    0% { width: 260px; height: 260px; opacity: 0; }
-    20% { opacity: 0.4; }
+    0% { width: 300px; height: 300px; opacity: 0.4; }
     100% { width: 140px; height: 140px; opacity: 0; }
 }
 
-@keyframes rippleOut {
-    0% { width: 140px; height: 140px; opacity: 0.6; }
-    100% { width: 280px; height: 280px; opacity: 0; }
-}
+/* Ripple Staggering */
+.ripple-1 { animation-delay: 0s; }
+.ripple-2 { animation-delay: 0.8s; }
+.ripple-3 { animation-delay: 1.6s; }
 
 /* Scrollbar Polish */
 ::-webkit-scrollbar { width: 8px; }
