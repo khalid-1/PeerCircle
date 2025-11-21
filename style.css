@@ -184,3 +184,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 :is(.dark) input[type="time"]::-webkit-calendar-picker-indicator {
     filter: invert(1); /* White in dark mode */
 }
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}

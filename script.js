@@ -489,30 +489,58 @@ let peerMessages = [
 ];
 
 function handleBooking(e) {
-    e.preventDefault(); // Stop page reload
+    e.preventDefault(); 
     
-    // Get values using the specific IDs we just added
-    const nameVal = document.getElementById('chat-name').value;
-    const yearVal = document.getElementById('chat-year').value;
-    const topicVal = document.getElementById('chat-topic').value;
+    const btn = document.getElementById('chat-submit-btn');
+    const originalText = btn.innerHTML;
 
-    const newMessage = {
-        id: Date.now(),
-        name: nameVal || "Anonymous",
-        year: yearVal,
-        topic: topicVal,
-        time: "Just now",
-        status: "pending"
-    };
+    // 1. Disable Button & Show Spinner
+    btn.disabled = true;
+    btn.classList.add('opacity-75', 'cursor-not-allowed');
+    btn.innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Sending...`;
 
-    peerMessages.push(newMessage);
-    updateDashboard(); // Refresh admin stats
+    // 2. Simulate Network Delay (1.5 seconds)
+    setTimeout(() => {
+        // Capture Data
+        const nameVal = document.getElementById('chat-name').value;
+        const yearVal = document.getElementById('chat-year').value;
+        const topicVal = document.getElementById('chat-topic').value;
+
+        const newMessage = {
+            id: Date.now(),
+            name: nameVal || "Anonymous",
+            year: yearVal,
+            topic: topicVal,
+            time: "Just now",
+            status: "pending"
+        };
+
+        peerMessages.push(newMessage);
+        updateDashboard(); 
+
+        // 3. HIDE Form / SHOW Success
+        document.getElementById('chat-form-container').classList.add('hidden');
+        document.getElementById('chat-success-container').classList.remove('hidden');
+        document.getElementById('chat-success-container').classList.add('flex'); // Flex needed for centering
+
+        // Reset button state (for next time)
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        btn.innerHTML = originalText;
+        
+        showNotification("Request Sent Successfully!", "success");
+
+    }, 1500); // 1.5s delay
+}
+
+function resetChatForm() {
+    // Clear inputs
+    document.getElementById('chat-name').value = "";
     
-    // Clear the form
-    e.target.reset();
-    
-    // Show success message
-    showNotification("Request Sent! A Peer will email you shortly.", "success");
+    // Swap containers back
+    document.getElementById('chat-success-container').classList.add('hidden');
+    document.getElementById('chat-success-container').classList.remove('flex');
+    document.getElementById('chat-form-container').classList.remove('hidden');
 }
 
 function renderInbox() {
