@@ -5,7 +5,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     renderTopics();
-    renderSessions(); // <--- ADD THIS LINE
+    renderSessions();
+    renderMentors(); // <--- This loads your real colleagues!
     
     const savedRole = localStorage.getItem('dps_user_role');
     if (savedRole) {
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// ... (Keep your existing initTheme and toggleTheme functions exactly as they were) ...
 function initTheme() {
     const themeIcon = document.getElementById('theme-icon');
     if(!themeIcon) return;
@@ -42,9 +44,10 @@ function toggleTheme() {
 }
 
 // ==========================================
-// 2. NAVIGATION
+// 2. NAVIGATION & HELPERS
 // ==========================================
 
+// ... (Keep showSection, renderSection, updateNavState, event listeners, showNotification, openModal, closeModal as they were) ...
 function showSection(sectionId) {
     if(window.location.hash.substring(1) !== sectionId) {
         window.location.hash = sectionId;
@@ -88,7 +91,6 @@ window.addEventListener('hashchange', () => {
 function toggleMobileMenu() {
     document.getElementById('mobile-menu').classList.toggle('hidden');
 }
-
 document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
 
 function showNotification(msg, type) {
@@ -110,17 +112,40 @@ function closeModal(id) {
     document.getElementById(id).classList.remove('flex');
 }
 
+// --- PERSISTENCE HELPERS (NEW) ---
+function saveToStorage(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
+
+function loadFromStorage(key, defaultData) {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : defaultData;
+}
+
 
 // ==========================================
-// 4. TOPICS & ADMIN LOGIC (ENHANCED)
+// 3. TOPICS (PERSISTENT)
 // ==========================================
 
-// 1. Predefined Assets
-const availableIcons = [
-    "fa-lightbulb", "fa-heart-pulse", "fa-brain", "fa-user-nurse", 
-    "fa-coffee", "fa-bed", "fa-stopwatch", "fa-users", "fa-book-open", "fa-hand-holding-heart"
+const defaultTopics = [
+    { 
+        id: 1, title: "Stress & Burnout", desc: "Identifying signs of fatigue.", color: "rose", icon: "fa-heart-pulse", 
+        content: { intro: "Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace stress.", bullets: ["Dreading clinicals.", "Feeling cynical.", "Physical fatigue."], action: "Step into a supply room. Drink water slowly." }
+    },
+    { 
+        id: 2, title: "Exam Anxiety", desc: "Handling NCLEX pressure.", color: "amber", icon: "fa-brain", 
+        content: { intro: "The NCLEX tests critical thinking. Anxiety blocks that pathway.", bullets: ["Green Light: You know it.", "Red Light: Guess."], action: "Use the Stop Light Method." }
+    },
+    { 
+        id: 3, title: "Clinical Placement", desc: "Navigating hospital hierarchy.", color: "blue", icon: "fa-user-nurse", 
+        content: { intro: "Remember that you are there to learn, not to be perfect.", bullets: ["Ask questions.", "Find a 'safe nurse'."], action: "Introduce yourself to the charge nurse." }
+    }
 ];
 
+let topicsData = loadFromStorage('dps_topics', defaultTopics);
+
+// Available assets for Admin
+const availableIcons = ["fa-lightbulb", "fa-heart-pulse", "fa-brain", "fa-user-nurse", "fa-coffee", "fa-bed", "fa-stopwatch", "fa-users", "fa-book-open", "fa-hand-holding-heart"];
 const availableColors = [
     { name: "teal", hex: "bg-teal-500", light: "bg-teal-100", text: "text-teal-600" },
     { name: "blue", hex: "bg-blue-500", light: "bg-blue-100", text: "text-blue-600" },
@@ -130,61 +155,16 @@ const availableColors = [
     { name: "amber", hex: "bg-amber-500", light: "bg-amber-100", text: "text-amber-600" }
 ];
 
-// 2. Enhanced Data Structure
-let topicsData = [
-    { 
-        id: 1, 
-        title: "Stress & Burnout", 
-        desc: "Identifying signs of fatigue and emotional exhaustion.", 
-        color: "rose", 
-        icon: "fa-heart-pulse", 
-        content: {
-            intro: "Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace stress.",
-            bullets: ["Dreading clinicals or work shifts.", "Feeling cynical or irritable with patients.", "Physical fatigue even after sleeping."],
-            action: "Step into a supply room. Drink water slowly. Do one cycle of box breathing."
-        }
-    },
-    { 
-        id: 2, 
-        title: "Exam Anxiety", 
-        desc: "Handling NCLEX pressure and test-taking panic.", 
-        color: "amber", 
-        icon: "fa-brain", 
-        content: {
-            intro: "The NCLEX tests critical thinking, not just memory. Anxiety blocks that pathway. You need to calm the amygdala to access the frontal cortex.",
-            bullets: ["Green Light: You know it. Mark it.", "Yellow Light: Narrowed to two. Trust your gut.", "Red Light: No idea. Breathe, guess, move on."],
-            action: "Use the Stop Light Method for every question."
-        }
-    },
-    { 
-        id: 3, 
-        title: "Clinical Placement", 
-        desc: "Navigating hospital hierarchy and shift anxiety.", 
-        color: "blue", 
-        icon: "fa-user-nurse", 
-        content: {
-            intro: "Your first clinical rotation can feel overwhelming. Remember that you are there to learn, not to be perfect.",
-            bullets: ["Ask questions when unsure—it shows safety awareness.", "Find a 'safe nurse' to shadow.", "Bring snacks and stay hydrated."],
-            action: "Introduce yourself to the charge nurse at the start of the shift."
-        }
-    }
-];
-
-// 3. Render Function
 function renderTopics() {
     const container = document.getElementById('topics-container');
     if(!container) return; 
     container.innerHTML = ""; 
 
     topicsData.forEach(topic => {
-        // Determine styles based on color name
         const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
-
         let adminControls = currentUserRole === 'admin' 
-            ? `<button onclick="deleteTopic(event, ${topic.id})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition z-20"><i class="fas fa-trash-alt"></i></button>` 
-            : "";
+            ? `<button onclick="deleteTopic(event, ${topic.id})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition z-20"><i class="fas fa-trash-alt"></i></button>` : "";
 
-        // NOTE: onclick passes the topic ID to open the dynamic modal
         const cardHTML = `
             <div onclick="openTopicModal(${topic.id})" class="cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative">
                 <div class="h-2 ${theme.hex}"></div> <div class="p-6">
@@ -203,181 +183,168 @@ function renderTopics() {
     });
 }
 
-// 4. Dynamic Modal Logic (The "Universal Modal")
-function openTopicModal(id) {
-    const topic = topicsData.find(t => t.id === id);
-    if(!topic) return;
-
-    const modal = document.getElementById('modal-dynamic-topic');
-    const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
-
-    // Inject Colors
-    document.getElementById('modal-header-bar').className = `h-4 w-full ${theme.hex}`;
-    document.getElementById('modal-icon-box').className = `w-12 h-12 rounded-xl flex items-center justify-center text-xl ${theme.light} ${theme.text} dark:bg-opacity-20`;
-    
-    // Inject Content
-    document.getElementById('modal-icon').className = `fas ${topic.icon}`;
-    document.getElementById('modal-title').textContent = topic.title;
-    document.getElementById('modal-title').className = `text-2xl font-bold text-slate-800 dark:text-white`;
-    
-    // Handle Rich Content
-    const content = topic.content || { intro: topic.desc, bullets: [], action: "" };
-    
-    document.getElementById('modal-intro').textContent = content.intro;
-    
-    // Bullets
-    const bulletsList = document.getElementById('modal-bullets');
-    const bulletsContainer = document.getElementById('modal-bullets-container');
-    bulletsList.innerHTML = "";
-    if(content.bullets && content.bullets.length > 0) {
-        bulletsContainer.classList.remove('hidden');
-        content.bullets.forEach(b => {
-            const li = document.createElement('li');
-            li.textContent = b;
-            bulletsList.appendChild(li);
-        });
-    } else {
-        bulletsContainer.classList.add('hidden');
-    }
-
-    // Action Box
-    const actionBox = document.getElementById('modal-action-box');
-    if(content.action) {
-        actionBox.classList.remove('hidden');
-        actionBox.className = `p-4 rounded-xl border-l-4 mt-6 ${theme.light} border-${theme.name}-500 dark:bg-opacity-10`;
-        document.getElementById('modal-action-title').className = `font-bold mb-1 ${theme.text}`;
-        document.getElementById('modal-action-text').textContent = content.action;
-        document.getElementById('modal-action-text').className = "text-sm text-slate-700 dark:text-slate-300";
-    } else {
-        actionBox.classList.add('hidden');
-    }
-
-    // Show Modal
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
-
-// 5. Admin Form Logic
-// Initialize Pickers when Admin Mode starts
-function initAdminPickers() {
-    // Render Icons
-    const iconContainer = document.getElementById('icon-selector');
-    if(iconContainer.innerHTML === "") { // Only render once
-        availableIcons.forEach(icon => {
-            const div = document.createElement('div');
-            div.className = `icon-option ${icon === 'fa-lightbulb' ? 'selected' : ''}`;
-            div.innerHTML = `<i class="fas ${icon}"></i>`;
-            div.onclick = () => {
-                document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected'));
-                div.classList.add('selected');
-                document.getElementById('selected-icon').value = icon;
-            };
-            iconContainer.appendChild(div);
-        });
-
-        // Render Colors
-        const colorContainer = document.getElementById('color-selector');
-        availableColors.forEach(c => {
-            const div = document.createElement('div');
-            div.className = `color-option ${c.hex} ${c.name === 'teal' ? 'selected' : ''}`;
-            div.onclick = () => {
-                document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
-                div.classList.add('selected');
-                document.getElementById('selected-color').value = c.name;
-            };
-            colorContainer.appendChild(div);
-        });
-    }
-}
-
 function handleAddTopic(event) {
     event.preventDefault();
-    
     const title = document.getElementById('new-topic-title').value;
     const desc = document.getElementById('new-topic-desc').value;
     const color = document.getElementById('selected-color').value;
     const icon = document.getElementById('selected-icon').value;
-    
     const intro = document.getElementById('new-content-intro').value || desc;
     const bulletsRaw = document.getElementById('new-content-bullets').value;
+    const bullets = bulletsRaw ? bulletsRaw.split('\n').filter(line => line.trim() !== '') : [];
     const action = document.getElementById('new-content-action').value;
 
-    // Parse bullets by new line
-    const bullets = bulletsRaw ? bulletsRaw.split('\n').filter(line => line.trim() !== '') : [];
-
     const newTopic = { 
-        id: Date.now(), 
-        title, 
-        desc, 
-        color, 
-        icon, 
+        id: Date.now(), title, desc, color, icon, 
         content: { intro, bullets, action }
     };
 
     topicsData.push(newTopic);
+    saveToStorage('dps_topics', topicsData); // SAVE
     renderTopics();
     updateDashboard();
     event.target.reset();
     document.getElementById('admin-add-topic').classList.add('hidden');
-    showNotification("New Guide Published Successfully!", "success");
+    showNotification("New Guide Published!", "success");
 }
 
 function deleteTopic(event, id) {
-    event.stopPropagation(); // Prevent opening the modal when clicking delete
+    event.stopPropagation();
     if(confirm("Delete this topic?")) {
         topicsData = topicsData.filter(topic => topic.id !== id);
+        saveToStorage('dps_topics', topicsData); // SAVE
         renderTopics();
         updateDashboard();
         showNotification("Topic deleted.", "success");
     }
 }
 
+// Universal Modal Logic (Same as before)
+function openTopicModal(id) {
+    const topic = topicsData.find(t => t.id === id);
+    if(!topic) return;
+    const modal = document.getElementById('modal-dynamic-topic');
+    const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
+    document.getElementById('modal-header-bar').className = `h-4 w-full ${theme.hex}`;
+    document.getElementById('modal-icon-box').className = `w-12 h-12 rounded-xl flex items-center justify-center text-xl ${theme.light} ${theme.text} dark:bg-opacity-20`;
+    document.getElementById('modal-icon').className = `fas ${topic.icon}`;
+    document.getElementById('modal-title').textContent = topic.title;
+    document.getElementById('modal-title').className = `text-2xl font-bold text-slate-800 dark:text-white`;
+    const content = topic.content || { intro: topic.desc, bullets: [], action: "" };
+    document.getElementById('modal-intro').textContent = content.intro;
+    const bulletsList = document.getElementById('modal-bullets');
+    const bulletsContainer = document.getElementById('modal-bullets-container');
+    bulletsList.innerHTML = "";
+    if(content.bullets && content.bullets.length > 0) {
+        bulletsContainer.classList.remove('hidden');
+        content.bullets.forEach(b => { const li = document.createElement('li'); li.textContent = b; bulletsList.appendChild(li); });
+    } else { bulletsContainer.classList.add('hidden'); }
+    const actionBox = document.getElementById('modal-action-box');
+    if(content.action) {
+        actionBox.classList.remove('hidden');
+        actionBox.className = `p-4 rounded-xl border-l-4 mt-6 ${theme.light} border-${theme.name}-500 dark:bg-opacity-10`;
+        document.getElementById('modal-action-title').className = `font-bold mb-1 ${theme.text}`;
+        document.getElementById('modal-action-text').textContent = content.action;
+    } else { actionBox.classList.add('hidden'); }
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+// Admin Pickers Init (Same as before)
+function initAdminPickers() {
+    const iconContainer = document.getElementById('icon-selector');
+    if(iconContainer.innerHTML === "") {
+        availableIcons.forEach(icon => {
+            const div = document.createElement('div');
+            div.className = `icon-option ${icon === 'fa-lightbulb' ? 'selected' : ''}`;
+            div.innerHTML = `<i class="fas ${icon}"></i>`;
+            div.onclick = () => { document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected')); div.classList.add('selected'); document.getElementById('selected-icon').value = icon; };
+            iconContainer.appendChild(div);
+        });
+        const colorContainer = document.getElementById('color-selector');
+        availableColors.forEach(c => {
+            const div = document.createElement('div');
+            div.className = `color-option ${c.hex} ${c.name === 'teal' ? 'selected' : ''}`;
+            div.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); div.classList.add('selected'); document.getElementById('selected-color').value = c.name; };
+            colorContainer.appendChild(div);
+        });
+    }
+}
+
+
 // ==========================================
-// VIRTUAL SESSIONS LOGIC
+// 4. MENTOR DIRECTORY (YOUR REAL DATA)
 // ==========================================
 
-// 1. Initial Data
-let sessionsData = [
-    { 
-        id: 1, 
-        title: "Mindfulness for Nurses", 
-        desc: "Guided meditation & grounding techniques.", 
-        date: "2025-11-24", 
-        time: "17:00", 
-        duration: "60",
-        host: "Sarah Jenkins", 
-        platform: "Zoom", 
-        tag: "Stress Relief", 
-        link: "#" 
-    },
-    { 
-        id: 2, 
-        title: "NCLEX Q&A Strategy", 
-        desc: "How to dissect difficult questions.", 
-        date: "2025-11-28", 
-        time: "18:30", 
-        duration: "90",
-        host: "Peer Mentor Mike", 
-        platform: "Microsoft Teams", 
-        tag: "Exam Prep", 
-        link: "#" 
-    }
+// I HAVE EXTRACTED ALL 13 OF YOUR REAL COLLEAGUES HERE:
+const mentorsData = [
+    { name: "Meerah Ahmed Alansi", year: "BSN Year 4", quote: "Happy to support with clinical placement anxiety and confidence on the ward.", tags: ["Clinical Support", "Placement Anxiety"] },
+    { name: "Seham Mohammed Abuhatab", year: "BSN Year 4", quote: "Let’s talk about balancing life, studies, and clinicals without burning out.", tags: ["Stress & Burnout", "Time Management"] },
+    { name: "Doaa Mohamed Sharafeldin", year: "BSN Year 4", quote: "Here for exam anxiety, study plans, and last-minute motivation.", tags: ["Exam Prep", "Study Skills"] },
+    { name: "Khalid Said Islam", year: "BSN Year 4", quote: "Happy to chat about tech tools, note-taking, and keeping organized.", tags: ["Study Skills", "Time Management"] },
+    { name: "Amina Sulieman Yassin", year: "BSN Year 4", quote: "Let’s make pharmacology and pathophysiology feel less scary.", tags: ["Pharmacology", "Pathophysiology"] },
+    { name: "Haya Hani Al Halabi", year: "BSN Year 3", quote: "Supporting you with first clinicals, communication, and reflective practice.", tags: ["Clinical Support", "Communication"] },
+    { name: "Khalifa Khalid Alshehhi", year: "BSN Year 3", quote: "Happy to discuss exam strategies and OSCE preparation.", tags: ["Exam Prep", "OSCE"] },
+    { name: "Abdalqader Abdou", year: "BSN Year 3", quote: "We can work together on clinical reasoning and case-based thinking.", tags: ["Clinical Reasoning", "Case Discussions"] },
+    { name: "Bushra Garallah Ali", year: "BSN Year 2", quote: "Here for first-year nerves, basics, and building your confidence.", tags: ["First Year Support", "Foundations"] },
+    { name: "Ghofran G A Abuzour", year: "BSN Year 2", quote: "Happy to help with pharmacology flashcards and study routines.", tags: ["Pharmacology", "Study Routines"] },
+    { name: "Leen Abdelhakim Toubeh", year: "BSN Year 2", quote: "Let’s focus on building study habits that actually work for you.", tags: ["Study Skills", "Motivation"] },
+    { name: "Raghad Mohammad", year: "BSN Year 2", quote: "Here for stress management, grounding techniques, and check-ins.", tags: ["Stress Management", "Coping Skills"] },
+    { name: "Haneen Jamal Hjaila", year: "BSN Year 2", quote: "Let’s work on confidence, presentations, and speaking up in class.", tags: ["Confidence", "Presentations"] }
 ];
 
-// 2. Render Function
-// Helper to get Brand SVGs (Using your uploaded files)
-function getPlatformIcon(platform) {
-    if (platform === 'Google Meet') {
-        return `<img src="google-meet.svg" class="w-5 h-5 object-contain" alt="Google Meet">`;
-    } 
-    else if (platform === 'Zoom') {
-        return `<img src="zoom.svg" class="w-5 h-5 object-contain" alt="Zoom">`;
-    } 
-    else if (platform === 'Microsoft Teams') {
-        return `<img src="microsoft-teams.svg" class="w-5 h-5 object-contain" alt="Teams">`;
+function renderMentors(filter = 'all') {
+    const container = document.getElementById('mentors-container');
+    if(!container) return;
+    container.innerHTML = "";
+
+    const filtered = filter === 'all' 
+        ? mentorsData 
+        : mentorsData.filter(m => m.tags.includes(filter) || m.year === filter);
+
+    if(filtered.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">No mentors found for this filter.</div>`;
+        return;
     }
-    return '<i class="fas fa-video text-slate-400"></i>'; // Fallback
+
+    container.innerHTML = filtered.map(m => `
+        <article class="bg-white dark:bg-slate-800 rounded-2xl border border-teal-100 dark:border-slate-700 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6 animate-[fadeIn_0.3s_ease-out]">
+            <header class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mr-3">
+                        <i class="fas fa-user-nurse text-slate-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-slate-800 dark:text-white">${m.name}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">${m.year}</p>
+                    </div>
+                </div>
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            </header>
+            <p class="text-sm text-slate-600 dark:text-slate-300 italic mb-4">"${m.quote}"</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+                ${m.tags.map(tag => `<span class="px-2 py-1 text-xs rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300">${tag}</span>`).join('')}
+            </div>
+            <button class="mt-auto w-full border border-teal-500 text-teal-700 dark:text-teal-400 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">Connect</button>
+        </article>
+    `).join('');
 }
+
+function filterMentors(category) {
+    renderMentors(category);
+}
+
+
+// ==========================================
+// 5. SESSIONS (PERSISTENT)
+// ==========================================
+
+const defaultSessions = [
+    { id: 1, title: "Mindfulness for Nurses", desc: "Guided meditation.", date: "2025-11-24", time: "17:00", duration: "60", host: "Sarah Jenkins", platform: "Zoom", tag: "Stress Relief", link: "#" },
+    { id: 2, title: "NCLEX Q&A Strategy", desc: "How to dissect difficult questions.", date: "2025-11-28", time: "18:30", duration: "90", host: "Peer Mentor Mike", platform: "Microsoft Teams", tag: "Exam Prep", link: "#" }
+];
+
+let sessionsData = loadFromStorage('dps_sessions', defaultSessions);
 
 function renderSessions() {
     const container = document.getElementById('sessions-container');
@@ -393,8 +360,11 @@ function renderSessions() {
         const day = dateObj.getDate();
         const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
         
-        // Get the SVG Icon
-        const iconSVG = getPlatformIcon(session.platform);
+        let platIcon = 'fa-video';
+        let platColor = 'text-slate-500';
+        if(session.platform === 'Zoom') { platIcon = 'fa-video'; platColor = 'text-blue-500'; }
+        if(session.platform === 'Google Meet') { platIcon = 'fa-handshake'; platColor = 'text-green-500'; }
+        if(session.platform === 'Microsoft Teams') { platIcon = 'fa-users-rectangle'; platColor = 'text-indigo-500'; }
 
         let adminControls = currentUserRole === 'admin' 
             ? `<button onclick="deleteSession(${session.id})" class="text-slate-300 hover:text-red-500 ml-2 transition"><i class="fas fa-trash-alt"></i></button>` 
@@ -402,50 +372,34 @@ function renderSessions() {
 
         return `
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition items-center group">
-            
             <div class="md:col-span-2 flex items-center gap-3">
                 <div class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl p-2 w-14 text-center border border-slate-200 dark:border-slate-600">
                     <div class="text-[10px] uppercase tracking-wider">${month}</div>
                     <div class="text-xl leading-none">${day}</div>
                 </div>
                 <div class="text-sm text-slate-500 dark:text-slate-400">
-                    ${session.time}<br>
-                    <span class="text-xs opacity-70">${session.duration}m</span>
+                    ${session.time}<br><span class="text-xs opacity-70">${session.duration}m</span>
                 </div>
             </div>
-
             <div class="md:col-span-4">
                 <h4 class="font-bold text-slate-800 dark:text-white text-lg">${session.title}</h4>
                 <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">${session.desc}</p>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">
-                    ${session.tag}
-                </span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">${session.tag}</span>
             </div>
-
             <div class="md:col-span-3 flex flex-col justify-center text-sm">
-                <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1">
-                    <i class="fas fa-user-circle mr-2 text-slate-400"></i> ${session.host}
-                </div>
-                <div class="flex items-center text-slate-500 dark:text-slate-400 font-medium">
-                    <span class="mr-2 flex items-center justify-center">${iconSVG}</span>
-                    ${session.platform}
-                </div>
+                <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1"><i class="fas fa-user-circle mr-2 text-slate-400"></i> ${session.host}</div>
+                <div class="flex items-center ${platColor}"><i class="fas ${platIcon} mr-2"></i> ${session.platform}</div>
             </div>
-
             <div class="md:col-span-3 flex items-center justify-end gap-3">
-                <a href="${session.link}" target="_blank" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-bold hover:opacity-90 transition shadow-md">
-                    Join
-                </a>
+                <a href="${session.link}" target="_blank" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-bold hover:opacity-90 transition shadow-md">Join</a>
                 ${adminControls}
             </div>
         </div>`;
     }).join('');
 }
 
-// 3. Add Session Logic
 function handleAddSession(e) {
     e.preventDefault();
-    
     const newSession = {
         id: Date.now(),
         title: document.getElementById('new-session-title').value,
@@ -458,30 +412,27 @@ function handleAddSession(e) {
         link: document.getElementById('new-session-link').value,
         desc: document.getElementById('new-session-desc').value,
     };
-
     sessionsData.push(newSession);
+    saveToStorage('dps_sessions', sessionsData); // SAVE
     renderSessions();
-    
-    // Update Analytics
-    if(document.getElementById('stat-sessions')) {
-        document.getElementById('stat-sessions').textContent = sessionsData.length;
-    }
-
+    if(document.getElementById('stat-sessions')) document.getElementById('stat-sessions').textContent = sessionsData.length;
     e.target.reset();
     document.getElementById('admin-add-session').classList.add('hidden');
-    showNotification("Session Scheduled Successfully!", "success");
+    showNotification("Session Scheduled!", "success");
 }
 
 function deleteSession(id) {
     if(confirm("Cancel and delete this session?")) {
         sessionsData = sessionsData.filter(s => s.id !== id);
+        saveToStorage('dps_sessions', sessionsData); // SAVE
         renderSessions();
         showNotification("Session cancelled.", "success");
     }
 }
 
+
 // ==========================================
-// 5. INBOX & MESSAGES
+// 6. MESSAGES (VALIDATED)
 // ==========================================
 
 let peerMessages = [
@@ -490,112 +441,50 @@ let peerMessages = [
 
 function handleBooking(e) {
     e.preventDefault();
-
-    const form = e.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-
-    // Guard in case button isn't found
-    if (!submitBtn) {
-        console.warn('Submit button not found in booking form');
+    
+    // 1. Grab Inputs
+    const name = e.target.querySelector('input[type="text"]').value;
+    const email = document.getElementById('chat-email') ? document.getElementById('chat-email').value : "no-email@test.com";
+    
+    // 2. VALIDATION
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (document.getElementById('chat-email') && !emailRegex.test(email)) {
+        alert("Please enter a valid student email address.");
+        return;
     }
 
-    // Store original state and show loading state
-    const originalText = submitBtn ? submitBtn.textContent : '';
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Sending...';
-        submitBtn.classList.add('opacity-70', 'cursor-wait');
-    }
+    const inputs = e.target.querySelectorAll('select');
+    const year = inputs[0].value;
+    const topic = inputs[1].value;
 
-    // Collect form data
-    const inputs = form.querySelectorAll('input, select');
     const newMessage = {
-        id: Date.now(),
-        name: inputs[0].value || 'Anonymous',
-        year: inputs[1].value,
-        topic: inputs[2].value,
-        time: 'Anytime',
-        status: 'pending'
+        id: Date.now(), name, year, topic, time: "Anytime", status: "pending"
     };
 
-    // Push to in-memory inbox + update stats
     peerMessages.push(newMessage);
     updateDashboard();
-    form.reset();
-    showNotification('Request Sent! Peer will reply via email.', 'success');
-
-    // Simulate small delay, then restore button
-    setTimeout(() => {
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText || 'Send Request';
-            submitBtn.classList.remove('opacity-70', 'cursor-wait');
-        }
-    }, 800);
-}
-
-function resetChatForm() {
-    document.getElementById('chat-name').value = "";
-    
-    document.getElementById('chat-success-container').classList.add('hidden');
-    document.getElementById('chat-success-container').classList.remove('flex');
-    document.getElementById('chat-form-container').classList.remove('hidden');
-}
-
-function resetChatForm() {
-    // Clear inputs
-    const nameInput = document.getElementById('chat-name');
-    if(nameInput) nameInput.value = "";
-    
-    // Swap containers back
-    const formContainer = document.getElementById('chat-form-container');
-    const successContainer = document.getElementById('chat-success-container');
-    
-    if (formContainer && successContainer) {
-        successContainer.classList.add('hidden');
-        successContainer.classList.remove('flex');
-        formContainer.classList.remove('hidden');
-    }
+    e.target.reset();
+    showNotification("Request Sent! Check your email.", "success");
 }
 
 function renderInbox() {
     const container = document.getElementById('inbox-container');
     if(!container) return;
-
     const activeMessages = peerMessages.filter(msg => msg.status === 'pending');
 
     if (activeMessages.length === 0) {
-        container.innerHTML = `
-            <div class="p-12 text-center text-slate-400 dark:text-slate-500 flex flex-col items-center justify-center">
-                <div class="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-300">
-                    <i class="fas fa-inbox text-3xl"></i>
-                </div>
-                <p>No new requests.</p>
-            </div>`;
+        container.innerHTML = `<div class="p-12 text-center text-slate-400 flex flex-col items-center"><i class="fas fa-inbox text-3xl mb-4"></i><p>No new requests.</p></div>`;
         return;
     }
 
     container.innerHTML = activeMessages.map(msg => `
         <div class="flex flex-col md:flex-row gap-4 p-5 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
             <div class="flex items-start gap-3 md:w-1/3">
-                <div class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex-shrink-0 flex items-center justify-center font-bold text-sm">
-                    ${msg.name.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                    <h4 class="font-bold text-slate-800 dark:text-white text-sm">${msg.name}</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${msg.year}</p>
-                </div>
+                <div class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex-shrink-0 flex items-center justify-center font-bold text-sm">${msg.name.charAt(0).toUpperCase()}</div>
+                <div><h4 class="font-bold text-slate-800 dark:text-white text-sm">${msg.name}</h4><p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${msg.year}</p></div>
             </div>
-            <div class="md:w-1/4 flex items-center">
-                <span class="inline-block bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-600">
-                    ${msg.topic}
-                </span>
-            </div>
-            <div class="flex-1 flex justify-end items-center">
-                <button onclick="acceptRequest(${msg.id})" class="bg-teal-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm hover:bg-teal-700 transition">
-                    Accept
-                </button>
-            </div>
+            <div class="md:w-1/4 flex items-center"><span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-600">${msg.topic}</span></div>
+            <div class="flex-1 flex justify-end items-center"><button onclick="acceptRequest(${msg.id})" class="bg-teal-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm hover:bg-teal-700 transition">Accept</button></div>
         </div>`).join('');
 }
 
@@ -609,73 +498,59 @@ function acceptRequest(id) {
     }
 }
 
+
 // ==========================================
-// 6. UTILS & DASHBOARD
+// 7. DASHBOARD & AUTH
 // ==========================================
 
 function updateDashboard() {
     if(document.getElementById('stat-topics')) {
         document.getElementById('stat-topics').textContent = topicsData.length;
         document.getElementById('stat-requests').textContent = peerMessages.length;
-        if(document.getElementById('stat-requests-sub')) {
-             document.getElementById('stat-requests-sub').textContent = peerMessages.filter(m => m.status === 'pending').length;
-        }
+        if(document.getElementById('stat-requests-sub')) document.getElementById('stat-requests-sub').textContent = peerMessages.filter(m => m.status === 'pending').length;
+        if(document.getElementById('stat-sessions')) document.getElementById('stat-sessions').textContent = sessionsData.length; // Update session count
     }
 }
 
 let currentUserRole = 'student';
-
 function loginAs(role, isAutoLogin = false) {
     localStorage.setItem('dps_user_role', role);
     currentUserRole = role;
     document.getElementById('login-modal').classList.add('hidden');
 
-    // Reset Views
     const navAdmin = document.getElementById('nav-admin-link');
     const navPeer = document.getElementById('nav-peer-link');
     const mobAdmin = document.getElementById('mobile-admin-link');
     const mobPeer = document.getElementById('mobile-peer-link');
     const adminControls = document.getElementById('admin-controls-btn');
+    const sessionControls = document.getElementById('admin-session-controls');
     
-    // Hide all role specific
-    [navAdmin, navPeer, mobAdmin, mobPeer, adminControls].forEach(el => el && el.classList.add('hidden'));
+    [navAdmin, navPeer, mobAdmin, mobPeer, adminControls, sessionControls].forEach(el => el && el.classList.add('hidden'));
     document.getElementById('logout-btn').classList.remove('hidden');
 
-    // Show role specific
     if (role === 'admin') {
         if(navAdmin) navAdmin.classList.remove('hidden');
         if(mobAdmin) mobAdmin.classList.remove('hidden');
         if(adminControls) adminControls.classList.remove('hidden');
+        if(sessionControls) sessionControls.classList.remove('hidden');
         initAdminPickers();
-        if(document.getElementById('admin-session-controls')) {
-            document.getElementById('admin-session-controls').classList.remove('hidden');
-        }
         updateDashboard();
-        if(!isAutoLogin) {
-            showSection('admin-dashboard');
-            showNotification("Admin Mode Active", "success");
-        }
+        if(!isAutoLogin) { showSection('admin-dashboard'); showNotification("Admin Mode Active", "success"); }
     } else if (role === 'peer') {
         if(navPeer) navPeer.classList.remove('hidden');
         if(mobPeer) mobPeer.classList.remove('hidden');
         renderInbox();
-        if(!isAutoLogin) {
-            showSection('peer-inbox');
-            showNotification("Welcome Mentor", "success");
-        }
+        if(!isAutoLogin) { showSection('peer-inbox'); showNotification("Welcome Mentor", "success"); }
     } else {
-        if(!isAutoLogin) {
-            showSection('home');
-            showNotification("Welcome Student", "success");
-        }
+        if(!isAutoLogin) { showSection('home'); showNotification("Welcome Student", "success"); }
     }
     
-    // Handle hash on refresh
     if(isAutoLogin) {
          const hash = window.location.hash.substring(1) || 'home';
          renderSection(hash);
     }
     renderTopics();
+    renderSessions(); // Refresh sessions with admin controls if needed
 }
 
 function logout() {
@@ -684,12 +559,13 @@ function logout() {
     window.location.reload();
 }
 
+
 // ==========================================
-// BREATHING WIDGET LOGIC (Fixed & Scientific)
+// 8. BREATHING (FIXED)
 // ==========================================
 
 let isBreathing = false;
-let breathingTimeouts = []; // To store timeouts so we can clear them on stop
+let breathingTimeouts = []; 
 
 function toggleBreathing() {
     const btn = document.getElementById('breath-btn');
@@ -698,76 +574,52 @@ function toggleBreathing() {
     const instruction = document.getElementById('breath-instruction');
     
     if (!isBreathing) {
-        // --- START BREATHING ---
         isBreathing = true;
         btn.textContent = "Stop Exercise";
         btn.classList.replace('bg-teal-600', 'bg-red-500');
         btn.classList.replace('hover:bg-teal-700', 'hover:bg-red-600');
-        
-        // Start the first cycle immediately
         runBreathingCycle(widget, text, instruction);
-        
     } else {
-        // --- STOP BREATHING ---
         isBreathing = false;
-        // Clear all scheduled steps
         breathingTimeouts.forEach(clearTimeout);
         breathingTimeouts = [];
-        
-        // Reset UI
         btn.textContent = "Start Exercise";
         btn.classList.replace('bg-red-500', 'bg-teal-600');
         btn.classList.replace('hover:bg-red-600', 'hover:bg-teal-700');
-        
-        widget.className = 'breathing-widget'; // Remove all state classes
+        widget.className = 'breathing-widget'; 
         text.textContent = "Ready?";
         instruction.textContent = "Tap Start";
-        // Force a repaint to ensure ripples disappear instantly
         void widget.offsetWidth; 
     }
 }
 
-// The 4-7-8 Cycle (+ 3s Rest) function
 function runBreathingCycle(widget, text, instruction) {
-    if (!isBreathing) return; // Stop if user clicked stop
-
-    // 1. INHALE (4s)
+    if (!isBreathing) return; 
     widget.className = 'breathing-widget inhaling';
     text.textContent = "Inhale...";
     instruction.textContent = "Breathe in slowly through nose (4s)";
     
     breathingTimeouts.push(setTimeout(() => {
         if (!isBreathing) return;
-
-        // 2. HOLD (7s)
         widget.className = 'breathing-widget holding';
         text.textContent = "Hold...";
         instruction.textContent = "Keep lungs full (7s)";
 
         breathingTimeouts.push(setTimeout(() => {
             if (!isBreathing) return;
-
-            // 3. EXHALE (8s)
             widget.className = 'breathing-widget exhaling';
             text.textContent = "Exhale...";
             instruction.textContent = "Release slowly through mouth (8s)";
 
             breathingTimeouts.push(setTimeout(() => {
                 if (!isBreathing) return;
-
-                // 4. REST (3s) - The "Break" you asked for
                 widget.className = 'breathing-widget resting';
                 text.textContent = "Rest...";
                 instruction.textContent = "Relax for a moment (3s)";
-
-                // Schedule next cycle after rest
                 breathingTimeouts.push(setTimeout(() => {
                     if(isBreathing) runBreathingCycle(widget, text, instruction);
-                }, 3000)); // End of Rest (3s)
-
-            }, 8000)); // End of Exhale (8s)
-
-        }, 7000)); // End of Hold (7s)
-
-    }, 4000)); // End of Inhale (4s)
+                }, 3000)); 
+            }, 8000)); 
+        }, 7000)); 
+    }, 4000)); 
 }
