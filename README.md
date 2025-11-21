@@ -33,4 +33,4 @@ This version is optimized for presentations and academic project use.
 
 ## Status
 
-This is an **MVP demo only** — no backend, no real authentication, and no real data storage (yet).
+This is an **MVP demo only** — no backend, no real authentication.
