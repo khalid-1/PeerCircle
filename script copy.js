@@ -70,17 +70,12 @@ let peerMessages = [
 ];
 let currentUserRole = 'student';
 
-// FIXED: Stop browser from scrolling to bottom on reload
-if (history.scrollRestoration) {
-    history.scrollRestoration = 'manual';
-}
 
 // ==========================================
 // 2. INITIALIZATION & THEME
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    window.scrollTo(0, 0); // Force top scroll
     initTheme();
     renderTopics();
     renderSessions();
