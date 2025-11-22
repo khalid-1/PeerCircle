@@ -1,12 +1,85 @@
 // ==========================================
-// 1. CONFIG & THEME
+// 1. STATE & DATA MODELS
+// ==========================================
+
+// --- PERSISTENCE HELPERS ---
+function saveToStorage(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
+
+function loadFromStorage(key, defaultData) {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : defaultData;
+}
+
+// --- SANITIZATION HELPER (Security) ---
+function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag])
+    );
+}
+
+// --- DATA STORE ---
+const defaultTopics = [
+    { 
+        id: 1, title: "Stress & Burnout", desc: "Identifying signs of fatigue and emotional exhaustion.", color: "rose", icon: "fa-heart-pulse", 
+        content: { intro: "Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace stress.", bullets: ["Dreading clinicals or work shifts.", "Feeling cynical or irritable with patients.", "Physical fatigue even after sleeping."], action: "Step into a supply room. Drink water slowly. Do one cycle of box breathing." }
+    },
+    { 
+        id: 2, title: "Exam Anxiety", desc: "Handling NCLEX pressure and test-taking panic.", color: "amber", icon: "fa-brain", 
+        content: { intro: "The NCLEX tests critical thinking, not just memory. Anxiety blocks that pathway. You need to calm the amygdala to access the frontal cortex.", bullets: ["Green Light: You know it. Mark it.", "Yellow Light: Narrowed to two. Trust your gut.", "Red Light: No idea. Breathe, guess, move on."], action: "Use the Stop Light Method for every question." }
+    },
+    { 
+        id: 3, title: "Clinical Placement", desc: "Navigating hospital hierarchy and shift anxiety.", color: "blue", icon: "fa-user-nurse", 
+        content: { intro: "Your first clinical rotation can feel overwhelming. Remember that you are there to learn, not to be perfect.", bullets: ["Ask questions when unsure—it shows safety awareness.", "Find a 'safe nurse' to shadow.", "Bring snacks and stay hydrated."], action: "Introduce yourself to the charge nurse at the start of the shift." }
+    }
+];
+
+const mentorsData = [
+    { name: "Meerah Ahmed Alansi", year: "BSN Year 4", quote: "Happy to support with clinical placement anxiety and confidence on the ward.", tags: ["Clinical Support", "Placement Anxiety"] },
+    { name: "Seham Mohammed Abuhatab", year: "BSN Year 4", quote: "Let’s talk about balancing life, studies, and clinicals without burning out.", tags: ["Stress & Burnout", "Time Management"] },
+    { name: "Doaa Mohamed Sharafeldin", year: "BSN Year 4", quote: "Here for exam anxiety, study plans, and last-minute motivation.", tags: ["Exam Prep", "Study Skills"] },
+    { name: "Khalid Said Islam", year: "BSN Year 4", quote: "Happy to chat about tech tools, note-taking, and keeping organized.", tags: ["Study Skills", "Time Management"] },
+    { name: "Amina Sulieman Yassin", year: "BSN Year 4", quote: "Let’s make pharmacology and pathophysiology feel less scary.", tags: ["Pharmacology", "Pathophysiology"] },
+    { name: "Haya Hani Al Halabi", year: "BSN Year 3", quote: "Supporting you with first clinicals, communication, and reflective practice.", tags: ["Clinical Support", "Communication"] },
+    { name: "Khalifa Khalid Alshehhi", year: "BSN Year 3", quote: "Happy to discuss exam strategies and OSCE preparation.", tags: ["Exam Prep", "OSCE"] },
+    { name: "Abdalqader Abdou", year: "BSN Year 3", quote: "We can work together on clinical reasoning and case-based thinking.", tags: ["Clinical Reasoning", "Case Discussions"] },
+    { name: "Bushra Garallah Ali", year: "BSN Year 2", quote: "Here for first-year nerves, basics, and building your confidence.", tags: ["First Year Support", "Foundations"] },
+    { name: "Ghofran G A Abuzour", year: "BSN Year 2", quote: "Happy to help with pharmacology flashcards and study routines.", tags: ["Pharmacology", "Study Routines"] },
+    { name: "Leen Abdelhakim Toubeh", year: "BSN Year 2", quote: "Let’s focus on building study habits that actually work for you.", tags: ["Study Skills", "Motivation"] },
+    { name: "Raghad Mohammad", year: "BSN Year 2", quote: "Here for stress management, grounding techniques, and check-ins.", tags: ["Stress Management", "Coping Skills"] },
+    { name: "Haneen Jamal Hjaila", year: "BSN Year 2", quote: "Let’s work on confidence, presentations, and speaking up in class.", tags: ["Confidence", "Presentations"] }
+];
+
+const defaultSessions = [
+    { id: 1, title: "Mindfulness for Nurses", desc: "Guided meditation & grounding techniques.", date: "2025-11-24", time: "17:00", duration: "60", host: "Sarah Jenkins", platform: "Zoom", tag: "Stress Relief", link: "#" },
+    { id: 2, title: "NCLEX Q&A Strategy", desc: "How to dissect difficult questions.", date: "2025-11-28", time: "18:30", duration: "90", host: "Peer Mentor Mike", platform: "Microsoft Teams", tag: "Exam Prep", link: "#" }
+];
+
+let topicsData = loadFromStorage('dps_topics', defaultTopics);
+let sessionsData = loadFromStorage('dps_sessions', defaultSessions);
+let peerMessages = [
+    { id: 101, name: "NervousStudent22", year: "BSN Year 1", topic: "Academic Struggles", time: "Weekends", status: "pending" }
+];
+let currentUserRole = 'student';
+
+
+// ==========================================
+// 2. INITIALIZATION & THEME
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     renderTopics();
     renderSessions();
-    renderMentors(); // <--- This loads your real colleagues!
+    renderMentors();
     
     const savedRole = localStorage.getItem('dps_user_role');
     if (savedRole) {
@@ -16,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ... (Keep your existing initTheme and toggleTheme functions exactly as they were) ...
 function initTheme() {
     const themeIcon = document.getElementById('theme-icon');
     if(!themeIcon) return;
@@ -43,11 +115,11 @@ function toggleTheme() {
     }
 }
 
+
 // ==========================================
-// 2. NAVIGATION & HELPERS
+// 3. NAVIGATION
 // ==========================================
 
-// ... (Keep showSection, renderSection, updateNavState, event listeners, showNotification, openModal, closeModal as they were) ...
 function showSection(sectionId) {
     if(window.location.hash.substring(1) !== sectionId) {
         window.location.hash = sectionId;
@@ -112,39 +184,11 @@ function closeModal(id) {
     document.getElementById(id).classList.remove('flex');
 }
 
-// --- PERSISTENCE HELPERS (NEW) ---
-function saveToStorage(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
-}
-
-function loadFromStorage(key, defaultData) {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : defaultData;
-}
-
 
 // ==========================================
-// 3. TOPICS (PERSISTENT)
+// 4. TOPICS & ADMIN LOGIC
 // ==========================================
 
-const defaultTopics = [
-    { 
-        id: 1, title: "Stress & Burnout", desc: "Identifying signs of fatigue.", color: "rose", icon: "fa-heart-pulse", 
-        content: { intro: "Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace stress.", bullets: ["Dreading clinicals.", "Feeling cynical.", "Physical fatigue."], action: "Step into a supply room. Drink water slowly." }
-    },
-    { 
-        id: 2, title: "Exam Anxiety", desc: "Handling NCLEX pressure.", color: "amber", icon: "fa-brain", 
-        content: { intro: "The NCLEX tests critical thinking. Anxiety blocks that pathway.", bullets: ["Green Light: You know it.", "Red Light: Guess."], action: "Use the Stop Light Method." }
-    },
-    { 
-        id: 3, title: "Clinical Placement", desc: "Navigating hospital hierarchy.", color: "blue", icon: "fa-user-nurse", 
-        content: { intro: "Remember that you are there to learn, not to be perfect.", bullets: ["Ask questions.", "Find a 'safe nurse'."], action: "Introduce yourself to the charge nurse." }
-    }
-];
-
-let topicsData = loadFromStorage('dps_topics', defaultTopics);
-
-// Available assets for Admin
 const availableIcons = ["fa-lightbulb", "fa-heart-pulse", "fa-brain", "fa-user-nurse", "fa-coffee", "fa-bed", "fa-stopwatch", "fa-users", "fa-book-open", "fa-hand-holding-heart"];
 const availableColors = [
     { name: "teal", hex: "bg-teal-500", light: "bg-teal-100", text: "text-teal-600" },
@@ -158,41 +202,43 @@ const availableColors = [
 function renderTopics() {
     const container = document.getElementById('topics-container');
     if(!container) return; 
-    container.innerHTML = ""; 
-
-    topicsData.forEach(topic => {
+    
+    // OPTIMIZATION: Use map/join instead of innerHTML +=
+    container.innerHTML = topicsData.map(topic => {
         const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
         let adminControls = currentUserRole === 'admin' 
-            ? `<button onclick="deleteTopic(event, ${topic.id})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition z-20"><i class="fas fa-trash-alt"></i></button>` : "";
+            ? `<button onclick="deleteTopic(event, ${topic.id})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition z-20"><i class="fas fa-trash-alt"></i></button>` 
+            : "";
 
-        const cardHTML = `
+        return `
             <div onclick="openTopicModal(${topic.id})" class="cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative">
                 <div class="h-2 ${theme.hex}"></div> <div class="p-6">
                     ${adminControls}
                     <div class="flex justify-between items-start mb-3">
-                        <h3 class="font-bold text-lg text-slate-800 dark:text-white group-hover:${theme.text} transition-colors">${topic.title}</h3>
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-white group-hover:${theme.text} transition-colors">${escapeHTML(topic.title)}</h3>
                         <div class="${theme.text} text-xl"><i class="fas ${topic.icon}"></i></div>
                     </div>
-                    <p class="text-slate-600 dark:text-slate-300 text-sm mb-6 h-10 overflow-hidden">${topic.desc}</p>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm mb-6 h-10 overflow-hidden">${escapeHTML(topic.desc)}</p>
                     <span class="text-xs font-bold ${theme.text} uppercase tracking-wider flex items-center">
                         Read Guide <i class="fas fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform"></i>
                     </span>
                 </div>
             </div>`;
-        container.innerHTML += cardHTML;
-    });
+    }).join('');
 }
 
 function handleAddTopic(event) {
     event.preventDefault();
+    
     const title = document.getElementById('new-topic-title').value;
     const desc = document.getElementById('new-topic-desc').value;
     const color = document.getElementById('selected-color').value;
     const icon = document.getElementById('selected-icon').value;
     const intro = document.getElementById('new-content-intro').value || desc;
     const bulletsRaw = document.getElementById('new-content-bullets').value;
-    const bullets = bulletsRaw ? bulletsRaw.split('\n').filter(line => line.trim() !== '') : [];
     const action = document.getElementById('new-content-action').value;
+
+    const bullets = bulletsRaw ? bulletsRaw.split('\n').filter(line => line.trim() !== '') : [];
 
     const newTopic = { 
         id: Date.now(), title, desc, color, icon, 
@@ -219,38 +265,50 @@ function deleteTopic(event, id) {
     }
 }
 
-// Universal Modal Logic (Same as before)
 function openTopicModal(id) {
     const topic = topicsData.find(t => t.id === id);
     if(!topic) return;
+
     const modal = document.getElementById('modal-dynamic-topic');
     const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
+
     document.getElementById('modal-header-bar').className = `h-4 w-full ${theme.hex}`;
     document.getElementById('modal-icon-box').className = `w-12 h-12 rounded-xl flex items-center justify-center text-xl ${theme.light} ${theme.text} dark:bg-opacity-20`;
     document.getElementById('modal-icon').className = `fas ${topic.icon}`;
     document.getElementById('modal-title').textContent = topic.title;
     document.getElementById('modal-title').className = `text-2xl font-bold text-slate-800 dark:text-white`;
+    
     const content = topic.content || { intro: topic.desc, bullets: [], action: "" };
     document.getElementById('modal-intro').textContent = content.intro;
+    
     const bulletsList = document.getElementById('modal-bullets');
     const bulletsContainer = document.getElementById('modal-bullets-container');
     bulletsList.innerHTML = "";
     if(content.bullets && content.bullets.length > 0) {
         bulletsContainer.classList.remove('hidden');
-        content.bullets.forEach(b => { const li = document.createElement('li'); li.textContent = b; bulletsList.appendChild(li); });
-    } else { bulletsContainer.classList.add('hidden'); }
+        content.bullets.forEach(b => {
+            const li = document.createElement('li');
+            li.textContent = b;
+            bulletsList.appendChild(li);
+        });
+    } else {
+        bulletsContainer.classList.add('hidden');
+    }
+
     const actionBox = document.getElementById('modal-action-box');
     if(content.action) {
         actionBox.classList.remove('hidden');
         actionBox.className = `p-4 rounded-xl border-l-4 mt-6 ${theme.light} border-${theme.name}-500 dark:bg-opacity-10`;
         document.getElementById('modal-action-title').className = `font-bold mb-1 ${theme.text}`;
         document.getElementById('modal-action-text').textContent = content.action;
-    } else { actionBox.classList.add('hidden'); }
+    } else {
+        actionBox.classList.add('hidden');
+    }
+
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 }
 
-// Admin Pickers Init (Same as before)
 function initAdminPickers() {
     const iconContainer = document.getElementById('icon-selector');
     if(iconContainer.innerHTML === "") {
@@ -258,14 +316,22 @@ function initAdminPickers() {
             const div = document.createElement('div');
             div.className = `icon-option ${icon === 'fa-lightbulb' ? 'selected' : ''}`;
             div.innerHTML = `<i class="fas ${icon}"></i>`;
-            div.onclick = () => { document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected')); div.classList.add('selected'); document.getElementById('selected-icon').value = icon; };
+            div.onclick = () => {
+                document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                document.getElementById('selected-icon').value = icon;
+            };
             iconContainer.appendChild(div);
         });
         const colorContainer = document.getElementById('color-selector');
         availableColors.forEach(c => {
             const div = document.createElement('div');
             div.className = `color-option ${c.hex} ${c.name === 'teal' ? 'selected' : ''}`;
-            div.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); div.classList.add('selected'); document.getElementById('selected-color').value = c.name; };
+            div.onclick = () => {
+                document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                document.getElementById('selected-color').value = c.name;
+            };
             colorContainer.appendChild(div);
         });
     }
@@ -273,31 +339,13 @@ function initAdminPickers() {
 
 
 // ==========================================
-// 4. MENTOR DIRECTORY (YOUR REAL DATA)
+// 5. MENTOR DIRECTORY
 // ==========================================
-
-// I HAVE EXTRACTED ALL 13 OF YOUR REAL COLLEAGUES HERE:
-const mentorsData = [
-    { name: "Meerah Ahmed Alansi", year: "BSN Year 4", quote: "Happy to support with clinical placement anxiety and confidence on the ward.", tags: ["Clinical Support", "Placement Anxiety"] },
-    { name: "Seham Mohammed Abuhatab", year: "BSN Year 4", quote: "Let’s talk about balancing life, studies, and clinicals without burning out.", tags: ["Stress & Burnout", "Time Management"] },
-    { name: "Doaa Mohamed Sharafeldin", year: "BSN Year 4", quote: "Here for exam anxiety, study plans, and last-minute motivation.", tags: ["Exam Prep", "Study Skills"] },
-    { name: "Khalid Said Islam", year: "BSN Year 4", quote: "Happy to chat about tech tools, note-taking, and keeping organized.", tags: ["Study Skills", "Time Management"] },
-    { name: "Amina Sulieman Yassin", year: "BSN Year 4", quote: "Let’s make pharmacology and pathophysiology feel less scary.", tags: ["Pharmacology", "Pathophysiology"] },
-    { name: "Haya Hani Al Halabi", year: "BSN Year 3", quote: "Supporting you with first clinicals, communication, and reflective practice.", tags: ["Clinical Support", "Communication"] },
-    { name: "Khalifa Khalid Alshehhi", year: "BSN Year 3", quote: "Happy to discuss exam strategies and OSCE preparation.", tags: ["Exam Prep", "OSCE"] },
-    { name: "Abdalqader Abdou", year: "BSN Year 3", quote: "We can work together on clinical reasoning and case-based thinking.", tags: ["Clinical Reasoning", "Case Discussions"] },
-    { name: "Bushra Garallah Ali", year: "BSN Year 2", quote: "Here for first-year nerves, basics, and building your confidence.", tags: ["First Year Support", "Foundations"] },
-    { name: "Ghofran G A Abuzour", year: "BSN Year 2", quote: "Happy to help with pharmacology flashcards and study routines.", tags: ["Pharmacology", "Study Routines"] },
-    { name: "Leen Abdelhakim Toubeh", year: "BSN Year 2", quote: "Let’s focus on building study habits that actually work for you.", tags: ["Study Skills", "Motivation"] },
-    { name: "Raghad Mohammad", year: "BSN Year 2", quote: "Here for stress management, grounding techniques, and check-ins.", tags: ["Stress Management", "Coping Skills"] },
-    { name: "Haneen Jamal Hjaila", year: "BSN Year 2", quote: "Let’s work on confidence, presentations, and speaking up in class.", tags: ["Confidence", "Presentations"] }
-];
 
 function renderMentors(filter = 'all') {
     const container = document.getElementById('mentors-container');
     if(!container) return;
-    container.innerHTML = "";
-
+    
     const filtered = filter === 'all' 
         ? mentorsData 
         : mentorsData.filter(m => m.tags.includes(filter) || m.year === filter);
@@ -307,6 +355,7 @@ function renderMentors(filter = 'all') {
         return;
     }
 
+    // OPTIMIZATION: Use map/join
     container.innerHTML = filtered.map(m => `
         <article class="bg-white dark:bg-slate-800 rounded-2xl border border-teal-100 dark:border-slate-700 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6 animate-[fadeIn_0.3s_ease-out]">
             <header class="flex items-center justify-between mb-4">
@@ -315,13 +364,13 @@ function renderMentors(filter = 'all') {
                         <i class="fas fa-user-nurse text-slate-400"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-slate-800 dark:text-white">${m.name}</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">${m.year}</p>
+                        <h3 class="font-semibold text-slate-800 dark:text-white">${escapeHTML(m.name)}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">${escapeHTML(m.year)}</p>
                     </div>
                 </div>
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
             </header>
-            <p class="text-sm text-slate-600 dark:text-slate-300 italic mb-4">"${m.quote}"</p>
+            <p class="text-sm text-slate-600 dark:text-slate-300 italic mb-4">"${escapeHTML(m.quote)}"</p>
             <div class="flex flex-wrap gap-2 mb-4">
                 ${m.tags.map(tag => `<span class="px-2 py-1 text-xs rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300">${tag}</span>`).join('')}
             </div>
@@ -336,15 +385,8 @@ function filterMentors(category) {
 
 
 // ==========================================
-// 5. SESSIONS (PERSISTENT)
+// 6. SESSIONS
 // ==========================================
-
-const defaultSessions = [
-    { id: 1, title: "Mindfulness for Nurses", desc: "Guided meditation.", date: "2025-11-24", time: "17:00", duration: "60", host: "Sarah Jenkins", platform: "Zoom", tag: "Stress Relief", link: "#" },
-    { id: 2, title: "NCLEX Q&A Strategy", desc: "How to dissect difficult questions.", date: "2025-11-28", time: "18:30", duration: "90", host: "Peer Mentor Mike", platform: "Microsoft Teams", tag: "Exam Prep", link: "#" }
-];
-
-let sessionsData = loadFromStorage('dps_sessions', defaultSessions);
 
 function renderSessions() {
     const container = document.getElementById('sessions-container');
@@ -355,6 +397,7 @@ function renderSessions() {
         return;
     }
 
+    // OPTIMIZATION: Use map/join
     container.innerHTML = sessionsData.map(session => {
         const dateObj = new Date(session.date);
         const day = dateObj.getDate();
@@ -382,12 +425,12 @@ function renderSessions() {
                 </div>
             </div>
             <div class="md:col-span-4">
-                <h4 class="font-bold text-slate-800 dark:text-white text-lg">${session.title}</h4>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">${session.desc}</p>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">${session.tag}</span>
+                <h4 class="font-bold text-slate-800 dark:text-white text-lg">${escapeHTML(session.title)}</h4>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">${escapeHTML(session.desc)}</p>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">${escapeHTML(session.tag)}</span>
             </div>
             <div class="md:col-span-3 flex flex-col justify-center text-sm">
-                <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1"><i class="fas fa-user-circle mr-2 text-slate-400"></i> ${session.host}</div>
+                <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1"><i class="fas fa-user-circle mr-2 text-slate-400"></i> ${escapeHTML(session.host)}</div>
                 <div class="flex items-center ${platColor}"><i class="fas ${platIcon} mr-2"></i> ${session.platform}</div>
             </div>
             <div class="md:col-span-3 flex items-center justify-end gap-3">
@@ -432,19 +475,17 @@ function deleteSession(id) {
 
 
 // ==========================================
-// 6. MESSAGES (VALIDATED)
+// 7. MESSAGES & BOOKING
 // ==========================================
-
-let peerMessages = [
-    { id: 101, name: "NervousStudent22", year: "BSN Year 1", topic: "Academic Struggles", time: "Weekends", status: "pending" }
-];
 
 function handleBooking(e) {
     e.preventDefault();
     
     // 1. Grab Inputs
-    const name = e.target.querySelector('input[type="text"]').value;
+    const name = document.getElementById('chat-name').value;
     const email = document.getElementById('chat-email') ? document.getElementById('chat-email').value : "no-email@test.com";
+    const year = document.getElementById('chat-year').value;
+    const topic = document.getElementById('chat-topic').value;
     
     // 2. VALIDATION
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -453,18 +494,28 @@ function handleBooking(e) {
         return;
     }
 
-    const inputs = e.target.querySelectorAll('select');
-    const year = inputs[0].value;
-    const topic = inputs[1].value;
-
+    // 3. STORE MESSAGE
     const newMessage = {
-        id: Date.now(), name, year, topic, time: "Anytime", status: "pending"
+        id: Date.now(), name, year, topic, email, time: "Anytime", status: "pending"
     };
 
     peerMessages.push(newMessage);
     updateDashboard();
-    e.target.reset();
-    showNotification("Request Sent! Check your email.", "success");
+    
+    // 4. TOGGLE UI (FIXED)
+    document.getElementById('chat-form-container').classList.add('hidden');
+    const successDiv = document.getElementById('chat-success-container');
+    successDiv.classList.remove('hidden');
+    successDiv.classList.add('flex');
+
+    showNotification("Request Sent Successfully", "success");
+}
+
+function resetChatForm() {
+    document.getElementById('chat-success-container').classList.add('hidden');
+    document.getElementById('chat-success-container').classList.remove('flex');
+    document.getElementById('chat-form-container').classList.remove('hidden');
+    document.querySelector('#chat-form-container form').reset();
 }
 
 function renderInbox() {
@@ -481,9 +532,9 @@ function renderInbox() {
         <div class="flex flex-col md:flex-row gap-4 p-5 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
             <div class="flex items-start gap-3 md:w-1/3">
                 <div class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex-shrink-0 flex items-center justify-center font-bold text-sm">${msg.name.charAt(0).toUpperCase()}</div>
-                <div><h4 class="font-bold text-slate-800 dark:text-white text-sm">${msg.name}</h4><p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${msg.year}</p></div>
+                <div><h4 class="font-bold text-slate-800 dark:text-white text-sm">${escapeHTML(msg.name)}</h4><p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${escapeHTML(msg.year)}</p></div>
             </div>
-            <div class="md:w-1/4 flex items-center"><span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-600">${msg.topic}</span></div>
+            <div class="md:w-1/4 flex items-center"><span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-600">${escapeHTML(msg.topic)}</span></div>
             <div class="flex-1 flex justify-end items-center"><button onclick="acceptRequest(${msg.id})" class="bg-teal-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm hover:bg-teal-700 transition">Accept</button></div>
         </div>`).join('');
 }
@@ -500,7 +551,7 @@ function acceptRequest(id) {
 
 
 // ==========================================
-// 7. DASHBOARD & AUTH
+// 8. DASHBOARD & AUTH
 // ==========================================
 
 function updateDashboard() {
@@ -508,11 +559,10 @@ function updateDashboard() {
         document.getElementById('stat-topics').textContent = topicsData.length;
         document.getElementById('stat-requests').textContent = peerMessages.length;
         if(document.getElementById('stat-requests-sub')) document.getElementById('stat-requests-sub').textContent = peerMessages.filter(m => m.status === 'pending').length;
-        if(document.getElementById('stat-sessions')) document.getElementById('stat-sessions').textContent = sessionsData.length; // Update session count
+        if(document.getElementById('stat-sessions')) document.getElementById('stat-sessions').textContent = sessionsData.length; 
     }
 }
 
-let currentUserRole = 'student';
 function loginAs(role, isAutoLogin = false) {
     localStorage.setItem('dps_user_role', role);
     currentUserRole = role;
@@ -550,7 +600,7 @@ function loginAs(role, isAutoLogin = false) {
          renderSection(hash);
     }
     renderTopics();
-    renderSessions(); // Refresh sessions with admin controls if needed
+    renderSessions(); 
 }
 
 function logout() {
@@ -561,7 +611,7 @@ function logout() {
 
 
 // ==========================================
-// 8. BREATHING (FIXED)
+// 9. BREATHING WIDGET
 // ==========================================
 
 let isBreathing = false;
