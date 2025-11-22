@@ -397,17 +397,28 @@ function renderSessions() {
         return;
     }
 
-    // OPTIMIZATION: Use map/join
     container.innerHTML = sessionsData.map(session => {
         const dateObj = new Date(session.date);
         const day = dateObj.getDate();
         const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
         
-        let platIcon = 'fa-video';
-        let platColor = 'text-slate-500';
-        if(session.platform === 'Zoom') { platIcon = 'fa-video'; platColor = 'text-blue-500'; }
-        if(session.platform === 'Google Meet') { platIcon = 'fa-handshake'; platColor = 'text-green-500'; }
-        if(session.platform === 'Microsoft Teams') { platIcon = 'fa-users-rectangle'; platColor = 'text-indigo-500'; }
+        // --- ICON LOGIC FIXED ---
+        let platformLogo = '';
+        
+        if (session.platform === 'Google Meet') {
+            // Use your local SVG file ONLY for Google Meet
+            platformLogo = `<img src="google-meet.svg" alt="Meet" class="w-5 h-5 mr-2 inline-block">`;
+        } else if (session.platform === 'Zoom') {
+            // Keep the FontAwesome Icon (Blue)
+            platformLogo = `<i class="fas fa-video mr-2 text-blue-500 text-lg"></i>`;
+        } else if (session.platform === 'Microsoft Teams') {
+            // Keep the FontAwesome Icon (Indigo/Purple)
+            platformLogo = `<i class="fas fa-users-rectangle mr-2 text-indigo-500 text-lg"></i>`;
+        } else {
+            // Fallback generic icon
+            platformLogo = `<i class="fas fa-video mr-2 text-slate-400"></i>`;
+        }
+        // ------------------------
 
         let adminControls = currentUserRole === 'admin' 
             ? `<button onclick="deleteSession(${session.id})" class="text-slate-300 hover:text-red-500 ml-2 transition"><i class="fas fa-trash-alt"></i></button>` 
@@ -431,7 +442,10 @@ function renderSessions() {
             </div>
             <div class="md:col-span-3 flex flex-col justify-center text-sm">
                 <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1"><i class="fas fa-user-circle mr-2 text-slate-400"></i> ${escapeHTML(session.host)}</div>
-                <div class="flex items-center ${platColor}"><i class="fas ${platIcon} mr-2"></i> ${session.platform}</div>
+                <div class="flex items-center text-slate-600 dark:text-slate-400">
+                    ${platformLogo}
+                    <span>${session.platform}</span>
+                </div>
             </div>
             <div class="md:col-span-3 flex items-center justify-end gap-3">
                 <a href="${session.link}" target="_blank" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-bold hover:opacity-90 transition shadow-md">Join</a>
