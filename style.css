@@ -4,7 +4,6 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    /* Removed fixed background color, using Tailwind classes in HTML */
 }
 
 /* Custom Input Styles for Forms */
@@ -28,7 +27,7 @@ body {
 }
 
 /* ==========================================
-   BREATHING WIDGET (Fixed & Scientific)
+   BREATHING WIDGET (Scientific 4-7-8)
    ========================================== */
 .breathing-widget {
     position: relative;
@@ -53,7 +52,6 @@ body {
     justify-content: center;
     box-shadow: 0 10px 30px rgba(20, 184, 166, 0.2);
     position: relative;
-    /* Base transition for smooth state changes */
     transition: all 0.5s ease-in-out;
 }
 
@@ -172,7 +170,7 @@ body {
     @apply scale-110 ring-slate-400 dark:ring-white;
 }
 
-/* Fix for Date/Time Pickers */
+/* Fix for Date/Time Pickers in Dark Mode */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
@@ -185,7 +183,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     filter: invert(1); /* White in dark mode */
 }
 
-/* Success Checkmark Animation */
+/* Success Checkmark Animation (New) */
 @keyframes popIn {
     0% { transform: scale(0); }
     80% { transform: scale(1.2); }
