@@ -6,13 +6,27 @@
     <title>Digital Peer Support Circles | Nursing Student Wellbeing</title>
     
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    
     <link rel="mask-icon" href="favicon.svg" color="#0d9488"> 
-    
     <link rel="apple-touch-icon" href="favicon.svg">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    </head>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { slate: { 850: '#1e293b' } }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
 <body class="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 transition-colors duration-300 flex flex-col min-h-screen font-sans">
 
     <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
