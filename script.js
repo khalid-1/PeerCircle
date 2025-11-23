@@ -173,8 +173,11 @@ document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobil
 function showNotification(msg, type) {
     const notif = document.getElementById('notification');
     document.getElementById('notif-message').textContent = msg;
+    // Remove the class that pushes it down (so it slides UP)
     notif.classList.remove('translate-y-24', 'opacity-0');
+    
     setTimeout(() => {
+        // Add the class back to push it down again
         notif.classList.add('translate-y-24', 'opacity-0');
     }, 3000);
 }
@@ -618,11 +621,11 @@ function loginAs(role, isAutoLogin = false) {
     }
     
 // --- SCROLL FIX START ---
-    // Forces the browser back to top 50ms after login
-    setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'instant' });
-    }, 5);
-    // --- SCROLL FIX END ---
+// Forces the browser back to top 50ms after login
+setTimeout(() => {
+window.scrollTo({ top: 0, behavior: 'instant' });
+}, 5);
+// --- SCROLL FIX END --- I
     
     if(isAutoLogin) {
          const hash = window.location.hash.substring(1) || 'home';
