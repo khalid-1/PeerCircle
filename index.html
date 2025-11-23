@@ -6,9 +6,7 @@
     <title>Digital Peer Support Circles | Nursing Student Wellbeing</title>
     
     <link rel="icon" type="image/png" href="favicon.png">
-    
     <link rel="apple-touch-icon" href="favicon.png">
-    
     <link rel="mask-icon" href="favicon.svg" color="#0d9488"> 
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -112,7 +110,6 @@
     </nav>
 
     <main class="flex-grow pt-24 pb-8 px-4 sm:px-6 w-full">
-        
         <div class="relative z-10 max-w-7xl mx-auto bg-white/80 dark:bg-slate-900/60 backdrop-blur-2xl rounded-3xl md:rounded-[2.5rem] overflow-hidden shadow-2xl dark:shadow-teal-900/20 border border-white/60 dark:border-white/10 p-5 md:p-10 min-h-[80vh] transition-all duration-500">
             
             <div id="home" class="section-content active">
@@ -127,28 +124,19 @@
                     <p class="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
                         A safe, anonymous digital space for BSN and MSN students to navigate academic stress, clinical placement anxiety, and the transition to professional practice.
                     </p>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-12 text-left">
-                        <div onclick="showSection('directory')" role="button" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' ') showSection('directory')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-                            <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                <i class="fas fa-user-friends"></i>
-                            </div>
+                        <div onclick="showSection('directory')" role="button" tabindex="0" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                            <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i class="fas fa-user-friends"></i></div>
                             <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Find a Mentor</h3>
                             <p class="text-sm text-slate-500 dark:text-slate-400">Connect with senior students who have been in your shoes.</p>
                         </div>
-                        
-                        <div onclick="showSection('education')" role="button" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' ') showSection('education')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-                            <div class="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                                <i class="fas fa-book-reader"></i>
-                            </div>
+                        <div onclick="showSection('education')" role="button" tabindex="0" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                            <div class="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors"><i class="fas fa-book-reader"></i></div>
                             <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Wellbeing Library</h3>
                             <p class="text-sm text-slate-500 dark:text-slate-400">Curated guides on burnout, exam anxiety, and resilience.</p>
                         </div>
-
-                        <div onclick="showSection('chat')" role="button" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' ') showSection('chat')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-                            <div class="w-12 h-12 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-teal-600 group-hover:text-white transition-colors">
-                                <i class="fas fa-comment-medical"></i>
-                            </div>
+                        <div onclick="showSection('chat')" role="button" tabindex="0" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                            <div class="w-12 h-12 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-teal-600 group-hover:text-white transition-colors"><i class="fas fa-comment-medical"></i></div>
                             <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Request Chat</h3>
                             <p class="text-sm text-slate-500 dark:text-slate-400">Safe, private, asynchronous support from trained peers.</p>
                         </div>
@@ -430,39 +418,26 @@
                             <div class="relative z-10">
                                 <h3 class="text-2xl font-bold mb-6">How it works</h3>
                                 <ul class="space-y-6 mb-8">
-                                    <li class="flex items-start">
-                                        <div class="w-6 h-6 bg-teal-500 rounded flex-shrink-0 flex items-center justify-center mt-0.5 mr-3 border border-teal-400"><i class="fas fa-check text-xs"></i></div>
-                                        <span class="text-teal-50 text-sm leading-relaxed">Fill out the request form.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <div class="w-6 h-6 bg-teal-500 rounded flex-shrink-0 flex items-center justify-center mt-0.5 mr-3 border border-teal-400"><i class="fas fa-check text-xs"></i></div>
-                                        <span class="text-teal-50 text-sm leading-relaxed">Matched within 24 hours.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <div class="w-6 h-6 bg-teal-500 rounded flex-shrink-0 flex items-center justify-center mt-0.5 mr-3 border border-teal-400"><i class="fas fa-check text-xs"></i></div>
-                                        <span class="text-teal-50 text-sm leading-relaxed">Receive secure chat link via email.</span>
-                                    </li>
+                                    <li class="flex items-start"><i class="fas fa-check mt-1 mr-3 text-teal-300"></i><span class="text-teal-50 text-sm leading-relaxed">Fill out the request form.</span></li>
+                                    <li class="flex items-start"><i class="fas fa-check mt-1 mr-3 text-teal-300"></i><span class="text-teal-50 text-sm leading-relaxed">Matched within 24 hours.</span></li>
+                                    <li class="flex items-start"><i class="fas fa-check mt-1 mr-3 text-teal-300"></i><span class="text-teal-50 text-sm leading-relaxed">Receive secure chat link via email.</span></li>
                                 </ul>
-                                <div class="pt-6 border-t border-teal-500/30">
-                                    <p class="text-xs text-teal-200 opacity-80">Not a crisis service. For emergencies, verify local protocols.</p>
-                                </div>
                             </div>
                         </div>
 
                         <div class="p-8 md:p-12 relative min-h-[400px] flex flex-col justify-center">
-                            
                             <div id="chat-form-container" class="transition-opacity duration-300">
-                                <form onsubmit="handleBooking(event)" class="space-y-5">
+                                <form onsubmit="handleBooking(event)" class="space-y-6">
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Name / Alias</label>
+                                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Name / Alias</label>
                                         <input type="text" id="chat-name" required class="input-field" placeholder="e.g. Alex">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Student Email</label>
+                                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Student Email</label>
                                         <input type="email" id="chat-email" required class="input-field" placeholder="e.g. student@college.edu">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Year of Study</label>
+                                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Year of Study</label>
                                         <div class="relative">
                                             <select id="chat-year" class="input-field appearance-none cursor-pointer">
                                                 <option>BSN Year 1</option>
@@ -471,11 +446,13 @@
                                                 <option>BSN Year 4</option>
                                                 <option>MSN Student</option>
                                             </select>
-                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="fas fa-chevron-down text-xs"></i></div>
+                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                                <i class="fas fa-chevron-down text-xs"></i>
+                                            </div>
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Topic</label>
+                                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Topic</label>
                                         <div class="relative">
                                             <select id="chat-topic" class="input-field appearance-none cursor-pointer">
                                                 <option>General Stress</option>
@@ -483,29 +460,23 @@
                                                 <option>Clinical Placement</option>
                                                 <option>Venting</option>
                                             </select>
-                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="fas fa-chevron-down text-xs"></i></div>
+                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                                <i class="fas fa-chevron-down text-xs"></i>
+                                            </div>
                                         </div>
                                     </div>
-                                    
                                     <button type="submit" id="chat-submit-btn" class="w-full bg-slate-800 dark:bg-teal-600 text-white py-3.5 rounded-lg font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center">
                                         <span>Send Request</span>
                                     </button>
                                 </form>
                             </div>
-
                             <div id="chat-success-container" class="hidden flex-col items-center justify-center text-center animate-[fadeIn_0.5s_ease-out]">
                                 <div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6 shadow-sm">
                                     <i class="fas fa-check text-4xl text-green-500 scale-0 animate-[popIn_0.5s_0.2s_forwards]"></i>
                                 </div>
                                 <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Request Received!</h3>
-                                <p class="text-slate-500 dark:text-slate-400 text-sm mb-8 max-w-xs mx-auto">
-                                    A peer mentor has been notified. Please check your student email for a secure chat link within 24 hours.
-                                </p>
-                                <button onclick="resetChatForm()" class="text-teal-600 dark:text-teal-400 font-semibold hover:underline text-sm">
-                                    Send another request
-                                </button>
+                                <button onclick="resetChatForm()" class="text-teal-600 dark:text-teal-400 font-semibold hover:underline text-sm">Send another request</button>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -561,7 +532,7 @@
         </div>
     </footer>
 
-    <div id="notification" class="fixed bottom-6 right-6 transform translate-y-24 opacity-0 transition-all duration-300 z-[100]">
+    <div id="notification" class="fixed top-24 right-6 transform -translate-y-10 opacity-0 transition-all duration-300 z-[100]">
         <div class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-xl shadow-2xl flex items-center font-medium">
             <i class="fas fa-check-circle text-teal-400 dark:text-teal-600 mr-3"></i>
             <span id="notif-message">Success</span>
