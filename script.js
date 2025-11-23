@@ -617,11 +617,11 @@ function loginAs(role, isAutoLogin = false) {
         }
     }
     
-    // --- SCROLL FIX START ---
-    // This forces the browser back to the top 10ms after the notification triggers
+// --- SCROLL FIX START ---
+    // Forces the browser back to top 50ms after login
     setTimeout(() => {
-        window.scrollTo(0, 0);
-    }, 10);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }, 50);
     // --- SCROLL FIX END ---
     
     if(isAutoLogin) {
