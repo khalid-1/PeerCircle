@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Peer Support Circles | Nursing Student Wellbeing</title>
     
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <link rel="apple-touch-icon" href="favicon.png">
+    
     <link rel="mask-icon" href="favicon.svg" color="#0d9488"> 
-    <link rel="apple-touch-icon" href="image_b1faa4.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -16,7 +18,21 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { slate: { 850: '#1e293b' } }
+                    colors: { slate: { 850: '#1e293b' } },
+                    animation: {
+                        'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards'
+                    },
+                    keyframes: {
+                        popIn: {
+                            '0%': { transform: 'scale(0)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            'from': { opacity: '0', transform: 'translateY(10px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
                 }
             }
         }

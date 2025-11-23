@@ -611,8 +611,18 @@ function loginAs(role, isAutoLogin = false) {
         renderInbox();
         if(!isAutoLogin) { showSection('peer-inbox'); showNotification("Welcome Mentor", "success"); }
     } else {
-        if(!isAutoLogin) { showSection('home'); showNotification("Welcome Student", "success"); }
+        if(!isAutoLogin) { 
+            showSection('home'); 
+            showNotification("Welcome Student", "success"); 
+        }
     }
+    
+    // --- SCROLL FIX START ---
+    // This forces the browser back to the top 10ms after the notification triggers
+    setTimeout(() => {
+        window.scrollTo(0, 0);
+    }, 10);
+    // --- SCROLL FIX END ---
     
     if(isAutoLogin) {
          const hash = window.location.hash.substring(1) || 'home';
