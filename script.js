@@ -621,7 +621,7 @@ function loginAs(role, isAutoLogin = false) {
     // Forces the browser back to top 50ms after login
     setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'instant' });
-    }, 50);
+    }, 5);
     // --- SCROLL FIX END ---
     
     if(isAutoLogin) {
