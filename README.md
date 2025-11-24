@@ -1,6 +1,6 @@
 # PeerCircle – Digital Peer Support Circles
 
-A demo web platform designed to support nursing students’ emotional wellbeing through educational resources, virtual wellbeing sessions, self-help tools, and connection with peer supporters.
+A web platform designed to support nursing students’ emotional wellbeing through educational resources, virtual wellbeing sessions, self-help tools, and connection with peer supporters.
 
 🔗 **Live Demo:**  
 https://khalid-1.github.io/PeerCircle/
