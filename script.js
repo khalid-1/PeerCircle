@@ -836,6 +836,20 @@ async function handleAuth(e) {
     }
 }
 
+// --- RESET PASSWORD ---
+async function resetPassword() {
+    const email = prompt("Please enter your email address to reset your password:");
+    if (email) {
+        try {
+            await auth.sendPasswordResetEmail(email);
+            alert("Password reset email sent! Check your inbox.");
+        } catch (error) {
+            console.error(error);
+            alert("Error: " + error.message);
+        }
+    }
+}
+
 // --- DEV ONLY: GUEST MODE ---
 function loginAsGuest() {
     console.log("Logging in as Guest (Dev Mode)");
