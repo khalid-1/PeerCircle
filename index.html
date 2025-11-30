@@ -726,153 +726,175 @@
             <span id="notif-message">Success</span>
         </div>
     </div>
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen"
+        class="fixed inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="text-teal-500 font-bold animate-pulse">Loading PeerCircle...</p>
+    </div>
 
+    <!-- LOGIN MODAL (Hidden by default) -->
     <div id="login-modal"
-        class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+        class="fixed inset-0 bg-slate-900/95 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300">
         <div
-            class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-8 text-center shadow-2xl border border-slate-100 dark:border-slate-700">
-            <div
-                class="bg-teal-50 dark:bg-teal-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-teal-600 dark:text-teal-400 text-2xl">
-                <i class="fas fa-user-nurse"></i>
-            </div>
-            <h2 id="auth-title" class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Welcome Back</h2>
-            <p id="auth-desc" class="text-slate-500 dark:text-slate-400 mb-6 text-sm">Sign in to access resources.</p>
+            class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform scale-100 transition-transform duration-300">
+            <div class="p-8">
+                <div class="text-center mb-8">
+                    <div
+                        class="w-16 h-16 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-4 text-teal-600 dark:text-teal-400 text-2xl">
+                        <i class="fas fa-user-nurse"></i>
+                    </div>
+                    <h2 id="auth-title" class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Welcome Back</h2>
+                    <p id="auth-desc" class="text-slate-500 dark:text-slate-400 mb-6 text-sm">Sign in to access
+                        resources.</p>
 
-            <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 text-left">
-                <div id="name-field-container" class="hidden">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Full Name</label>
-                    <input type="text" id="auth-name" class="input-field" placeholder="Jane Doe">
+                    <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 text-left">
+                        <div id="name-field-container" class="hidden">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Full
+                                Name</label>
+                            <input type="text" id="auth-name" class="input-field" placeholder="Jane Doe">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Email</label>
+                            <input type="email" id="auth-email" required class="input-field"
+                                placeholder="student@college.edu">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Password</label>
+                            <input type="password" id="auth-password" required class="input-field"
+                                placeholder="••••••••">
+                        </div>
+
+                        <button type="submit" id="auth-submit-btn"
+                            class="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition shadow-md shadow-teal-200 dark:shadow-none mt-2">
+                            Sign In
+                        </button>
+                    </form>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
+                        <p class="text-xs text-slate-500 dark:text-slate-400">
+                            <span id="auth-toggle-text">New here?</span>
+                            <button onclick="toggleAuthMode()" id="auth-toggle-btn"
+                                class="text-teal-600 dark:text-teal-400 font-bold hover:underline">Create
+                                Account</button>
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Email</label>
-                    <input type="email" id="auth-email" required class="input-field" placeholder="student@college.edu">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Password</label>
-                    <input type="password" id="auth-password" required class="input-field" placeholder="••••••••">
-                </div>
-
-                <button type="submit" id="auth-submit-btn"
-                    class="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition shadow-md shadow-teal-200 dark:shadow-none mt-2">
-                    Sign In
-                </button>
-            </form>
-
-            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
-                <p class="text-xs text-slate-500 dark:text-slate-400">
-                    <span id="auth-toggle-text">New here?</span>
-                    <button onclick="toggleAuthMode()" id="auth-toggle-btn"
-                        class="text-teal-600 dark:text-teal-400 font-bold hover:underline">Create Account</button>
-                </p>
             </div>
-        </div>
-    </div>
 
-    <div id="modal-burnout"
-        class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[70] p-4">
-        <div
-            class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 md:p-8 relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
-            <button onclick="closeModal('modal-burnout')"
-                class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i
-                    class="fas fa-times"></i></button>
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4 pr-8">Stress & Burnout</h2>
-            <div
-                class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-4 text-slate-600 dark:text-slate-300">
-                <p>Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace stress. It
-                    is not your fault.</p>
-                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-100 dark:border-red-900/30">
-                    <h4 class="font-bold text-red-700 dark:text-red-300 mb-2">Common Signs</h4>
-                    <ul class="list-disc pl-5 space-y-1">
-                        <li>Dreading clinicals/work.</li>
-                        <li>Feeling cynical with patients.</li>
-                        <li>Physical fatigue after sleeping.</li>
-                    </ul>
-                </div>
-                <h4 class="font-bold text-slate-800 dark:text-white">Immediate Action: The "3-Minute Reset"</h4>
-                <p>Step into a supply room. Drink water slowly. Do one cycle of box breathing. Remind yourself: "I am
-                    doing my best."</p>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
-                <button onclick="closeModal('modal-burnout')"
-                    class="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-exams"
-        class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[70] p-4">
-        <div
-            class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 md:p-8 relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
-            <button onclick="closeModal('modal-exams')"
-                class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i
-                    class="fas fa-times"></i></button>
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4 pr-8">Exam Anxiety</h2>
-            <div
-                class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-4 text-slate-600 dark:text-slate-300">
-                <p>The NCLEX tests critical thinking, not just memory. Anxiety blocks that pathway.</p>
+            <div id="modal-burnout"
+                class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[70] p-4">
                 <div
-                    class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-100 dark:border-yellow-900/30">
-                    <h4 class="font-bold text-slate-800 dark:text-white mb-2">The Stop Light Method</h4>
-                    <ul class="space-y-2">
-                        <li><span class="font-bold text-green-600">Green:</span> Know it? Mark it, move on.</li>
-                        <li><span class="font-bold text-yellow-600">Yellow:</span> Narrowed to two? Pick your gut.</li>
-                        <li><span class="font-bold text-red-500">Red:</span> No idea? Don't panic. Guess. Move on.</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
-                <button onclick="closeModal('modal-exams')"
-                    class="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-dynamic-topic"
-        class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[80] p-4">
-        <div
-            class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
-
-            <div id="modal-header-bar" class="h-4 w-full bg-teal-500"></div>
-
-            <button onclick="closeModal('modal-dynamic-topic')"
-                class="absolute top-6 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i
-                    class="fas fa-times"></i></button>
-
-            <div class="p-6 md:p-8 pt-4">
-                <div class="flex items-center gap-3 mb-6">
-                    <div id="modal-icon-box"
-                        class="w-12 h-12 rounded-xl bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center text-xl">
-                        <i id="modal-icon" class="fas fa-lightbulb"></i>
+                    class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 md:p-8 relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
+                    <button onclick="closeModal('modal-burnout')"
+                        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i
+                            class="fas fa-times"></i></button>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4 pr-8">Stress & Burnout</h2>
+                    <div
+                        class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-4 text-slate-600 dark:text-slate-300">
+                        <p>Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace
+                            stress. It
+                            is not your fault.</p>
+                        <div
+                            class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-100 dark:border-red-900/30">
+                            <h4 class="font-bold text-red-700 dark:text-red-300 mb-2">Common Signs</h4>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Dreading clinicals/work.</li>
+                                <li>Feeling cynical with patients.</li>
+                                <li>Physical fatigue after sleeping.</li>
+                            </ul>
+                        </div>
+                        <h4 class="font-bold text-slate-800 dark:text-white">Immediate Action: The "3-Minute Reset"</h4>
+                        <p>Step into a supply room. Drink water slowly. Do one cycle of box breathing. Remind yourself:
+                            "I am
+                            doing my best."</p>
                     </div>
-                    <h2 id="modal-title" class="text-2xl font-bold text-slate-800 dark:text-white">Topic Title</h2>
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
+                        <button onclick="closeModal('modal-burnout')"
+                            class="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90">Close</button>
+                    </div>
                 </div>
+            </div>
 
+            <div id="modal-exams"
+                class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[70] p-4">
                 <div
-                    class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-6 text-slate-600 dark:text-slate-300">
-
-                    <p id="modal-intro">Introduction text goes here...</p>
-
-                    <div id="modal-bullets-container" class="hidden">
-                        <h4 class="font-bold text-slate-800 dark:text-white mb-2">Key Signs & Strategies</h4>
-                        <ul id="modal-bullets" class="list-disc pl-5 space-y-1"></ul>
+                    class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 md:p-8 relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
+                    <button onclick="closeModal('modal-exams')"
+                        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i
+                            class="fas fa-times"></i></button>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4 pr-8">Exam Anxiety</h2>
+                    <div
+                        class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-4 text-slate-600 dark:text-slate-300">
+                        <p>The NCLEX tests critical thinking, not just memory. Anxiety blocks that pathway.</p>
+                        <div
+                            class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-100 dark:border-yellow-900/30">
+                            <h4 class="font-bold text-slate-800 dark:text-white mb-2">The Stop Light Method</h4>
+                            <ul class="space-y-2">
+                                <li><span class="font-bold text-green-600">Green:</span> Know it? Mark it, move on.</li>
+                                <li><span class="font-bold text-yellow-600">Yellow:</span> Narrowed to two? Pick your
+                                    gut.</li>
+                                <li><span class="font-bold text-red-500">Red:</span> No idea? Don't panic. Guess. Move
+                                    on.</li>
+                            </ul>
+                        </div>
                     </div>
-
-                    <div id="modal-action-box" class="p-4 rounded-xl border border-l-4 hidden">
-                        <h4 id="modal-action-title" class="font-bold mb-1">Try This:</h4>
-                        <p id="modal-action-text">Actionable advice.</p>
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
+                        <button onclick="closeModal('modal-exams')"
+                            class="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90">Close</button>
                     </div>
                 </div>
+            </div>
 
-                <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
+            <div id="modal-dynamic-topic"
+                class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[80] p-4">
+                <div
+                    class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
+
+                    <div id="modal-header-bar" class="h-4 w-full bg-teal-500"></div>
+
                     <button onclick="closeModal('modal-dynamic-topic')"
-                        class="px-6 py-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-white rounded-lg font-medium hover:bg-slate-200 transition">Close</button>
+                        class="absolute top-6 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i
+                            class="fas fa-times"></i></button>
+
+                    <div class="p-6 md:p-8 pt-4">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div id="modal-icon-box"
+                                class="w-12 h-12 rounded-xl bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center text-xl">
+                                <i id="modal-icon" class="fas fa-lightbulb"></i>
+                            </div>
+                            <h2 id="modal-title" class="text-2xl font-bold text-slate-800 dark:text-white">Topic Title
+                            </h2>
+                        </div>
+
+                        <div
+                            class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-6 text-slate-600 dark:text-slate-300">
+
+                            <p id="modal-intro">Introduction text goes here...</p>
+
+                            <div id="modal-bullets-container" class="hidden">
+                                <h4 class="font-bold text-slate-800 dark:text-white mb-2">Key Signs & Strategies</h4>
+                                <ul id="modal-bullets" class="list-disc pl-5 space-y-1"></ul>
+                            </div>
+
+                            <div id="modal-action-box" class="p-4 rounded-xl border border-l-4 hidden">
+                                <h4 id="modal-action-title" class="font-bold mb-1">Try This:</h4>
+                                <p id="modal-action-text">Actionable advice.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
+                            <button onclick="closeModal('modal-dynamic-topic')"
+                                class="px-6 py-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-white rounded-lg font-medium hover:bg-slate-200 transition">Close</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <script src="firebase-config.js"></script>
-    <script src="script.js"></script>
+            <script src="firebase-config.js"></script>
+            <script src="script.js"></script>
 </body>
 
 </html>

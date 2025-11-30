@@ -32,5 +32,7 @@ This version is optimized for presentations and academic project use.
 ---
 
 ## Status
-
-Adding back end features
+ 
+This project is now integrated with **Firebase** for:
+- **Authentication**: Email/Password login with University Domain Restriction (@rakmhsu.ac.ae).
+- **Database**: Cloud Firestore for real-time Topics, Sessions, and Peer Requests.

@@ -95,6 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             updateUIForRole(currentUserRole);
+
+            // HIDE LOADING SCREEN / LOGIN MODAL
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('opacity-0');
+                setTimeout(() => loadingScreen.classList.add('hidden'), 500);
+            }
             document.getElementById('login-modal').classList.add('hidden');
 
             // Load Data (Real-time Listeners)
@@ -102,9 +109,21 @@ document.addEventListener('DOMContentLoaded', () => {
             subscribeToSessions();
             subscribeToInbox();
             renderMentors();
+
+            // SCROLL FIX: Force top
+            window.scrollTo(0, 0);
+
         } else {
             console.log("User logged out");
+
+            // HIDE LOADING SCREEN -> SHOW LOGIN
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('opacity-0');
+                setTimeout(() => loadingScreen.classList.add('hidden'), 500);
+            }
             document.getElementById('login-modal').classList.remove('hidden');
+
             updateUIForRole(null);
         }
     });
