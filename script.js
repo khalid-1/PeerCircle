@@ -484,8 +484,21 @@ function copyMentorEmail() {
     });
 }
 
-function filterMentors(category) {
+function filterMentors(category, btn) {
     renderMentors(category);
+
+    // Update UI Buttons
+    if (btn) {
+        const buttons = document.querySelectorAll('.mentor-filter-btn');
+
+        // Inactive Classes
+        const inactiveClass = "mentor-filter-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition cursor-pointer";
+        // Active Classes
+        const activeClass = "mentor-filter-btn px-4 py-1.5 bg-teal-600 text-white rounded-full text-sm font-medium shadow-md hover:bg-teal-700 transition cursor-pointer";
+
+        buttons.forEach(b => b.className = inactiveClass);
+        btn.className = activeClass;
+    }
 }
 
 

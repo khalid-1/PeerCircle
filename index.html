@@ -31,7 +31,7 @@
 
             <div class="flex flex-col items-center space-y-3">
                 <p id="mentor-email-display"
-                    class="text-lg font-mono font-semibold text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-700 p-3 rounded-lg w-full break-all select-all">
+                    class="text-sm font-mono font-semibold text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-700 p-3 rounded-lg w-full whitespace-nowrap overflow-x-auto select-all">
                 </p>
                 <input type="text" id="mentor-email-text" class="absolute opacity-0 pointer-events-none" value="">
 
@@ -347,16 +347,16 @@
                 </div>
 
                 <div class="flex flex-wrap justify-center gap-2 mb-8">
-                    <button onclick="filterMentors('all')"
-                        class="px-4 py-1.5 bg-teal-600 text-white rounded-full text-sm font-medium shadow-md hover:bg-teal-700 transition">All</button>
-                    <button onclick="filterMentors('BSN Year 4')"
-                        class="px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition">BSN
+                    <button onclick="filterMentors('all', this)"
+                        class="mentor-filter-btn px-4 py-1.5 bg-teal-600 text-white rounded-full text-sm font-medium shadow-md hover:bg-teal-700 transition">All</button>
+                    <button onclick="filterMentors('BSN Year 4', this)"
+                        class="mentor-filter-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition">BSN
                         Year 4</button>
-                    <button onclick="filterMentors('Clinical Support')"
-                        class="px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition">Clinical
+                    <button onclick="filterMentors('Clinical Support', this)"
+                        class="mentor-filter-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition">Clinical
                         Support</button>
-                    <button onclick="filterMentors('Exam Prep')"
-                        class="px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition">Exam
+                    <button onclick="filterMentors('Exam Prep', this)"
+                        class="mentor-filter-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium hover:border-teal-500 transition">Exam
                         Prep</button>
                 </div>
 
