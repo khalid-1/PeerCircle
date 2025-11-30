@@ -244,7 +244,10 @@ const availableColors = [
 
 function subscribeToTopics() {
     db.collection('topics').onSnapshot((snapshot) => {
-        topicsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log("Topics snapshot received. Docs:", snapshot.docs.length);
+        // FIX: Put 'id: doc.id' LAST so it overrides any number ID inside the data
+        topicsData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        console.log("Topics data loaded:", topicsData);
         renderTopics();
         updateDashboard();
     });
@@ -326,24 +329,44 @@ async function deleteTopic(event, id) {
 }
 
 function openTopicModal(id) {
-    const topic = topicsData.find(t => t.id === id);
-    if (!topic) return;
+    console.log("Attempting to open topic ID:", id);
+
+    // FIX: Convert both to String to ensure they match (handles "1" vs 1)
+    const topic = topicsData.find(t => String(t.id) === String(id));
+
+    if (!topic) {
+        console.error("Error: Topic ID not found.", id, topicsData);
+        alert("Error: Topic content not found. Check console for details.");
+        return;
+    }
 
     const modal = document.getElementById('modal-dynamic-topic');
+    if (!modal) {
+        console.error("CRITICAL: Modal element 'modal-dynamic-topic' missing in HTML.");
+        return;
+    }
+
+    // Setup Theme
     const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
 
-    document.getElementById('modal-header-bar').className = `h-4 w-full ${theme.hex}`;
+    // Populate Content
+    const headerBar = document.getElementById('modal-header-bar');
+    if (headerBar) headerBar.className = `h-4 w-full ${theme.hex}`;
+
     document.getElementById('modal-icon-box').className = `w-12 h-12 rounded-xl flex items-center justify-center text-xl ${theme.light} ${theme.text} dark:bg-opacity-20`;
     document.getElementById('modal-icon').className = `fas ${topic.icon}`;
     document.getElementById('modal-title').textContent = topic.title;
     document.getElementById('modal-title').className = `text-2xl font-bold text-slate-800 dark:text-white`;
 
-    const content = topic.content || { intro: topic.desc, bullets: [], action: "" };
-    document.getElementById('modal-intro').textContent = content.intro;
+    // Content Safety Check
+    const content = topic.content || {};
+    document.getElementById('modal-intro').textContent = content.intro || topic.desc || "No description.";
 
+    // Bullets
     const bulletsList = document.getElementById('modal-bullets');
     const bulletsContainer = document.getElementById('modal-bullets-container');
     bulletsList.innerHTML = "";
+
     if (content.bullets && content.bullets.length > 0) {
         bulletsContainer.classList.remove('hidden');
         content.bullets.forEach(b => {
@@ -355,6 +378,7 @@ function openTopicModal(id) {
         bulletsContainer.classList.add('hidden');
     }
 
+    // Action Box
     const actionBox = document.getElementById('modal-action-box');
     if (content.action) {
         actionBox.classList.remove('hidden');
@@ -365,8 +389,9 @@ function openTopicModal(id) {
         actionBox.classList.add('hidden');
     }
 
+    // Show Modal
     modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    modal.style.display = 'flex';
 }
 
 function initAdminPickers() {
@@ -721,25 +746,15 @@ async function acceptRequest(id) {
 // ==========================================
 
 function updateDashboard() {
-    if (document.getElementById('stat-topics')) {
-        document.getElementById('stat-topics').textContent = topicsData.length;
-        document.getElementById('stat-requests').textContent = peerMessages.length;
-        if (document.getElementById('stat-requests-sub')) document.getElementById('stat-requests-sub').textContent = peerMessages.filter(m => m.status === 'pending').length;
-        if (document.getElementById('stat-sessions')) document.getElementById('stat-sessions').textContent = sessionsData.length;
-    }
-}
+    const statTopics = document.getElementById('stat-topics');
+    const statRequests = document.getElementById('stat-requests');
+    const statRequestsSub = document.getElementById('stat-requests-sub');
+    const statSessions = document.getElementById('stat-sessions');
 
-// ==========================================
-// 8. DASHBOARD & AUTH (FIREBASE)
-// ==========================================
-
-function updateDashboard() {
-    if (document.getElementById('stat-topics')) {
-        document.getElementById('stat-topics').textContent = topicsData.length;
-        document.getElementById('stat-requests').textContent = peerMessages.length;
-        if (document.getElementById('stat-requests-sub')) document.getElementById('stat-requests-sub').textContent = peerMessages.filter(m => m.status === 'pending').length;
-        if (document.getElementById('stat-sessions')) document.getElementById('stat-sessions').textContent = sessionsData.length;
-    }
+    if (statTopics) statTopics.textContent = topicsData.length;
+    if (statRequests) statRequests.textContent = peerMessages.length;
+    if (statRequestsSub) statRequestsSub.textContent = peerMessages.filter(m => m.status === 'pending').length;
+    if (statSessions) statSessions.textContent = sessionsData.length;
 }
 
 // --- AUTH UI LOGIC ---
