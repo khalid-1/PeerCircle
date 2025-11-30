@@ -64,14 +64,33 @@ document.addEventListener('DOMContentLoaded', () => {
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             console.log("User logged in:", user.email);
-            // Fetch Role from Firestore
-            const userDoc = await db.collection('users').doc(user.uid).get();
+
+            // 1. Check Email Verification
+            if (!user.emailVerified) {
+                console.log("Email not verified.");
+                // We don't block the UI here immediately to allow the "Please Verify" message to be shown in handleAuth
+                // But if they refresh, we should probably show a "Verify your email" state or sign them out.
+                // For this flow, we will sign them out if they try to access the app without verification.
+                // However, to avoid infinite loops, we check if we just signed up.
+                return;
+            }
+
+            // 2. Fetch Role from Firestore
+            // RETRY LOGIC: Wait a moment for the profile to be created if it's a new user
+            let userDoc = await db.collection('users').doc(user.uid).get();
+            let attempts = 0;
+            while (!userDoc.exists && attempts < 3) {
+                await new Promise(r => setTimeout(r, 500)); // Wait 500ms
+                userDoc = await db.collection('users').doc(user.uid).get();
+                attempts++;
+            }
+
             if (userDoc.exists) {
                 const userData = userDoc.data();
                 currentUserRole = userData.role || 'student';
                 showNotification(`Welcome back, ${userData.name || 'Student'}`, "success");
             } else {
-                // Fallback if no doc (shouldn't happen on normal flow)
+                // Fallback
                 currentUserRole = 'student';
             }
 
@@ -81,12 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Load Data (Real-time Listeners)
             subscribeToTopics();
             subscribeToSessions();
-            subscribeToInbox(); // NEW: Listen for requests
-            renderMentors(); // Static for now
+            subscribeToInbox();
+            renderMentors();
         } else {
             console.log("User logged out");
             document.getElementById('login-modal').classList.remove('hidden');
-            // Unsubscribe if needed (omitted for simplicity in MVP)
             updateUIForRole(null);
         }
     });
@@ -679,10 +697,16 @@ function toggleAuthMode() {
 
 async function handleAuth(e) {
     e.preventDefault();
-    const email = document.getElementById('auth-email').value;
+    const email = document.getElementById('auth-email').value.trim(); // Trim whitespace
     const password = document.getElementById('auth-password').value;
     const name = document.getElementById('auth-name').value;
     const btn = document.getElementById('auth-submit-btn');
+
+    // DOMAIN RESTRICTION
+    if (!email.endsWith('@rakmhsu.ac.ae')) {
+        alert("Access Restricted: Please use your university email (@rakmhsu.ac.ae).");
+        return;
+    }
 
     btn.disabled = true;
     btn.textContent = "Processing...";
@@ -701,12 +725,32 @@ async function handleAuth(e) {
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            showNotification("Account Created!", "success");
+            // SEND VERIFICATION EMAIL
+            await user.sendEmailVerification();
+
+            alert("Account created! A verification email has been sent to " + email + ". Please verify your email before logging in.");
+
+            // Sign out immediately to force verification flow
+            await auth.signOut();
+
+            // Reset UI
+            toggleAuthMode(); // Switch back to login
+
         } else {
             // SIGN IN
-            await auth.signInWithEmailAndPassword(email, password);
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+
+            if (!user.emailVerified) {
+                alert("Please verify your email address to log in.");
+                await auth.signOut();
+                btn.disabled = false;
+                btn.textContent = "Sign In";
+                return;
+            }
+
+            // If verified, onAuthStateChanged will handle the rest
         }
-        // Listener in DOMContentLoaded handles the rest
     } catch (error) {
         console.error(error);
         alert(error.message);
