@@ -3,19 +3,12 @@
 // ==========================================
 
 // --- PERSISTENCE HELPERS ---
-function saveToStorage(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
-}
-
-function loadFromStorage(key, defaultData) {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : defaultData;
-}
+// (Removed: Using Firestore)
 
 // --- SANITIZATION HELPER (Security) ---
 function escapeHTML(str) {
     if (typeof str !== 'string') return str;
-    return str.replace(/[&<>'"]/g, 
+    return str.replace(/[&<>'"]/g,
         tag => ({
             '&': '&amp;',
             '<': '&lt;',
@@ -27,20 +20,8 @@ function escapeHTML(str) {
 }
 
 // --- DATA STORE ---
-const defaultTopics = [
-    { 
-        id: 1, title: "Stress & Burnout", desc: "Identifying signs of fatigue and emotional exhaustion.", color: "rose", icon: "fa-heart-pulse", 
-        content: { intro: "Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace stress.", bullets: ["Dreading clinicals or work shifts.", "Feeling cynical or irritable with patients.", "Physical fatigue even after sleeping."], action: "Step into a supply room. Drink water slowly. Do one cycle of box breathing." }
-    },
-    { 
-        id: 2, title: "Exam Anxiety", desc: "Handling NCLEX pressure and test-taking panic.", color: "amber", icon: "fa-brain", 
-        content: { intro: "The NCLEX tests critical thinking, not just memory. Anxiety blocks that pathway. You need to calm the amygdala to access the frontal cortex.", bullets: ["Green Light: You know it. Mark it.", "Yellow Light: Narrowed to two. Trust your gut.", "Red Light: No idea. Breathe, guess, move on."], action: "Use the Stop Light Method for every question." }
-    },
-    { 
-        id: 3, title: "Clinical Placement", desc: "Navigating hospital hierarchy and shift anxiety.", color: "blue", icon: "fa-user-nurse", 
-        content: { intro: "Your first clinical rotation can feel overwhelming. Remember that you are there to learn, not to be perfect.", bullets: ["Ask questions when unsure—it shows safety awareness.", "Find a 'safe nurse' to shadow.", "Bring snacks and stay hydrated."], action: "Introduce yourself to the charge nurse at the start of the shift." }
-    }
-];
+// Topics and Sessions are now loaded from Firestore
+
 
 const mentorsData = [
     { name: "Meerah Ahmed Alansi", year: "BSN Year 4", quote: "Happy to support with clinical placement anxiety and confidence on the ward.", tags: ["Clinical Support", "Placement Anxiety"] },
@@ -58,17 +39,13 @@ const mentorsData = [
     { name: "Haneen Jamal Hjaila", year: "BSN Year 2", quote: "Let’s work on confidence, presentations, and speaking up in class.", tags: ["Confidence", "Presentations"] }
 ];
 
-const defaultSessions = [
-    { id: 1, title: "Mindfulness for Nurses", desc: "Guided meditation & grounding techniques.", date: "2025-11-24", time: "17:00", duration: "60", host: "Sarah Jenkins", platform: "Zoom", tag: "Stress Relief", link: "#" },
-    { id: 2, title: "NCLEX Q&A Strategy", desc: "How to dissect difficult questions.", date: "2025-11-28", time: "18:30", duration: "90", host: "Peer Mentor Mike", platform: "Microsoft Teams", tag: "Exam Prep", link: "#" }
-];
 
-let topicsData = loadFromStorage('dps_topics', defaultTopics);
-let sessionsData = loadFromStorage('dps_sessions', defaultSessions);
-let peerMessages = [
-    { id: 101, name: "NervousStudent22", year: "BSN Year 1", topic: "Academic Struggles", time: "Weekends", status: "pending" }
-];
+
+let topicsData = []; // Will load from Firestore
+let sessionsData = []; // Will load from Firestore
+let peerMessages = []; // Will load from Firestore
 let currentUserRole = 'student';
+let isSignUpMode = false;
 
 // FIXED: Stop browser from scrolling to bottom on reload
 if (history.scrollRestoration) {
@@ -80,23 +57,44 @@ if (history.scrollRestoration) {
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    window.scrollTo(0, 0); // Force top scroll
+    window.scrollTo(0, 0);
     initTheme();
-    renderTopics();
-    renderSessions();
-    renderMentors();
-    
-    const savedRole = localStorage.getItem('dps_user_role');
-    if (savedRole) {
-        loginAs(savedRole, true);
-    } else {
-        document.getElementById('login-modal').classList.remove('hidden');
-    }
+
+    // Firebase Auth Listener
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            console.log("User logged in:", user.email);
+            // Fetch Role from Firestore
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                currentUserRole = userData.role || 'student';
+                showNotification(`Welcome back, ${userData.name || 'Student'}`, "success");
+            } else {
+                // Fallback if no doc (shouldn't happen on normal flow)
+                currentUserRole = 'student';
+            }
+
+            updateUIForRole(currentUserRole);
+            document.getElementById('login-modal').classList.add('hidden');
+
+            // Load Data (Real-time Listeners)
+            subscribeToTopics();
+            subscribeToSessions();
+            subscribeToInbox(); // NEW: Listen for requests
+            renderMentors(); // Static for now
+        } else {
+            console.log("User logged out");
+            document.getElementById('login-modal').classList.remove('hidden');
+            // Unsubscribe if needed (omitted for simplicity in MVP)
+            updateUIForRole(null);
+        }
+    });
 });
 
 function initTheme() {
     const themeIcon = document.getElementById('theme-icon');
-    if(!themeIcon) return;
+    if (!themeIcon) return;
     if (localStorage.getItem('dps_theme') === 'dark' || (!('dps_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
         themeIcon.classList.replace('fa-moon', 'fa-sun');
@@ -126,7 +124,7 @@ function toggleTheme() {
 // ==========================================
 
 function showSection(sectionId) {
-    if(window.location.hash.substring(1) !== sectionId) {
+    if (window.location.hash.substring(1) !== sectionId) {
         window.location.hash = sectionId;
     }
     renderSection(sectionId);
@@ -139,7 +137,7 @@ function renderSection(sectionId) {
     });
     const targetId = document.getElementById(sectionId) ? sectionId : 'home';
     const target = document.getElementById(targetId);
-    if(target) {
+    if (target) {
         target.classList.add('active');
         target.classList.remove('hidden');
     }
@@ -150,7 +148,7 @@ function renderSection(sectionId) {
 function updateNavState(activeId) {
     document.querySelectorAll('.nav-link').forEach(btn => {
         const onClickText = btn.getAttribute('onclick');
-        if(onClickText && onClickText.includes(activeId)) {
+        if (onClickText && onClickText.includes(activeId)) {
             btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-teal-600', 'dark:text-teal-400');
             btn.classList.remove('text-slate-600', 'dark:text-slate-400');
         } else {
@@ -175,7 +173,7 @@ function showNotification(msg, type) {
     document.getElementById('notif-message').textContent = msg;
     // Remove the class that pushes it down (so it slides UP)
     notif.classList.remove('translate-y-24', 'opacity-0');
-    
+
     setTimeout(() => {
         // Add the class back to push it down again
         notif.classList.add('translate-y-24', 'opacity-0');
@@ -207,19 +205,32 @@ const availableColors = [
     { name: "amber", hex: "bg-amber-500", light: "bg-amber-100", text: "text-amber-600" }
 ];
 
+function subscribeToTopics() {
+    db.collection('topics').onSnapshot((snapshot) => {
+        topicsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderTopics();
+        updateDashboard();
+    });
+}
+
 function renderTopics() {
     const container = document.getElementById('topics-container');
-    if(!container) return; 
-    
-    // OPTIMIZATION: Use map/join instead of innerHTML +=
+    if (!container) return;
+
+    if (topicsData.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">No topics found. Admin can add one.</div>`;
+        return;
+    }
+
     container.innerHTML = topicsData.map(topic => {
         const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
-        let adminControls = currentUserRole === 'admin' 
-            ? `<button onclick="deleteTopic(event, ${topic.id})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition z-20"><i class="fas fa-trash-alt"></i></button>` 
+        // Use doc ID for deletion
+        let adminControls = currentUserRole === 'admin'
+            ? `<button onclick="deleteTopic(event, '${topic.id}')" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition z-20"><i class="fas fa-trash-alt"></i></button>`
             : "";
 
         return `
-            <div onclick="openTopicModal(${topic.id})" class="cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative">
+            <div onclick="openTopicModal('${topic.id}')" class="cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative">
                 <div class="h-2 ${theme.hex}"></div> <div class="p-6">
                     ${adminControls}
                     <div class="flex justify-between items-start mb-3">
@@ -235,9 +246,9 @@ function renderTopics() {
     }).join('');
 }
 
-function handleAddTopic(event) {
+async function handleAddTopic(event) {
     event.preventDefault();
-    
+
     const title = document.getElementById('new-topic-title').value;
     const desc = document.getElementById('new-topic-desc').value;
     const color = document.getElementById('selected-color').value;
@@ -248,34 +259,38 @@ function handleAddTopic(event) {
 
     const bullets = bulletsRaw ? bulletsRaw.split('\n').filter(line => line.trim() !== '') : [];
 
-    const newTopic = { 
-        id: Date.now(), title, desc, color, icon, 
-        content: { intro, bullets, action }
-    };
+    try {
+        await db.collection('topics').add({
+            title, desc, color, icon,
+            content: { intro, bullets, action },
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
-    topicsData.push(newTopic);
-    saveToStorage('dps_topics', topicsData); // SAVE
-    renderTopics();
-    updateDashboard();
-    event.target.reset();
-    document.getElementById('admin-add-topic').classList.add('hidden');
-    showNotification("New Guide Published!", "success");
+        event.target.reset();
+        document.getElementById('admin-add-topic').classList.add('hidden');
+        showNotification("New Guide Published!", "success");
+    } catch (error) {
+        console.error("Error adding topic: ", error);
+        alert("Failed to add topic.");
+    }
 }
 
-function deleteTopic(event, id) {
+async function deleteTopic(event, id) {
     event.stopPropagation();
-    if(confirm("Delete this topic?")) {
-        topicsData = topicsData.filter(topic => topic.id !== id);
-        saveToStorage('dps_topics', topicsData); // SAVE
-        renderTopics();
-        updateDashboard();
-        showNotification("Topic deleted.", "success");
+    if (confirm("Delete this topic?")) {
+        try {
+            await db.collection('topics').doc(id).delete();
+            showNotification("Topic deleted.", "success");
+        } catch (error) {
+            console.error("Error deleting topic: ", error);
+            alert("Failed to delete topic.");
+        }
     }
 }
 
 function openTopicModal(id) {
     const topic = topicsData.find(t => t.id === id);
-    if(!topic) return;
+    if (!topic) return;
 
     const modal = document.getElementById('modal-dynamic-topic');
     const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
@@ -285,14 +300,14 @@ function openTopicModal(id) {
     document.getElementById('modal-icon').className = `fas ${topic.icon}`;
     document.getElementById('modal-title').textContent = topic.title;
     document.getElementById('modal-title').className = `text-2xl font-bold text-slate-800 dark:text-white`;
-    
+
     const content = topic.content || { intro: topic.desc, bullets: [], action: "" };
     document.getElementById('modal-intro').textContent = content.intro;
-    
+
     const bulletsList = document.getElementById('modal-bullets');
     const bulletsContainer = document.getElementById('modal-bullets-container');
     bulletsList.innerHTML = "";
-    if(content.bullets && content.bullets.length > 0) {
+    if (content.bullets && content.bullets.length > 0) {
         bulletsContainer.classList.remove('hidden');
         content.bullets.forEach(b => {
             const li = document.createElement('li');
@@ -304,7 +319,7 @@ function openTopicModal(id) {
     }
 
     const actionBox = document.getElementById('modal-action-box');
-    if(content.action) {
+    if (content.action) {
         actionBox.classList.remove('hidden');
         actionBox.className = `p-4 rounded-xl border-l-4 mt-6 ${theme.light} border-${theme.name}-500 dark:bg-opacity-10`;
         document.getElementById('modal-action-title').className = `font-bold mb-1 ${theme.text}`;
@@ -319,7 +334,7 @@ function openTopicModal(id) {
 
 function initAdminPickers() {
     const iconContainer = document.getElementById('icon-selector');
-    if(iconContainer.innerHTML === "") {
+    if (iconContainer.innerHTML === "") {
         availableIcons.forEach(icon => {
             const div = document.createElement('div');
             div.className = `icon-option ${icon === 'fa-lightbulb' ? 'selected' : ''}`;
@@ -352,13 +367,13 @@ function initAdminPickers() {
 
 function renderMentors(filter = 'all') {
     const container = document.getElementById('mentors-container');
-    if(!container) return;
-    
-    const filtered = filter === 'all' 
-        ? mentorsData 
+    if (!container) return;
+
+    const filtered = filter === 'all'
+        ? mentorsData
         : mentorsData.filter(m => m.tags.includes(filter) || m.year === filter);
 
-    if(filtered.length === 0) {
+    if (filtered.length === 0) {
         container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">No mentors found for this filter.</div>`;
         return;
     }
@@ -396,11 +411,19 @@ function filterMentors(category) {
 // 6. SESSIONS
 // ==========================================
 
+function subscribeToSessions() {
+    db.collection('sessions').orderBy('date', 'asc').onSnapshot((snapshot) => {
+        sessionsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderSessions();
+        updateDashboard();
+    });
+}
+
 function renderSessions() {
     const container = document.getElementById('sessions-container');
-    if(!container) return;
-    
-    if(sessionsData.length === 0) {
+    if (!container) return;
+
+    if (sessionsData.length === 0) {
         container.innerHTML = `<div class="p-8 text-center text-slate-400">No upcoming sessions scheduled.</div>`;
         return;
     }
@@ -409,10 +432,10 @@ function renderSessions() {
         const dateObj = new Date(session.date);
         const day = dateObj.getDate();
         const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
-        
+
         // --- ICON LOGIC FIXED ---
         let platformLogo = '';
-        
+
         if (session.platform === 'Google Meet') {
             // Use your local SVG file ONLY for Google Meet
             platformLogo = `<img src="google-meet.svg" alt="Meet" class="w-5 h-5 mr-2 inline-block">`;
@@ -428,8 +451,8 @@ function renderSessions() {
         }
         // ------------------------
 
-        let adminControls = currentUserRole === 'admin' 
-            ? `<button onclick="deleteSession(${session.id})" class="text-slate-300 hover:text-red-500 ml-2 transition"><i class="fas fa-trash-alt"></i></button>` 
+        let adminControls = currentUserRole === 'admin'
+            ? `<button onclick="deleteSession('${session.id}')" class="text-slate-300 hover:text-red-500 ml-2 transition"><i class="fas fa-trash-alt"></i></button>`
             : "";
 
         return `
@@ -463,10 +486,9 @@ function renderSessions() {
     }).join('');
 }
 
-function handleAddSession(e) {
+async function handleAddSession(e) {
     e.preventDefault();
     const newSession = {
-        id: Date.now(),
         title: document.getElementById('new-session-title').value,
         host: document.getElementById('new-session-host').value,
         date: document.getElementById('new-session-date').value,
@@ -476,22 +498,29 @@ function handleAddSession(e) {
         tag: document.getElementById('new-session-tag').value,
         link: document.getElementById('new-session-link').value,
         desc: document.getElementById('new-session-desc').value,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    sessionsData.push(newSession);
-    saveToStorage('dps_sessions', sessionsData); // SAVE
-    renderSessions();
-    if(document.getElementById('stat-sessions')) document.getElementById('stat-sessions').textContent = sessionsData.length;
-    e.target.reset();
-    document.getElementById('admin-add-session').classList.add('hidden');
-    showNotification("Session Scheduled!", "success");
+
+    try {
+        await db.collection('sessions').add(newSession);
+        e.target.reset();
+        document.getElementById('admin-add-session').classList.add('hidden');
+        showNotification("Session Scheduled!", "success");
+    } catch (error) {
+        console.error("Error adding session: ", error);
+        alert("Failed to add session.");
+    }
 }
 
-function deleteSession(id) {
-    if(confirm("Cancel and delete this session?")) {
-        sessionsData = sessionsData.filter(s => s.id !== id);
-        saveToStorage('dps_sessions', sessionsData); // SAVE
-        renderSessions();
-        showNotification("Session cancelled.", "success");
+async function deleteSession(id) {
+    if (confirm("Cancel and delete this session?")) {
+        try {
+            await db.collection('sessions').doc(id).delete();
+            showNotification("Session cancelled.", "success");
+        } catch (error) {
+            console.error("Error deleting session: ", error);
+            alert("Failed to delete session.");
+        }
     }
 }
 
@@ -500,15 +529,15 @@ function deleteSession(id) {
 // 7. MESSAGES & BOOKING
 // ==========================================
 
-function handleBooking(e) {
+async function handleBooking(e) {
     e.preventDefault();
-    
+
     // 1. Grab Inputs
     const name = document.getElementById('chat-name').value;
     const email = document.getElementById('chat-email') ? document.getElementById('chat-email').value : "no-email@test.com";
     const year = document.getElementById('chat-year').value;
     const topic = document.getElementById('chat-topic').value;
-    
+
     // 2. VALIDATION
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (document.getElementById('chat-email') && !emailRegex.test(email)) {
@@ -516,21 +545,26 @@ function handleBooking(e) {
         return;
     }
 
-    // 3. STORE MESSAGE
-    const newMessage = {
-        id: Date.now(), name, year, topic, email, time: "Anytime", status: "pending"
-    };
+    // 3. STORE MESSAGE (FIRESTORE)
+    try {
+        await db.collection('requests').add({
+            name, year, topic, email,
+            time: "Anytime",
+            status: "pending",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
-    peerMessages.push(newMessage);
-    updateDashboard();
-    
-    // 4. TOGGLE UI (FIXED)
-    document.getElementById('chat-form-container').classList.add('hidden');
-    const successDiv = document.getElementById('chat-success-container');
-    successDiv.classList.remove('hidden');
-    successDiv.classList.add('flex');
+        // 4. TOGGLE UI
+        document.getElementById('chat-form-container').classList.add('hidden');
+        const successDiv = document.getElementById('chat-success-container');
+        successDiv.classList.remove('hidden');
+        successDiv.classList.add('flex');
 
-    showNotification("Request Sent Successfully", "success");
+        showNotification("Request Sent Successfully", "success");
+    } catch (error) {
+        console.error("Error sending request:", error);
+        alert("Failed to send request. Please try again.");
+    }
 }
 
 function resetChatForm() {
@@ -540,9 +574,20 @@ function resetChatForm() {
     document.querySelector('#chat-form-container form').reset();
 }
 
+function subscribeToInbox() {
+    // Only listen if user is peer or admin to save reads, but for MVP we listen always or check role
+    // Ideally: if (currentUserRole === 'peer' || currentUserRole === 'admin') ...
+
+    db.collection('requests').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+        peerMessages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderInbox();
+        updateDashboard();
+    });
+}
+
 function renderInbox() {
     const container = document.getElementById('inbox-container');
-    if(!container) return;
+    if (!container) return;
     const activeMessages = peerMessages.filter(msg => msg.status === 'pending');
 
     if (activeMessages.length === 0) {
@@ -557,17 +602,21 @@ function renderInbox() {
                 <div><h4 class="font-bold text-slate-800 dark:text-white text-sm">${escapeHTML(msg.name)}</h4><p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${escapeHTML(msg.year)}</p></div>
             </div>
             <div class="md:w-1/4 flex items-center"><span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-600">${escapeHTML(msg.topic)}</span></div>
-            <div class="flex-1 flex justify-end items-center"><button onclick="acceptRequest(${msg.id})" class="bg-teal-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm hover:bg-teal-700 transition">Accept</button></div>
+            <div class="flex-1 flex justify-end items-center"><button onclick="acceptRequest('${msg.id}')" class="bg-teal-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm hover:bg-teal-700 transition">Accept</button></div>
         </div>`).join('');
 }
 
-function acceptRequest(id) {
-    const msgIndex = peerMessages.findIndex(m => m.id === id);
-    if(msgIndex > -1) {
-        peerMessages[msgIndex].status = 'accepted';
-        renderInbox();
-        updateDashboard();
+async function acceptRequest(id) {
+    try {
+        await db.collection('requests').doc(id).update({
+            status: 'accepted',
+            acceptedBy: auth.currentUser ? auth.currentUser.uid : 'anonymous',
+            acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
         showNotification("Request Accepted!", "success");
+    } catch (error) {
+        console.error("Error accepting request:", error);
+        alert("Failed to accept request.");
     }
 }
 
@@ -577,68 +626,133 @@ function acceptRequest(id) {
 // ==========================================
 
 function updateDashboard() {
-    if(document.getElementById('stat-topics')) {
+    if (document.getElementById('stat-topics')) {
         document.getElementById('stat-topics').textContent = topicsData.length;
         document.getElementById('stat-requests').textContent = peerMessages.length;
-        if(document.getElementById('stat-requests-sub')) document.getElementById('stat-requests-sub').textContent = peerMessages.filter(m => m.status === 'pending').length;
-        if(document.getElementById('stat-sessions')) document.getElementById('stat-sessions').textContent = sessionsData.length; 
+        if (document.getElementById('stat-requests-sub')) document.getElementById('stat-requests-sub').textContent = peerMessages.filter(m => m.status === 'pending').length;
+        if (document.getElementById('stat-sessions')) document.getElementById('stat-sessions').textContent = sessionsData.length;
     }
 }
 
-function loginAs(role, isAutoLogin = false) {
-    localStorage.setItem('dps_user_role', role);
-    currentUserRole = role;
-    document.getElementById('login-modal').classList.add('hidden');
+// ==========================================
+// 8. DASHBOARD & AUTH (FIREBASE)
+// ==========================================
 
+function updateDashboard() {
+    if (document.getElementById('stat-topics')) {
+        document.getElementById('stat-topics').textContent = topicsData.length;
+        document.getElementById('stat-requests').textContent = peerMessages.length;
+        if (document.getElementById('stat-requests-sub')) document.getElementById('stat-requests-sub').textContent = peerMessages.filter(m => m.status === 'pending').length;
+        if (document.getElementById('stat-sessions')) document.getElementById('stat-sessions').textContent = sessionsData.length;
+    }
+}
+
+// --- AUTH UI LOGIC ---
+
+function toggleAuthMode() {
+    isSignUpMode = !isSignUpMode;
+    const title = document.getElementById('auth-title');
+    const desc = document.getElementById('auth-desc');
+    const btn = document.getElementById('auth-submit-btn');
+    const toggleText = document.getElementById('auth-toggle-text');
+    const toggleBtn = document.getElementById('auth-toggle-btn');
+    const nameField = document.getElementById('name-field-container');
+
+    if (isSignUpMode) {
+        title.textContent = "Create Account";
+        desc.textContent = "Join the PeerCircle community.";
+        btn.textContent = "Sign Up";
+        toggleText.textContent = "Already have an account?";
+        toggleBtn.textContent = "Sign In";
+        nameField.classList.remove('hidden');
+        document.getElementById('auth-name').required = true;
+    } else {
+        title.textContent = "Welcome Back";
+        desc.textContent = "Sign in to access resources.";
+        btn.textContent = "Sign In";
+        toggleText.textContent = "New here?";
+        toggleBtn.textContent = "Create Account";
+        nameField.classList.add('hidden');
+        document.getElementById('auth-name').required = false;
+    }
+}
+
+async function handleAuth(e) {
+    e.preventDefault();
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    const name = document.getElementById('auth-name').value;
+    const btn = document.getElementById('auth-submit-btn');
+
+    btn.disabled = true;
+    btn.textContent = "Processing...";
+
+    try {
+        if (isSignUpMode) {
+            // SIGN UP
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+
+            // Create User Profile in Firestore
+            await db.collection('users').doc(user.uid).set({
+                name: name,
+                email: email,
+                role: 'student', // Default role
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            showNotification("Account Created!", "success");
+        } else {
+            // SIGN IN
+            await auth.signInWithEmailAndPassword(email, password);
+        }
+        // Listener in DOMContentLoaded handles the rest
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+        btn.disabled = false;
+        btn.textContent = isSignUpMode ? "Sign Up" : "Sign In";
+    }
+}
+
+function updateUIForRole(role) {
     const navAdmin = document.getElementById('nav-admin-link');
     const navPeer = document.getElementById('nav-peer-link');
     const mobAdmin = document.getElementById('mobile-admin-link');
     const mobPeer = document.getElementById('mobile-peer-link');
     const adminControls = document.getElementById('admin-controls-btn');
     const sessionControls = document.getElementById('admin-session-controls');
-    
+
+    // Hide all privileged elements first
     [navAdmin, navPeer, mobAdmin, mobPeer, adminControls, sessionControls].forEach(el => el && el.classList.add('hidden'));
+
+    if (!role) {
+        document.getElementById('logout-btn').classList.add('hidden');
+        return;
+    }
+
     document.getElementById('logout-btn').classList.remove('hidden');
 
     if (role === 'admin') {
-        if(navAdmin) navAdmin.classList.remove('hidden');
-        if(mobAdmin) mobAdmin.classList.remove('hidden');
-        if(adminControls) adminControls.classList.remove('hidden');
-        if(sessionControls) sessionControls.classList.remove('hidden');
+        if (navAdmin) navAdmin.classList.remove('hidden');
+        if (mobAdmin) mobAdmin.classList.remove('hidden');
+        if (adminControls) adminControls.classList.remove('hidden');
+        if (sessionControls) sessionControls.classList.remove('hidden');
         initAdminPickers();
-        updateDashboard();
-        if(!isAutoLogin) { showSection('admin-dashboard'); showNotification("Admin Mode Active", "success"); }
+        showNotification("Admin Access Granted", "success");
     } else if (role === 'peer') {
-        if(navPeer) navPeer.classList.remove('hidden');
-        if(mobPeer) mobPeer.classList.remove('hidden');
-        renderInbox();
-        if(!isAutoLogin) { showSection('peer-inbox'); showNotification("Welcome Mentor", "success"); }
-    } else {
-        if(!isAutoLogin) { 
-            showSection('home'); 
-            showNotification("Welcome Student", "success"); 
-        }
+        if (navPeer) navPeer.classList.remove('hidden');
+        if (mobPeer) mobPeer.classList.remove('hidden');
+        renderInbox(); // Will need refactor later
+        showNotification("Peer Mentor Access Granted", "success");
     }
-    
-// --- SCROLL FIX START ---
-// Forces the browser back to top 50ms after login
-setTimeout(() => {
-window.scrollTo({ top: 0, behavior: 'instant' });
-}, 5);
-// --- SCROLL FIX END --- I
-    
-    if(isAutoLogin) {
-         const hash = window.location.hash.substring(1) || 'home';
-         renderSection(hash);
-    }
-    renderTopics();
-    renderSessions(); 
 }
 
 function logout() {
-    localStorage.removeItem('dps_user_role');
-    window.location.hash = '';
-    window.location.reload();
+    auth.signOut().then(() => {
+        showNotification("Logged Out", "success");
+        window.location.reload();
+    });
 }
 
 
@@ -647,14 +761,14 @@ function logout() {
 // ==========================================
 
 let isBreathing = false;
-let breathingTimeouts = []; 
+let breathingTimeouts = [];
 
 function toggleBreathing() {
     const btn = document.getElementById('breath-btn');
     const widget = document.getElementById('breathing-widget');
     const text = document.getElementById('breath-text');
     const instruction = document.getElementById('breath-instruction');
-    
+
     if (!isBreathing) {
         isBreathing = true;
         btn.textContent = "Stop Exercise";
@@ -668,19 +782,19 @@ function toggleBreathing() {
         btn.textContent = "Start Exercise";
         btn.classList.replace('bg-red-500', 'bg-teal-600');
         btn.classList.replace('hover:bg-red-600', 'hover:bg-teal-700');
-        widget.className = 'breathing-widget'; 
+        widget.className = 'breathing-widget';
         text.textContent = "Ready?";
         instruction.textContent = "Tap Start";
-        void widget.offsetWidth; 
+        void widget.offsetWidth;
     }
 }
 
 function runBreathingCycle(widget, text, instruction) {
-    if (!isBreathing) return; 
+    if (!isBreathing) return;
     widget.className = 'breathing-widget inhaling';
     text.textContent = "Inhale...";
     instruction.textContent = "Breathe in slowly through nose (4s)";
-    
+
     breathingTimeouts.push(setTimeout(() => {
         if (!isBreathing) return;
         widget.className = 'breathing-widget holding';
@@ -699,11 +813,11 @@ function runBreathingCycle(widget, text, instruction) {
                 text.textContent = "Rest...";
                 instruction.textContent = "Relax for a moment (3s)";
                 breathingTimeouts.push(setTimeout(() => {
-                    if(isBreathing) runBreathingCycle(widget, text, instruction);
-                }, 3000)); 
-            }, 8000)); 
-        }, 7000)); 
-    }, 4000)); 
+                    if (isBreathing) runBreathingCycle(widget, text, instruction);
+                }, 3000));
+            }, 8000));
+        }, 7000));
+    }, 4000));
 }
 
 // ==========================================
