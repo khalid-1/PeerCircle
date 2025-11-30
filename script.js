@@ -24,19 +24,19 @@ function escapeHTML(str) {
 
 
 const mentorsData = [
-    { name: "Meerah Ahmed Alansi", year: "BSN Year 4", quote: "Happy to support with clinical placement anxiety and confidence on the ward.", tags: ["Clinical Support", "Placement Anxiety"] },
-    { name: "Seham Mohammed Abuhatab", year: "BSN Year 4", quote: "Let’s talk about balancing life, studies, and clinicals without burning out.", tags: ["Stress & Burnout", "Time Management"] },
-    { name: "Doaa Mohamed Sharafeldin", year: "BSN Year 4", quote: "Here for exam anxiety, study plans, and last-minute motivation.", tags: ["Exam Prep", "Study Skills"] },
-    { name: "Khalid Said Islam", year: "BSN Year 4", quote: "Happy to chat about tech tools, note-taking, and keeping organized.", tags: ["Study Skills", "Time Management"] },
-    { name: "Amina Sulieman Yassin", year: "BSN Year 4", quote: "Let’s make pharmacology and pathophysiology feel less scary.", tags: ["Pharmacology", "Pathophysiology"] },
-    { name: "Haya Hani Al Halabi", year: "BSN Year 3", quote: "Supporting you with first clinicals, communication, and reflective practice.", tags: ["Clinical Support", "Communication"] },
-    { name: "Khalifa Khalid Alshehhi", year: "BSN Year 3", quote: "Happy to discuss exam strategies and OSCE preparation.", tags: ["Exam Prep", "OSCE"] },
-    { name: "Abdalqader Abdou", year: "BSN Year 3", quote: "We can work together on clinical reasoning and case-based thinking.", tags: ["Clinical Reasoning", "Case Discussions"] },
-    { name: "Bushra Garallah Ali", year: "BSN Year 2", quote: "Here for first-year nerves, basics, and building your confidence.", tags: ["First Year Support", "Foundations"] },
-    { name: "Ghofran G A Abuzour", year: "BSN Year 2", quote: "Happy to help with pharmacology flashcards and study routines.", tags: ["Pharmacology", "Study Routines"] },
-    { name: "Leen Abdelhakim Toubeh", year: "BSN Year 2", quote: "Let’s focus on building study habits that actually work for you.", tags: ["Study Skills", "Motivation"] },
-    { name: "Raghad Mohammad", year: "BSN Year 2", quote: "Here for stress management, grounding techniques, and check-ins.", tags: ["Stress Management", "Coping Skills"] },
-    { name: "Haneen Jamal Hjaila", year: "BSN Year 2", quote: "Let’s work on confidence, presentations, and speaking up in class.", tags: ["Confidence", "Presentations"] }
+    { name: "Meerah Ahmed Alansi", year: "BSN Year 4", email: "meera.22904065@rakmhsu.ac.ae", quote: "Happy to support with clinical placement anxiety and confidence on the ward.", tags: ["Clinical Support", "Placement Anxiety"] },
+    { name: "Seham Mohammed Abuhatab", year: "BSN Year 4", email: "seham.22904030@rakmhsu.ac.ae", quote: "Let’s talk about balancing life, studies, and clinicals without burning out.", tags: ["Stress & Burnout", "Time Management"] },
+    { name: "Doaa Mohamed Sharafeldin", year: "BSN Year 4", email: "doaa.22904079@rakmhsu.ac.ae", quote: "Here for exam anxiety, study plans, and last-minute motivation.", tags: ["Exam Prep", "Study Skills"] },
+    { name: "Khalid Said Islam", year: "BSN Year 4", email: "khalid.22904036@rakmhsu.ac.ae", quote: "Happy to chat about tech tools, note-taking, and keeping organized.", tags: ["Study Skills", "Time Management"] },
+    { name: "Amina Sulieman Yassin", year: "BSN Year 4", email: "amina.22904026@rakmhsu.ac.ae", quote: "Let’s make pharmacology and pathophysiology feel less scary.", tags: ["Pharmacology", "Pathophysiology"] },
+    { name: "Haya Hani Al Halabi", year: "BSN Year 3", email: "haya.23904004@rakmhsu.ac.ae", quote: "Supporting you with first clinicals, communication, and reflective practice.", tags: ["Clinical Support", "Communication"] },
+    { name: "Khalifa Khalid Alshehhi", year: "BSN Year 3", email: "khalifa.23904112@rakmhsu.ac.ae", quote: "Happy to discuss exam strategies and OSCE preparation.", tags: ["Exam Prep", "OSCE"] },
+    { name: "Abdalqader Abdou", year: "BSN Year 3", email: "abdalqader.23904036@rakmhsu.ac.ae", quote: "We can work together on clinical reasoning and case-based thinking.", tags: ["Clinical Reasoning", "Case Discussions"] },
+    { name: "Bushra Garallah Ali", year: "BSN Year 2", email: "bushra.24904025@rakmhsu.ac.ae", quote: "Here for first-year nerves, basics, and building your confidence.", tags: ["First Year Support", "Foundations"] },
+    { name: "Ghofran G A Abuzour", year: "BSN Year 2", email: "ghofran.24904022@rakmhsu.ac.ae", quote: "Happy to help with pharmacology flashcards and study routines.", tags: ["Pharmacology", "Study Routines"] },
+    { name: "Leen Abdelhakim Toubeh", year: "BSN Year 2", email: "leen.24904034@rakmhsu.ac.ae", quote: "Let’s focus on building study habits that actually work for you.", tags: ["Study Skills", "Motivation"] },
+    { name: "Raghad Mohammad", year: "BSN Year 2", email: "raghad.24904030@rakmhsu.ac.ae", quote: "Here for stress management, grounding techniques, and check-ins.", tags: ["Stress Management", "Coping Skills"] },
+    { name: "Haneen Jamal Hjaila", year: "BSN Year 2", email: "haneen.24904019@rakmhsu.ac.ae", quote: "Let’s work on confidence, presentations, and speaking up in class.", tags: ["Confidence", "Presentations"] }
 ];
 
 
@@ -399,7 +399,7 @@ function initAdminPickers() {
 
 
 // ==========================================
-// 5. MENTOR DIRECTORY
+// 5. MENTOR DIRECTORY (Updated with Contact Modal)
 // ==========================================
 
 function renderMentors(filter = 'all') {
@@ -434,9 +434,54 @@ function renderMentors(filter = 'all') {
             <div class="flex flex-wrap gap-2 mb-4">
                 ${m.tags.map(tag => `<span class="px-2 py-1 text-xs rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300">${tag}</span>`).join('')}
             </div>
-            <button class="mt-auto w-full border border-teal-500 text-teal-700 dark:text-teal-400 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition">Connect</button>
+            <button onclick="showMentorEmail('${escapeHTML(m.email)}', '${escapeHTML(m.name)}')" class="mt-auto w-full border border-teal-500 text-teal-700 dark:text-teal-400 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition flex items-center justify-center gap-2">
+                <i class="far fa-envelope"></i> Contact Mentor
+            </button>
         </article>
     `).join('');
+}
+
+// --- NEW HELPER FUNCTIONS FOR MODAL ---
+
+function showMentorEmail(mentorEmail, mentorName) {
+    const emailDisplay = document.getElementById('mentor-email-display');
+    const emailText = document.getElementById('mentor-email-text');
+    const emailName = document.getElementById('mentor-email-name');
+    const modal = document.getElementById('mentor-email-modal');
+
+    // Populate data
+    emailName.textContent = mentorName;
+    emailText.value = mentorEmail;
+    emailDisplay.textContent = mentorEmail;
+
+    // Reset copy button text
+    document.getElementById('mentor-copy-button').innerHTML = '<i class="fas fa-copy mr-2"></i> Copy Email';
+
+    // Show modal
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeMentorEmailModal() {
+    const modal = document.getElementById('mentor-email-modal');
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+}
+
+function copyMentorEmail() {
+    const emailText = document.getElementById('mentor-email-text');
+
+    // Select and Copy
+    emailText.select();
+    emailText.setSelectionRange(0, 99999); // Mobile fix
+    navigator.clipboard.writeText(emailText.value).then(() => {
+        // Visual Feedback
+        const copyButton = document.getElementById('mentor-copy-button');
+        copyButton.innerHTML = '<i class="fas fa-check mr-2"></i> Copied!';
+        setTimeout(() => {
+            copyButton.innerHTML = '<i class="fas fa-copy mr-2"></i> Copy Email';
+        }, 2000);
+    });
 }
 
 function filterMentors(category) {

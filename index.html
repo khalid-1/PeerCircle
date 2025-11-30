@@ -13,6 +13,40 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <div id="mentor-email-modal"
+        class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] hidden items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-8 text-center shadow-2xl border border-slate-100 dark:border-slate-700 animate-[fadeIn_0.2s_ease-out] relative">
+            <button onclick="closeMentorEmailModal()"
+                class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i
+                    class="fas fa-times"></i></button>
+            <div
+                class="bg-teal-50 dark:bg-teal-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-teal-600 dark:text-teal-400 text-2xl">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Contact <span
+                    id="mentor-email-name">Mentor</span></h2>
+            <p class="text-slate-500 dark:text-slate-400 mb-6 text-sm">Copy the email address below to contact your
+                mentor.</p>
+
+            <div class="flex flex-col items-center space-y-3">
+                <p id="mentor-email-display"
+                    class="text-lg font-mono font-semibold text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-700 p-3 rounded-lg w-full break-all select-all">
+                </p>
+                <input type="text" id="mentor-email-text" class="absolute opacity-0 pointer-events-none" value="">
+
+                <button id="mentor-copy-button" onclick="copyMentorEmail()"
+                    class="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition shadow-md shadow-teal-200 dark:shadow-none">
+                    <i class="fas fa-copy mr-2"></i> Copy Email
+                </button>
+                <button onclick="window.location.href='mailto:' + document.getElementById('mentor-email-text').value"
+                    class="w-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition border border-slate-200 dark:border-slate-600">
+                    <i class="fas fa-external-link-alt mr-2"></i> Open Email App
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -598,7 +632,7 @@
                                             class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Student
                                             Email</label>
                                         <input type="email" id="chat-email" required class="input-field"
-                                            placeholder="e.g. student@college.edu">
+                                            placeholder="e.g. student@rakmhsu.ac.ae">
                                     </div>
                                     <div>
                                         <label
@@ -758,7 +792,7 @@
                             <label
                                 class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Email</label>
                             <input type="email" id="auth-email" required class="input-field"
-                                placeholder="student@college.edu">
+                                placeholder="student@rakmhsu.ac.ae">
                         </div>
                         <div>
                             <label
