@@ -802,19 +802,22 @@
                         </div>
 
                         <button type="submit" id="auth-submit-btn"
-                            class="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition shadow-md shadow-teal-200 dark:shadow-none mt-2">
-                            Sign In
-                        </button>
+                            class="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition shadow-lg shadow-teal-200 dark:shadow-none mb-4">Sign
+                            In</button>
                     </form>
 
-                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
-                        <p class="text-xs text-slate-500 dark:text-slate-400">
-                            <span id="auth-toggle-text">New here?</span>
-                            <button onclick="toggleAuthMode()" id="auth-toggle-btn"
-                                class="text-teal-600 dark:text-teal-400 font-bold hover:underline">Create
-                                Account</button>
-                        </p>
-                    </div>
+                    <!-- DEV ONLY: Guest Button -->
+                    <button type="button" onclick="loginAsGuest()"
+                        class="w-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition mb-4 text-sm">
+                        <i class="fas fa-user-secret mr-2"></i> Guest Mode (Dev Only)
+                    </button>
+
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">
+                        <span id="auth-switch-text">New here?</span>
+                        <button type="button" onclick="toggleAuthMode()"
+                            class="text-teal-600 dark:text-teal-400 font-bold hover:underline ml-1"
+                            id="auth-switch-btn">Create Account</button>
+                    </p>
                 </div>
             </div>
 

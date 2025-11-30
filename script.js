@@ -823,6 +823,27 @@ async function handleAuth(e) {
     }
 }
 
+// --- DEV ONLY: GUEST MODE ---
+function loginAsGuest() {
+    console.log("Logging in as Guest (Dev Mode)");
+    currentUserRole = 'guest'; // Treat as student/guest
+
+    // Hide UI
+    document.getElementById('login-modal').classList.add('hidden');
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) loadingScreen.classList.add('hidden');
+
+    // Update UI
+    updateUIForRole(currentUserRole);
+    showNotification("Guest Mode Active (Dev)", "success");
+
+    // Load Data manually (Firestore Test Mode required)
+    subscribeToTopics();
+    subscribeToSessions();
+    subscribeToInbox();
+    renderMentors();
+}
+
 function updateUIForRole(role) {
     const navAdmin = document.getElementById('nav-admin-link');
     const navPeer = document.getElementById('nav-peer-link');
