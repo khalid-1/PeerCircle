@@ -743,38 +743,69 @@ function updateDashboard() {
 }
 
 // --- AUTH UI LOGIC ---
+let currentAuthMode = 'LOGIN'; // 'LOGIN', 'SIGNUP', 'RESET'
 
-function toggleAuthMode() {
-    isSignUpMode = !isSignUpMode;
+function setAuthMode(mode) {
+    currentAuthMode = mode;
+
     const title = document.getElementById('auth-title');
     const desc = document.getElementById('auth-desc');
     const btn = document.getElementById('auth-submit-btn');
-    const toggleText = document.getElementById('auth-toggle-text');
-    const toggleBtn = document.getElementById('auth-toggle-btn');
+    const toggleText = document.getElementById('auth-switch-text');
+    const toggleBtn = document.getElementById('auth-switch-btn');
     const nameField = document.getElementById('name-field-container');
+    const passField = document.getElementById('password-field-container');
+    const forgotBtn = document.getElementById('auth-forgot-btn');
+    const guestBtn = document.getElementById('auth-guest-btn');
 
-    if (isSignUpMode) {
+    // Reset visibility
+    nameField.classList.add('hidden');
+    passField.classList.remove('hidden');
+    forgotBtn.classList.remove('hidden');
+    guestBtn.classList.remove('hidden');
+
+    if (mode === 'SIGNUP') {
         title.textContent = "Create Account";
         desc.textContent = "Join the PeerCircle community.";
         btn.textContent = "Sign Up";
         toggleText.textContent = "Already have an account?";
         toggleBtn.textContent = "Sign In";
-        nameField.classList.remove('hidden');
-        document.getElementById('auth-name').required = true;
-    } else {
+        toggleBtn.onclick = () => setAuthMode('LOGIN');
+
+        nameField.classList.remove('hidden'); // Show Name
+
+    } else if (mode === 'LOGIN') {
         title.textContent = "Welcome Back";
         desc.textContent = "Sign in to access resources.";
         btn.textContent = "Sign In";
         toggleText.textContent = "New here?";
         toggleBtn.textContent = "Create Account";
-        nameField.classList.add('hidden');
-        document.getElementById('auth-name').required = false;
+        toggleBtn.onclick = () => setAuthMode('SIGNUP');
+
+    } else if (mode === 'RESET') {
+        title.textContent = "Reset Password";
+        desc.textContent = "Enter your email to receive a reset link.";
+        btn.textContent = "Send Reset Link";
+
+        passField.classList.add('hidden'); // Hide Password
+        forgotBtn.classList.add('hidden'); // Hide Forgot Link
+        guestBtn.classList.add('hidden'); // Hide Guest Button
+
+        toggleText.textContent = "Remembered your password?";
+        toggleBtn.textContent = "Back to Login";
+        toggleBtn.onclick = () => setAuthMode('LOGIN');
     }
+}
+
+function toggleAuthMode() {
+    // Legacy support or default toggle
+    if (currentAuthMode === 'LOGIN') setAuthMode('SIGNUP');
+    else setAuthMode('LOGIN');
 }
 
 async function handleAuth(e) {
     e.preventDefault();
-    const email = document.getElementById('auth-email').value.trim(); // Trim whitespace
+    const email = document.getElementById('auth-email').value.trim();
     const password = document.getElementById('auth-password').value;
     const name = document.getElementById('auth-name').value;
     const btn = document.getElementById('auth-submit-btn');
@@ -789,7 +820,7 @@ async function handleAuth(e) {
     btn.textContent = "Processing...";
 
     try {
-        if (isSignUpMode) {
+        if (currentAuthMode === 'SIGNUP') {
             // SIGN UP
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
@@ -806,14 +837,10 @@ async function handleAuth(e) {
             await user.sendEmailVerification();
 
             alert("Account created! A verification email has been sent to " + email + ". Please verify your email before logging in.");
-
-            // Sign out immediately to force verification flow
             await auth.signOut();
+            setAuthMode('LOGIN');
 
-            // Reset UI
-            toggleAuthMode(); // Switch back to login
-
-        } else {
+        } else if (currentAuthMode === 'LOGIN') {
             // SIGN IN
             const userCredential = await auth.signInWithEmailAndPassword(email, password);
             const user = userCredential.user;
@@ -826,27 +853,20 @@ async function handleAuth(e) {
                 return;
             }
 
-            // If verified, onAuthStateChanged will handle the rest
+        } else if (currentAuthMode === 'RESET') {
+            // RESET PASSWORD
+            await auth.sendPasswordResetEmail(email);
+            alert("Password reset email sent! Check your inbox.");
+            setAuthMode('LOGIN');
         }
+
     } catch (error) {
         console.error(error);
         alert(error.message);
         btn.disabled = false;
-        btn.textContent = isSignUpMode ? "Sign Up" : "Sign In";
-    }
-}
-
-// --- RESET PASSWORD ---
-async function resetPassword() {
-    const email = prompt("Please enter your email address to reset your password:");
-    if (email) {
-        try {
-            await auth.sendPasswordResetEmail(email);
-            alert("Password reset email sent! Check your inbox.");
-        } catch (error) {
-            console.error(error);
-            alert("Error: " + error.message);
-        }
+        if (currentAuthMode === 'SIGNUP') btn.textContent = "Sign Up";
+        else if (currentAuthMode === 'LOGIN') btn.textContent = "Sign In";
+        else btn.textContent = "Send Reset Link";
     }
 }
 

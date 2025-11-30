@@ -797,11 +797,10 @@
                             <input type="email" id="auth-email" required class="input-field"
                                 placeholder="student@rakmhsu.ac.ae">
                         </div>
-                        <div>
+                        <div id="password-field-container">
                             <label
                                 class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Password</label>
-                            <input type="password" id="auth-password" required class="input-field"
-                                placeholder="••••••••">
+                            <input type="password" id="auth-password" class="input-field" placeholder="••••••••">
                         </div>
 
                         <button type="submit" id="auth-submit-btn"
@@ -809,14 +808,13 @@
                             In</button>
 
                         <div class="text-center mb-4">
-                            <button type="button" onclick="resetPassword()"
+                            <button type="button" id="auth-forgot-btn" onclick="setAuthMode('RESET')"
                                 class="text-xs text-slate-500 hover:text-teal-600 transition">Forgot Password?</button>
                         </div>
                     </form>
 
                     <!-- DEV ONLY: Guest Button -->
-                    <!-- DEV ONLY: Guest Button -->
-                    <button type="button" onclick="loginAsGuest()"
+                    <button type="button" id="auth-guest-btn" onclick="loginAsGuest()"
                         class="w-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition mb-6 text-sm mt-2">
                         <i class="fas fa-user-secret mr-2"></i> Guest Mode (Dev Only)
                     </button>
@@ -940,10 +938,10 @@
             </div>
 
             <footer class="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 mt-12 py-8">
-                <div class="max-w-7xl mx-auto px-4 text-center">
-                    <p class="text-slate-500 dark:text-slate-400 text-sm mb-2">© 2025 PeerCircle. Created by <span
+                <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">© 2025 PeerCircle. Created by <span
                             class="font-bold text-slate-700 dark:text-slate-300">Khalid Said</span>.</p>
-                    <div class="flex justify-center space-x-4">
+                    <div class="flex space-x-4">
                         <a href="#" class="text-slate-400 hover:text-teal-500 transition"><i
                                 class="fab fa-instagram text-xl"></i></a>
                         <a href="#" class="text-slate-400 hover:text-teal-500 transition"><i
@@ -951,7 +949,6 @@
                     </div>
                 </div>
             </footer>
-
             <script src="firebase-config.js"></script>
             <script src="script.js"></script>
 </body>
