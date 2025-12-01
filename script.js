@@ -346,44 +346,109 @@ async function deleteTopic(event, id) {
 // ==========================================
 
 function openSuggestTopicModal() {
-    const modal = document.getElementById('suggest-topic-modal');
-    const form = document.getElementById('suggest-topic-form');
-    const success = document.getElementById('suggest-topic-success');
+    // Remove any existing modal
+    document.getElementById('dynamic-suggest-modal')?.remove();
     
-    if (modal) {
-        // Reset to form state
-        if (form) form.classList.remove('hidden');
-        if (success) success.classList.add('hidden');
-        
-        // Pre-fill email if user is logged in
-        const emailInput = document.getElementById('suggest-topic-email');
-        if (emailInput && currentUserData && currentUserData.email) {
-            emailInput.value = currentUserData.email;
-        }
-        
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
+    const isDark = document.documentElement.classList.contains('dark');
+    
+    const colors = {
+        bg: isDark ? '#1e293b' : '#ffffff',
+        text: isDark ? '#f1f5f9' : '#1e293b',
+        textMuted: isDark ? '#94a3b8' : '#64748b',
+        inputBg: isDark ? '#334155' : '#f8fafc',
+        inputBorder: isDark ? '#475569' : '#cbd5e1',
+        border: isDark ? '#475569' : '#e2e8f0'
+    };
+    
+    const prefillEmail = currentUserData && currentUserData.email ? currentUserData.email : '';
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'dynamic-suggest-modal';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 1rem;
+    `;
+    overlay.onclick = (e) => {
+        if (e.target === overlay) closeSuggestTopicModal();
+    };
+    
+    overlay.innerHTML = `
+        <div style="background: ${colors.bg}; border-radius: 1rem; max-width: 28rem; width: 100%; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden;">
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #14b8a6, #10b981); padding: 1.5rem; color: white;">
+                <button onclick="closeSuggestTopicModal()" style="position: absolute; top: 1rem; right: 1rem; width: 2rem; height: 2rem; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 3rem; height: 3rem; border-radius: 0.75rem; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h2 style="font-size: 1.25rem; font-weight: bold; margin: 0;">Suggest a Topic</h2>
+                        <p style="font-size: 0.875rem; opacity: 0.9; margin: 0;">Help us improve the library</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form -->
+            <div id="suggest-form-container" style="padding: 1.5rem;">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 700; color: ${colors.textMuted}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Topic Title *</label>
+                    <input type="text" id="dyn-suggest-title" placeholder="e.g. Managing Clinical Anxiety" required style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid ${colors.inputBorder}; background: ${colors.inputBg}; color: ${colors.text}; outline: none; box-sizing: border-box;">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 700; color: ${colors.textMuted}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Why is this important?</label>
+                    <textarea id="dyn-suggest-reason" placeholder="Tell us why this topic would help nursing students..." rows="3" style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid ${colors.inputBorder}; background: ${colors.inputBg}; color: ${colors.text}; outline: none; resize: none; box-sizing: border-box;"></textarea>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 700; color: ${colors.textMuted}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Your Email (Optional)</label>
+                    <input type="email" id="dyn-suggest-email" placeholder="To be notified when published" value="${prefillEmail}" style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid ${colors.inputBorder}; background: ${colors.inputBg}; color: ${colors.text}; outline: none; box-sizing: border-box;">
+                </div>
+                
+                <button onclick="submitSuggestTopic()" style="width: 100%; background: #14b8a6; color: white; padding: 0.875rem; border-radius: 0.75rem; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i class="fas fa-paper-plane"></i> Submit Suggestion
+                </button>
+                
+                <p style="text-align: center; font-size: 0.75rem; color: ${colors.textMuted}; margin-top: 1rem;">Your suggestion will be reviewed by our team</p>
+            </div>
+            
+            <!-- Success State -->
+            <div id="suggest-success-container" style="display: none; padding: 2rem; text-align: center;">
+                <div style="width: 4rem; height: 4rem; border-radius: 50%; background: ${isDark ? 'rgba(16, 185, 129, 0.2)' : '#d1fae5'}; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: #10b981; font-size: 2rem;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3 style="font-size: 1.25rem; font-weight: bold; color: ${colors.text}; margin-bottom: 0.5rem;">Thank You!</h3>
+                <p style="color: ${colors.textMuted}; margin-bottom: 1.5rem;">Your topic suggestion has been submitted. We appreciate your input!</p>
+                <button onclick="closeSuggestTopicModal()" style="padding: 0.5rem 1.5rem; background: ${colors.inputBg}; color: ${colors.text}; border-radius: 0.5rem; font-weight: 500; border: 1px solid ${colors.border}; cursor: pointer;">
+                    Close
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
 }
 
 function closeSuggestTopicModal() {
-    const modal = document.getElementById('suggest-topic-modal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        
-        // Reset form
-        const form = document.getElementById('suggest-topic-form');
-        if (form) form.reset();
-    }
+    document.getElementById('dynamic-suggest-modal')?.remove();
 }
 
-async function handleSuggestTopic(event) {
-    event.preventDefault();
-    
-    const title = document.getElementById('suggest-topic-title').value.trim();
-    const reason = document.getElementById('suggest-topic-reason').value.trim();
-    const email = document.getElementById('suggest-topic-email').value.trim();
+async function submitSuggestTopic() {
+    const title = document.getElementById('dyn-suggest-title')?.value.trim();
+    const reason = document.getElementById('dyn-suggest-reason')?.value.trim();
+    const email = document.getElementById('dyn-suggest-email')?.value.trim();
     
     if (!title) {
         showNotification("Please enter a topic title", "error");
@@ -402,11 +467,11 @@ async function handleSuggestTopic(event) {
         });
         
         // Show success state
-        const form = document.getElementById('suggest-topic-form');
-        const success = document.getElementById('suggest-topic-success');
+        const form = document.getElementById('suggest-form-container');
+        const success = document.getElementById('suggest-success-container');
         
-        if (form) form.classList.add('hidden');
-        if (success) success.classList.remove('hidden');
+        if (form) form.style.display = 'none';
+        if (success) success.style.display = 'block';
         
         showNotification("Topic suggestion submitted!", "success");
         
@@ -628,28 +693,81 @@ function renderMentors(filter = 'all') {
 // --- NEW HELPER FUNCTIONS FOR MODAL ---
 
 function showMentorEmail(mentorEmail, mentorName) {
-    const emailDisplay = document.getElementById('mentor-email-display');
-    const emailText = document.getElementById('mentor-email-text');
-    const emailName = document.getElementById('mentor-email-name');
-    const modal = document.getElementById('mentor-email-modal');
-
-    // Populate data
-    emailName.textContent = mentorName;
-    emailText.value = mentorEmail;
-    emailDisplay.textContent = mentorEmail;
-
-    // Reset copy button text
-    document.getElementById('mentor-copy-button').innerHTML = '<i class="fas fa-copy mr-2"></i> Copy Email';
-
-    // Show modal
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    // Remove any existing modal
+    document.getElementById('dynamic-mentor-modal')?.remove();
+    
+    const isDark = document.documentElement.classList.contains('dark');
+    
+    const colors = {
+        bg: isDark ? '#1e293b' : '#ffffff',
+        text: isDark ? '#f1f5f9' : '#1e293b',
+        textMuted: isDark ? '#94a3b8' : '#64748b',
+        inputBg: isDark ? '#334155' : '#f1f5f9',
+        border: isDark ? '#475569' : '#e2e8f0'
+    };
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'dynamic-mentor-modal';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 1rem;
+    `;
+    overlay.onclick = (e) => {
+        if (e.target === overlay) closeMentorEmailModal();
+    };
+    
+    overlay.innerHTML = `
+        <div style="background: ${colors.bg}; border-radius: 1rem; max-width: 24rem; width: 100%; padding: 2rem; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+            <button onclick="closeMentorEmailModal()" style="position: absolute; top: 1rem; right: 1rem; width: 2rem; height: 2rem; border-radius: 50%; background: ${colors.inputBg}; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: ${colors.textMuted};">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div style="width: 4rem; height: 4rem; border-radius: 50%; background: ${isDark ? 'rgba(20, 184, 166, 0.2)' : '#f0fdfa'}; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: #14b8a6; font-size: 1.5rem;">
+                <i class="fas fa-envelope"></i>
+            </div>
+            
+            <h2 style="font-size: 1.5rem; font-weight: bold; color: ${colors.text}; margin-bottom: 0.5rem;">Contact ${escapeHTML(mentorName.split(' ')[0])}</h2>
+            <p style="color: ${colors.textMuted}; font-size: 0.875rem; margin-bottom: 1.5rem;">Copy the email address below to contact your mentor.</p>
+            
+            <p id="mentor-email-value" style="font-family: monospace; font-weight: 600; color: ${colors.text}; background: ${colors.inputBg}; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; word-break: break-all; user-select: all;">${escapeHTML(mentorEmail)}</p>
+            
+            <button onclick="copyMentorEmailDynamic('${escapeHTML(mentorEmail)}')" id="copy-mentor-btn" style="width: 100%; background: #14b8a6; color: white; padding: 0.75rem; border-radius: 0.75rem; font-weight: bold; border: none; cursor: pointer; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <i class="fas fa-copy"></i> Copy Email
+            </button>
+            
+            <button onclick="window.location.href='mailto:${escapeHTML(mentorEmail)}'" style="width: 100%; background: ${colors.inputBg}; color: ${colors.text}; padding: 0.75rem; border-radius: 0.75rem; font-weight: bold; border: 1px solid ${colors.border}; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <i class="fas fa-external-link-alt"></i> Open Email App
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
 }
 
 function closeMentorEmailModal() {
-    const modal = document.getElementById('mentor-email-modal');
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
+    document.getElementById('dynamic-mentor-modal')?.remove();
+}
+
+function copyMentorEmailDynamic(email) {
+    navigator.clipboard.writeText(email).then(() => {
+        const btn = document.getElementById('copy-mentor-btn');
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-copy"></i> Copy Email';
+            }, 2000);
+        }
+    });
 }
 
 function copyMentorEmail() {

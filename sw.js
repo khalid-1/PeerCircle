@@ -1,4 +1,4 @@
-const CACHE_NAME = 'peercircle-v11';
+const CACHE_NAME = 'peercircle-v14';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
