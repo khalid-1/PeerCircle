@@ -346,15 +346,41 @@ function showDynamicModal(topic, theme) {
     // Remove any existing dynamic modal
     document.getElementById('dynamic-topic-modal')?.remove();
     
+    // Detect dark mode
+    const isDark = document.documentElement.classList.contains('dark');
+    
+    // Theme-aware colors
+    const colors = {
+        bg: isDark ? '#1e293b' : '#ffffff',
+        text: isDark ? '#f1f5f9' : '#1e293b',
+        textMuted: isDark ? '#94a3b8' : '#475569',
+        border: isDark ? '#334155' : '#e2e8f0',
+        btnBg: isDark ? '#334155' : '#f1f5f9',
+        btnText: isDark ? '#f1f5f9' : '#475569',
+        actionBg: isDark ? 'rgba(20, 184, 166, 0.15)' : '#f0fdfa',
+        iconBg: isDark ? 'rgba(20, 184, 166, 0.2)' : '#ccfbf1'
+    };
+    
+    // Get header color based on theme
+    const headerColor = theme.hex.includes('teal') ? '#14b8a6' : 
+                        theme.hex.includes('blue') ? '#3b82f6' : 
+                        theme.hex.includes('purple') ? '#a855f7' : 
+                        theme.hex.includes('rose') ? '#f43f5e' : 
+                        theme.hex.includes('amber') ? '#f59e0b' : '#6366f1';
+    
+    const iconColor = theme.text.includes('teal') ? '#14b8a6' : 
+                      theme.text.includes('blue') ? '#3b82f6' : 
+                      theme.text.includes('purple') ? '#a855f7' : '#14b8a6';
+    
     const content = topic.content || {};
     
     // Build bullets HTML
     let bulletsHTML = '';
     if (content.bullets && content.bullets.length > 0) {
         bulletsHTML = `
-            <div class="mb-4">
-                <h4 class="font-bold text-slate-800 dark:text-white mb-2">Key Signs & Strategies</h4>
-                <ul style="list-style: disc; padding-left: 1.25rem;" class="space-y-1 text-slate-600 dark:text-slate-300">
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="font-weight: 600; color: ${colors.text}; margin-bottom: 0.5rem;">Key Signs & Strategies</h4>
+                <ul style="list-style: disc; padding-left: 1.25rem; color: ${colors.textMuted}; display: flex; flex-direction: column; gap: 0.25rem;">
                     ${content.bullets.map(b => `<li>${escapeHTML(b)}</li>`).join('')}
                 </ul>
             </div>
@@ -365,9 +391,9 @@ function showDynamicModal(topic, theme) {
     let actionHTML = '';
     if (content.action) {
         actionHTML = `
-            <div style="background: ${theme.name === 'teal' ? '#f0fdfa' : '#f1f5f9'}; padding: 1rem; border-radius: 0.75rem; border-left: 4px solid ${theme.name === 'teal' ? '#14b8a6' : '#64748b'};" class="dark:bg-opacity-20">
-                <h4 style="color: ${theme.name === 'teal' ? '#0d9488' : '#475569'};" class="font-bold mb-1">Try This:</h4>
-                <p class="text-slate-600 dark:text-slate-300">${escapeHTML(content.action)}</p>
+            <div style="background: ${colors.actionBg}; padding: 1rem; border-radius: 0.75rem; border-left: 4px solid ${headerColor};">
+                <h4 style="color: ${iconColor}; font-weight: 600; margin-bottom: 0.25rem;">Try This:</h4>
+                <p style="color: ${colors.textMuted};">${escapeHTML(content.action)}</p>
             </div>
         `;
     }
@@ -395,13 +421,13 @@ function showDynamicModal(topic, theme) {
     
     // Create the modal content
     overlay.innerHTML = `
-        <div style="background: white; border-radius: 1rem; width: 100%; max-width: 32rem; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);" class="dark:bg-slate-800">
+        <div style="background: ${colors.bg}; border-radius: 1rem; width: 100%; max-width: 32rem; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
             
             <!-- Header bar -->
-            <div style="height: 1rem; width: 100%; background: ${theme.hex.includes('teal') ? '#14b8a6' : theme.hex.includes('blue') ? '#3b82f6' : theme.hex.includes('purple') ? '#a855f7' : theme.hex.includes('rose') ? '#f43f5e' : theme.hex.includes('amber') ? '#f59e0b' : '#6366f1'}; border-radius: 1rem 1rem 0 0;"></div>
+            <div style="height: 1rem; width: 100%; background: ${headerColor}; border-radius: 1rem 1rem 0 0;"></div>
             
             <!-- Close button -->
-            <button onclick="closeDynamicModal()" style="position: absolute; top: 1.5rem; right: 1rem; width: 2rem; height: 2rem; border-radius: 50%; background: #f1f5f9; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1rem;" class="hover:bg-red-50 hover:text-red-500 dark:bg-slate-700">
+            <button onclick="closeDynamicModal()" style="position: absolute; top: 1.5rem; right: 1rem; width: 2rem; height: 2rem; border-radius: 50%; background: ${colors.btnBg}; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: ${colors.textMuted}; font-size: 1rem; transition: all 0.2s;" onmouseover="this.style.background='#fef2f2'; this.style.color='#ef4444';" onmouseout="this.style.background='${colors.btnBg}'; this.style.color='${colors.textMuted}';">
                 <i class="fas fa-times"></i>
             </button>
             
@@ -409,14 +435,14 @@ function showDynamicModal(topic, theme) {
             <div style="padding: 1.5rem 2rem;">
                 <!-- Title with icon -->
                 <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
-                    <div style="width: 3rem; height: 3rem; border-radius: 0.75rem; background: ${theme.light.includes('teal') ? '#ccfbf1' : '#e0e7ff'}; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: ${theme.text.includes('teal') ? '#0d9488' : '#4f46e5'};" class="dark:bg-opacity-20">
+                    <div style="width: 3rem; height: 3rem; border-radius: 0.75rem; background: ${colors.iconBg}; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: ${iconColor};">
                         <i class="fas ${topic.icon}"></i>
                     </div>
-                    <h2 style="font-size: 1.5rem; font-weight: bold; color: #1e293b;" class="dark:text-white">${escapeHTML(topic.title)}</h2>
+                    <h2 style="font-size: 1.5rem; font-weight: bold; color: ${colors.text};">${escapeHTML(topic.title)}</h2>
                 </div>
                 
                 <!-- Intro text -->
-                <p style="color: #475569; margin-bottom: 1.5rem; line-height: 1.6;" class="dark:text-slate-300">
+                <p style="color: ${colors.textMuted}; margin-bottom: 1.5rem; line-height: 1.6;">
                     ${escapeHTML(content.intro || topic.desc || 'No description available.')}
                 </p>
                 
@@ -424,8 +450,8 @@ function showDynamicModal(topic, theme) {
                 ${actionHTML}
                 
                 <!-- Footer -->
-                <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; text-align: right;" class="dark:border-slate-700">
-                    <button onclick="closeDynamicModal()" style="padding: 0.5rem 1.5rem; background: #f1f5f9; color: #475569; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer;" class="hover:bg-slate-200 dark:bg-slate-700 dark:text-white">
+                <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid ${colors.border}; text-align: right;">
+                    <button onclick="closeDynamicModal()" style="padding: 0.5rem 1.5rem; background: ${colors.btnBg}; color: ${colors.btnText}; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
                         Close
                     </button>
                 </div>
