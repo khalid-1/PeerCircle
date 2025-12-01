@@ -143,6 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             document.getElementById('login-modal').classList.remove('hidden');
 
+            // Even if logged out (or guest), try to fetch mentor overrides
+            // This allows guests to see the public mentor profiles
+            fetchMentorOverrides();
+
             updateUIForRole(null);
         }
     });
@@ -1032,22 +1036,35 @@ async function saveProfilePicture() {
 
         // Convert to base64
         const photoURL = canvas.toDataURL('image/jpeg', 0.9);
+        const user = auth.currentUser;
 
-        // Save to Firestore if user is logged in and not a guest
-        if (currentUserData && !currentUserData.isGuest && auth.currentUser) {
-            await db.collection('users').doc(auth.currentUser.uid).update({
+        if (user) {
+            // 2. Update Firestore (Users Collection)
+            await db.collection('users').doc(user.uid).update({
                 photoURL: photoURL
             });
+
+            // 3. Sync to Mentor Profile (if user is a mentor)
+            // This ensures guests can see the photo without accessing the restricted 'users' collection
+            const isMentor = mentorsData.some(m => m.email === user.email);
+            if (isMentor) {
+                try {
+                    await db.collection('mentor_profiles').doc(user.email).set({
+                        photoURL: photoURL,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                    console.log("Synced photo to mentor profile");
+                } catch (err) {
+                    console.error("Failed to sync photo to mentor profile:", err);
+                }
+            }
         }
 
-        // Update local user data
+        // 4. Update UI
         if (currentUserData) {
             currentUserData.photoURL = photoURL;
         }
-
-        // Update all avatar displays
         updateAllAvatars(photoURL);
-
         showNotification('Profile picture updated!', 'success');
         closeProfilePictureModal();
 
@@ -1160,11 +1177,36 @@ function initAdminPickers() {
 
 async function fetchMentorOverrides() {
     try {
+        // 1. Fetch Overrides (Quote/Tags)
         const snapshot = await db.collection('mentor_profiles').get();
         mentorOverrides = {};
         snapshot.forEach(doc => {
             mentorOverrides[doc.id] = doc.data();
         });
+
+        // 2. Fetch Profile Pictures (from 'users' collection)
+        // We need to find the user doc where email matches the mentor email
+        const photoPromises = mentorsData.map(async (mentor) => {
+            try {
+                // Skip if we already have the photo from mentor_profiles (optimization)
+                if (mentorOverrides[mentor.email] && mentorOverrides[mentor.email].photoURL) return;
+
+                const userQuery = await db.collection('users').where('email', '==', mentor.email).limit(1).get();
+                if (!userQuery.empty) {
+                    const userData = userQuery.docs[0].data();
+                    if (userData.photoURL) {
+                        if (!mentorOverrides[mentor.email]) mentorOverrides[mentor.email] = {};
+                        mentorOverrides[mentor.email].photoURL = userData.photoURL;
+                    }
+                }
+            } catch (err) {
+                // Ignore permission errors (guests might not be able to read 'users')
+                // console.warn(`Could not fetch user profile for ${mentor.email}:`, err);
+            }
+        });
+
+        await Promise.all(photoPromises);
+
         renderMentors(); // Re-render with new data
     } catch (error) {
         console.error("Error fetching mentor profiles:", error);
@@ -1188,12 +1230,14 @@ function renderMentors(filter = 'all') {
     // OPTIMIZATION: Use map/join
     container.innerHTML = filtered.map(m => {
         const isCurrentUser = currentUserData && currentUserData.email === m.email;
-        const photoURL = isCurrentUser ? currentUserData.photoURL : null;
 
         // Merge with overrides
         const override = mentorOverrides[m.email] || {};
         const displayQuote = override.quote || m.quote;
         const displayTags = override.tags || m.tags;
+
+        // Use photo from overrides (fetched from users collection) or fallback to current user if it's them (immediate update)
+        const photoURL = override.photoURL || (isCurrentUser ? currentUserData.photoURL : null);
 
         // Check permissions
         const canEdit = (currentUserData && currentUserData.role === 'admin') || isCurrentUser;
