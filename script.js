@@ -44,6 +44,7 @@ const mentorsData = [
 let topicsData = []; // Will load from Firestore
 let sessionsData = []; // Will load from Firestore
 let peerMessages = []; // Will load from Firestore
+let mentorOverrides = {}; // Store edited mentor details (keyed by email)
 let currentUserRole = 'student';
 let currentUserData = null; // Store current user info
 let isSignUpMode = false;
@@ -122,7 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
             subscribeToTopics();
             subscribeToSessions();
             subscribeToInbox();
-            renderMentors();
+            subscribeToTopics();
+            subscribeToSessions();
+            subscribeToInbox();
+            fetchMentorOverrides(); // Fetch dynamic mentor data
+            // renderMentors(); // Will be called after fetch
 
             // SCROLL FIX: Force top
             window.scrollTo(0, 0);
@@ -1153,6 +1158,20 @@ function initAdminPickers() {
 // 5. MENTOR DIRECTORY (Updated with Contact Modal)
 // ==========================================
 
+async function fetchMentorOverrides() {
+    try {
+        const snapshot = await db.collection('mentor_profiles').get();
+        mentorOverrides = {};
+        snapshot.forEach(doc => {
+            mentorOverrides[doc.id] = doc.data();
+        });
+        renderMentors(); // Re-render with new data
+    } catch (error) {
+        console.error("Error fetching mentor profiles:", error);
+        renderMentors(); // Render anyway
+    }
+}
+
 function renderMentors(filter = 'all') {
     const container = document.getElementById('mentors-container');
     if (!container) return;
@@ -1171,8 +1190,23 @@ function renderMentors(filter = 'all') {
         const isCurrentUser = currentUserData && currentUserData.email === m.email;
         const photoURL = isCurrentUser ? currentUserData.photoURL : null;
 
+        // Merge with overrides
+        const override = mentorOverrides[m.email] || {};
+        const displayQuote = override.quote || m.quote;
+        const displayTags = override.tags || m.tags;
+
+        // Check permissions
+        const canEdit = (currentUserData && currentUserData.role === 'admin') || isCurrentUser;
+
         return `
-        <article class="bg-white dark:bg-slate-800 rounded-2xl border border-teal-100 dark:border-slate-700 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6 animate-[fadeIn_0.3s_ease-out]">
+        <article class="bg-white dark:bg-slate-800 rounded-2xl border border-teal-100 dark:border-slate-700 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6 animate-[fadeIn_0.3s_ease-out] relative group">
+            
+            ${canEdit ? `
+                <button onclick="openEditMentorModal('${escapeHTML(m.email)}')" class="absolute top-4 right-4 text-slate-400 hover:text-teal-500 transition opacity-0 group-hover:opacity-100">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+            ` : ''}
+
             <header class="flex items-center justify-between mb-4">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mr-3 overflow-hidden">
@@ -1188,9 +1222,9 @@ function renderMentors(filter = 'all') {
                 </div>
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
             </header>
-            <p class="text-sm text-slate-600 dark:text-slate-300 italic mb-4">"${escapeHTML(m.quote)}"</p>
+            <p class="text-sm text-slate-600 dark:text-slate-300 italic mb-4">"${escapeHTML(displayQuote)}"</p>
             <div class="flex flex-wrap gap-2 mb-4">
-                ${m.tags.map(tag => `<span class="px-2 py-1 text-xs rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300">${tag}</span>`).join('')}
+                ${displayTags.map(tag => `<span class="px-2 py-1 text-xs rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300">${tag}</span>`).join('')}
             </div>
             <button onclick="showMentorEmail('${escapeHTML(m.email)}', '${escapeHTML(m.name)}')" class="mt-auto w-full border border-teal-500 text-teal-700 dark:text-teal-400 rounded-full py-2 text-sm font-semibold hover:bg-teal-500 hover:text-white transition flex items-center justify-center gap-2">
                 <i class="far fa-envelope"></i> Contact Mentor
@@ -1199,6 +1233,89 @@ function renderMentors(filter = 'all') {
 
     `;
     }).join('');
+}
+
+// --- EDIT MENTOR MODAL ---
+
+function openEditMentorModal(email) {
+    const mentor = mentorsData.find(m => m.email === email);
+    if (!mentor) return;
+
+    const override = mentorOverrides[email] || {};
+    const currentQuote = override.quote || mentor.quote;
+    const currentTags = (override.tags || mentor.tags).join(', ');
+
+    const overlay = document.createElement('div');
+    overlay.id = 'edit-mentor-modal';
+    overlay.className = 'fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-[fadeIn_0.2s_ease-out]';
+
+    // Theme-aware colors
+    const isDark = document.documentElement.classList.contains('dark');
+    const bg = isDark ? '#1e293b' : '#ffffff';
+    const text = isDark ? '#f1f5f9' : '#1e293b';
+    const border = isDark ? '#334155' : '#e2e8f0';
+
+    overlay.innerHTML = `
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-[popIn_0.3s_cubic-bezier(0.175,0.885,0.32,1.275)]">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white">Edit Mentor Profile</h3>
+                <button onclick="document.getElementById('edit-mentor-modal').remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Message (Quote)</label>
+                    <textarea id="edit-mentor-quote" rows="3" class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition resize-none">${escapeHTML(currentQuote)}</textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tags (comma separated)</label>
+                    <input type="text" id="edit-mentor-tags" value="${escapeHTML(currentTags)}" class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition">
+                    <p class="text-xs text-slate-500 mt-1">Example: Clinical Support, Exam Prep</p>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
+                <button onclick="document.getElementById('edit-mentor-modal').remove()" class="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-700 transition">Cancel</button>
+                <button onclick="saveMentorDetails('${escapeHTML(email)}')" class="px-6 py-2 rounded-xl bg-teal-500 text-white font-bold hover:bg-teal-600 shadow-lg shadow-teal-500/30 transition transform hover:scale-105">Save Changes</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+}
+
+async function saveMentorDetails(email) {
+    const quoteInput = document.getElementById('edit-mentor-quote');
+    const tagsInput = document.getElementById('edit-mentor-tags');
+
+    if (!quoteInput || !tagsInput) return;
+
+    const newQuote = quoteInput.value.trim();
+    const newTags = tagsInput.value.split(',').map(t => t.trim()).filter(t => t.length > 0);
+
+    // Optimistic Update
+    if (!mentorOverrides[email]) mentorOverrides[email] = {};
+    mentorOverrides[email].quote = newQuote;
+    mentorOverrides[email].tags = newTags;
+
+    renderMentors();
+    document.getElementById('edit-mentor-modal').remove();
+    showNotification('Profile updated successfully!', 'success');
+
+    // Persist to Firestore
+    try {
+        await db.collection('mentor_profiles').doc(email).set({
+            quote: newQuote,
+            tags: newTags,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+    } catch (error) {
+        console.error("Error saving mentor profile:", error);
+        showNotification('Failed to save changes.', 'error');
+    }
 }
 
 // --- NEW HELPER FUNCTIONS FOR MODAL ---
