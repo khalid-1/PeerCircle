@@ -206,6 +206,7 @@ function renderSection(sectionId) {
 }
 
 function updateNavState(activeId) {
+    // Desktop Nav
     document.querySelectorAll('.nav-link').forEach(btn => {
         const onClickText = btn.getAttribute('onclick');
         if (onClickText && onClickText.includes(activeId)) {
@@ -214,6 +215,20 @@ function updateNavState(activeId) {
         } else {
             btn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-teal-600', 'dark:text-teal-400');
             btn.classList.add('text-slate-600', 'dark:text-slate-400');
+        }
+    });
+
+    // Mobile Nav
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+        const onClickText = link.getAttribute('onclick');
+        if (onClickText && onClickText.includes(activeId)) {
+            // Active State
+            link.classList.add('bg-teal-50', 'dark:bg-teal-900/30', 'text-teal-700', 'dark:text-teal-300');
+            link.classList.remove('text-slate-600', 'dark:text-slate-300');
+        } else {
+            // Inactive State
+            link.classList.remove('bg-teal-50', 'dark:bg-teal-900/30', 'text-teal-700', 'dark:text-teal-300');
+            link.classList.add('text-slate-600', 'dark:text-slate-300');
         }
     });
 }
@@ -1127,6 +1142,24 @@ function updateAllAvatars(photoURL) {
         }
     }
 
+    // Update Mobile Menu Avatar
+    const mobileAvatar = document.getElementById('mobile-menu-avatar');
+    if (mobileAvatar) {
+        if (photoURL) {
+            mobileAvatar.innerHTML = `<img src="${photoURL}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        } else {
+            mobileAvatar.innerHTML = `<span id="mobile-menu-initials">${initials}</span>`;
+        }
+    }
+
+    // Update Mobile Menu Text
+    if (currentUserData) {
+        const mobileName = document.getElementById('mobile-menu-name');
+        const mobileEmail = document.getElementById('mobile-menu-email');
+        if (mobileName) mobileName.textContent = currentUserData.name;
+        if (mobileEmail) mobileEmail.textContent = currentUserData.email;
+    }
+
     // Update mentor list in case the user is a mentor
     renderMentors();
 }
@@ -1942,6 +1975,26 @@ function updateUIForRole(role) {
         if (mobPeer) mobPeer.classList.remove('hidden');
         renderInbox(); // Will need refactor later
         showNotification("Peer Mentor Access Granted", "success");
+    }
+
+    // Update Mobile Menu Profile Text
+    if (currentUserData) {
+        const mobileName = document.getElementById('mobile-menu-name');
+        const mobileEmail = document.getElementById('mobile-menu-email');
+        const mobileAvatar = document.getElementById('mobile-menu-avatar');
+
+        if (mobileName) mobileName.textContent = currentUserData.name;
+        if (mobileEmail) mobileEmail.textContent = currentUserData.email;
+
+        // Also ensure avatar is set (in case updateAllAvatars wasn't triggered)
+        if (mobileAvatar) {
+            if (currentUserData.photoURL) {
+                mobileAvatar.innerHTML = `<img src="${currentUserData.photoURL}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            } else {
+                const initials = currentUserData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                mobileAvatar.innerHTML = `<span id="mobile-menu-initials">${initials}</span>`;
+            }
+        }
     }
 }
 
