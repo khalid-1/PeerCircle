@@ -1621,7 +1621,14 @@ function renderSessions() {
         }
 
         let adminControls = currentUserRole === 'admin'
-            ? `<button onclick="deleteSession('${session.id}')" class="text-slate-300 hover:text-red-500 ml-2 transition"><i class="fas fa-trash-alt"></i></button>`
+            ? `<div class="flex gap-1">
+                <button onclick="openEditSessionModal('${session.id}')" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button onclick="deleteSession('${session.id}')" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+               </div>`
             : "";
 
         // Determine button based on status
@@ -1683,9 +1690,14 @@ function renderSessions() {
                         ${actionButton.replace('class="', 'class="w-full text-center justify-center py-3 text-base ')}
                     </div>
                     ${currentUserRole === 'admin' ? `
-                    <button onclick="deleteSession('${session.id}')" class="w-12 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>` : ''}
+                    <div class="flex gap-2">
+                        <button onclick="openEditSessionModal('${session.id}')" class="w-12 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button onclick="deleteSession('${session.id}')" class="w-12 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>` : ''}
                 </div>
             </div>
         </div>
@@ -1748,7 +1760,9 @@ function updateSessionBadge() {
 
 async function handleAddSession(e) {
     e.preventDefault();
-    const newSession = {
+
+    const sessionId = document.getElementById('new-session-id').value;
+    const sessionData = {
         title: document.getElementById('new-session-title').value,
         host: document.getElementById('new-session-host').value,
         date: document.getElementById('new-session-date').value,
@@ -1758,18 +1772,58 @@ async function handleAddSession(e) {
         tag: document.getElementById('new-session-tag').value,
         link: document.getElementById('new-session-link').value,
         desc: document.getElementById('new-session-desc').value,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
-    try {
-        await db.collection('sessions').add(newSession);
-        e.target.reset();
-        document.getElementById('admin-add-session').classList.add('hidden');
-        showNotification("Session Scheduled!", "success");
-    } catch (error) {
-        console.error("Error adding session: ", error);
-        alert("Failed to add session.");
+    if (!sessionId) {
+        sessionData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
     }
+
+    try {
+        if (sessionId) {
+            await db.collection('sessions').doc(sessionId).update(sessionData);
+            showNotification("Session Updated!", "success");
+        } else {
+            await db.collection('sessions').add(sessionData);
+            showNotification("Session Scheduled!", "success");
+        }
+
+        e.target.reset();
+        document.getElementById('new-session-id').value = ''; // Clear ID
+        document.getElementById('admin-add-session').classList.add('hidden');
+    } catch (error) {
+        console.error("Error saving session: ", error);
+        alert("Failed to save session.");
+    }
+}
+
+function openEditSessionModal(sessionId) {
+    const session = sessionsData.find(s => s.id === sessionId);
+    if (!session) return;
+
+    document.getElementById('new-session-id').value = session.id;
+    document.getElementById('new-session-title').value = session.title;
+    document.getElementById('new-session-host').value = session.host;
+    document.getElementById('new-session-date').value = session.date;
+    document.getElementById('new-session-time').value = session.time;
+    document.getElementById('new-session-duration').value = session.duration;
+    document.getElementById('new-session-platform').value = session.platform;
+    document.getElementById('new-session-tag').value = session.tag;
+    document.getElementById('new-session-link').value = session.link;
+    document.getElementById('new-session-desc').value = session.desc;
+
+    document.getElementById('session-modal-title').textContent = 'Edit Session';
+    document.getElementById('session-modal-submit').textContent = 'Update Session';
+
+    document.getElementById('admin-add-session').classList.remove('hidden');
+}
+
+function resetSessionModal() {
+    document.getElementById('new-session-id').value = '';
+    document.querySelector('#admin-add-session form').reset();
+    document.getElementById('session-modal-title').textContent = 'Schedule New Session';
+    document.getElementById('session-modal-submit').textContent = 'Schedule Session';
+    document.getElementById('admin-add-session').classList.remove('hidden');
 }
 
 async function deleteSession(id) {
