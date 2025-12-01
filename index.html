@@ -113,7 +113,7 @@
                         <div id="user-profile-dropdown" class="relative hidden">
                             <button onclick="toggleProfileDropdown()" 
                                 class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
-                                <div class="w-7 h-7 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold" id="user-avatar">
+                                <div class="w-7 h-7 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold overflow-hidden" id="user-avatar">
                                     <i class="fas fa-user text-xs"></i>
                                 </div>
                                 <span id="user-display-name" class="text-sm font-medium text-slate-700 dark:text-slate-200 max-w-[100px] truncate">User</span>
@@ -121,29 +121,46 @@
                             </button>
                             
                             <!-- Dropdown Menu -->
-                            <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
-                                <!-- User Info -->
-                                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
-                                    <p id="dropdown-user-name" class="font-semibold text-slate-800 dark:text-white">User Name</p>
-                                    <p id="dropdown-user-email" class="text-sm text-slate-500 dark:text-slate-400 truncate">email@example.com</p>
-                                    <span id="dropdown-user-role" class="inline-flex items-center mt-2 px-2 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300">
-                                        Student
-                                    </span>
+                            <div id="profile-dropdown-menu" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
+                                <!-- User Info with Avatar -->
+                                <div class="px-4 py-4 border-b border-slate-100 dark:border-slate-700">
+                                    <div class="flex items-center gap-4">
+                                        <!-- Large Avatar with Edit Button -->
+                                        <div class="relative group">
+                                            <div id="dropdown-avatar" class="w-16 h-16 rounded-full bg-teal-500 text-white flex items-center justify-center text-xl font-bold overflow-hidden ring-4 ring-teal-100 dark:ring-teal-900/30">
+                                                <span id="dropdown-avatar-initials">U</span>
+                                            </div>
+                                            <button onclick="openProfilePictureModal(); toggleProfileDropdown();" 
+                                                class="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white">
+                                                <i class="fas fa-camera"></i>
+                                            </button>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p id="dropdown-user-name" class="font-semibold text-slate-800 dark:text-white truncate">User Name</p>
+                                            <p id="dropdown-user-email" class="text-sm text-slate-500 dark:text-slate-400 truncate">email@example.com</p>
+                                            <span id="dropdown-user-role" class="inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300">
+                                                Student
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <!-- Menu Items -->
                                 <div class="py-1">
-                                    <button onclick="showSection('home'); toggleProfileDropdown();" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                                    <button onclick="openProfilePictureModal(); toggleProfileDropdown();" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                                        <i class="fas fa-camera w-4 text-slate-400"></i> Change Profile Picture
+                                    </button>
+                                    <button onclick="showSection('home'); toggleProfileDropdown();" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
                                         <i class="fas fa-home w-4 text-slate-400"></i> Dashboard
                                     </button>
-                                    <button onclick="toggleTheme(); toggleProfileDropdown();" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                                    <button onclick="toggleTheme(); toggleProfileDropdown();" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
                                         <i class="fas fa-palette w-4 text-slate-400"></i> Toggle Theme
                                     </button>
                                 </div>
                                 
                                 <!-- Logout -->
                                 <div class="border-t border-slate-100 dark:border-slate-700 pt-1">
-                                    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                                    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                                         <i class="fas fa-sign-out-alt w-4"></i> Sign Out
                                     </button>
                                 </div>

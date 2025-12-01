@@ -92,7 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentUserData = {
                     name: userData.name || 'Student',
                     email: user.email,
-                    role: currentUserRole
+                    role: currentUserRole,
+                    photoURL: userData.photoURL || null
                 };
                 showNotification(`Welcome back, ${userData.name || 'Student'}`, "success");
             } else {
@@ -101,7 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentUserData = {
                     name: 'Student',
                     email: user.email,
-                    role: 'student'
+                    role: 'student',
+                    photoURL: null
                 };
             }
 
@@ -617,6 +619,432 @@ function showDynamicModal(topic, theme) {
 function closeDynamicModal() {
     document.getElementById('dynamic-topic-modal')?.remove();
 }
+
+// ==================== PROFILE PICTURE UPLOAD & CROP ====================
+
+function openProfilePictureModal() {
+    // Remove any existing modal
+    document.getElementById('profile-picture-modal')?.remove();
+    
+    const isDark = document.documentElement.classList.contains('dark');
+    const currentAvatar = currentUserData?.photoURL || null;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'profile-picture-modal';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+        display: flex;
+        flex-direction: column;
+        z-index: 10000;
+    `;
+    
+    overlay.innerHTML = `
+        <!-- Upload Step -->
+        <div id="profile-upload-step" style="display: flex; flex-direction: column; height: 100%;">
+            <!-- Header -->
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #262626;">
+                <button onclick="closeProfilePictureModal()" style="background: none; border: none; color: white; font-size: 1rem; cursor: pointer; padding: 0.5rem;">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2 style="color: white; font-size: 1rem; font-weight: 600; margin: 0;">Change Profile Photo</h2>
+                <div style="width: 2rem;"></div>
+            </div>
+            
+            <!-- Content -->
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem;">
+                <!-- Current Photo -->
+                <div style="width: 9rem; height: 9rem; border-radius: 50%; background: #262626; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 3px solid #363636; margin-bottom: 1.5rem;">
+                    ${currentAvatar 
+                        ? `<img src="${currentAvatar}" style="width: 100%; height: 100%; object-fit: cover;">`
+                        : `<span style="font-size: 3rem; font-weight: 600; color: #a3a3a3;">${getInitials(currentUserData?.name || 'U')}</span>`
+                    }
+                </div>
+                
+                <p style="color: white; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">${currentUserData?.name || 'User'}</p>
+                <p style="color: #a3a3a3; font-size: 0.875rem; margin-bottom: 2rem;">@${(currentUserData?.email || 'user').split('@')[0]}</p>
+                
+                <!-- Buttons -->
+                <label style="display: block; width: 100%; max-width: 20rem; padding: 0.875rem; background: #0095f6; color: white; text-align: center; border-radius: 0.75rem; font-weight: 600; cursor: pointer; margin-bottom: 0.75rem; transition: background 0.2s;" onmouseover="this.style.background='#1877f2';" onmouseout="this.style.background='#0095f6';">
+                    <input type="file" id="profile-file-input" accept="image/*" style="display: none;" onchange="handleProfileImageSelect(event)">
+                    <i class="fas fa-image" style="margin-right: 0.5rem;"></i> Choose from Gallery
+                </label>
+                
+                ${currentAvatar ? `
+                    <button onclick="removeProfilePicture()" style="width: 100%; max-width: 20rem; padding: 0.875rem; background: transparent; color: #ed4956; border: 1px solid #363636; border-radius: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#1c1c1c';" onmouseout="this.style.background='transparent';">
+                        <i class="fas fa-trash-alt" style="margin-right: 0.5rem;"></i> Remove Current Photo
+                    </button>
+                ` : ''}
+            </div>
+        </div>
+        
+        <!-- Crop Step - Instagram Style -->
+        <div id="profile-crop-step" style="display: none; flex-direction: column; height: 100%;">
+            <!-- Header -->
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #262626;">
+                <button onclick="cancelProfileCrop()" style="background: none; border: none; color: white; font-size: 1rem; cursor: pointer; padding: 0.5rem;">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 style="color: white; font-size: 1rem; font-weight: 600; margin: 0;">Crop</h2>
+                <button onclick="saveProfilePicture()" style="background: none; border: none; color: #0095f6; font-size: 1rem; font-weight: 600; cursor: pointer; padding: 0.5rem;">
+                    Done
+                </button>
+            </div>
+            
+            <!-- Crop Area with Circular Mask -->
+            <div id="crop-container" style="flex: 1; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000;">
+                <!-- The image -->
+                <img id="profile-crop-image" style="position: absolute; transform-origin: center; cursor: grab; user-select: none; -webkit-user-drag: none;">
+                
+                <!-- Circular mask overlay -->
+                <div id="crop-mask" style="position: absolute; inset: 0; pointer-events: none;">
+                    <svg width="100%" height="100%" style="position: absolute;">
+                        <defs>
+                            <mask id="circle-mask">
+                                <rect width="100%" height="100%" fill="white"/>
+                                <circle id="crop-circle" cx="50%" cy="50%" r="140" fill="black"/>
+                            </mask>
+                        </defs>
+                        <rect width="100%" height="100%" fill="rgba(0,0,0,0.7)" mask="url(#circle-mask)"/>
+                        <circle id="crop-circle-border" cx="50%" cy="50%" r="140" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Zoom Slider -->
+            <div style="padding: 1.5rem 2rem; background: #000; border-top: 1px solid #262626;">
+                <div style="display: flex; align-items: center; gap: 1rem; max-width: 24rem; margin: 0 auto;">
+                    <i class="fas fa-image" style="color: #a3a3a3; font-size: 0.75rem;"></i>
+                    <input type="range" id="profile-zoom-slider" min="1" max="3" step="0.01" value="1" 
+                        style="flex: 1; height: 3px; -webkit-appearance: none; background: #363636; border-radius: 2px; cursor: pointer;"
+                        oninput="adjustProfileZoom(this.value)">
+                    <i class="fas fa-image" style="color: #a3a3a3; font-size: 1rem;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Saving Overlay -->
+        <div id="profile-saving-overlay" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; flex-direction: column; gap: 1rem;">
+            <div style="width: 3rem; height: 3rem; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="color: white; font-weight: 500;">Saving...</p>
+        </div>
+        
+        <style>
+            @keyframes spin { to { transform: rotate(360deg); } }
+            #profile-zoom-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 16px;
+                height: 16px;
+                background: white;
+                border-radius: 50%;
+                cursor: pointer;
+            }
+            #profile-crop-image { touch-action: none; }
+        </style>
+    `;
+    
+    document.body.appendChild(overlay);
+}
+
+function closeProfilePictureModal() {
+    profileCropState = null;
+    document.getElementById('profile-picture-modal')?.remove();
+}
+
+function handleProfileImageSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        handleProfileImageFile(file);
+    }
+}
+
+// State for the custom circular cropper
+let profileCropState = null;
+
+function handleProfileImageFile(file) {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showNotification('Please select an image file', 'error');
+        return;
+    }
+    
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+        showNotification('Image must be less than 5MB', 'error');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        // Show crop step
+        document.getElementById('profile-upload-step').style.display = 'none';
+        document.getElementById('profile-crop-step').style.display = 'flex';
+        
+        const cropImage = document.getElementById('profile-crop-image');
+        const container = document.getElementById('crop-container');
+        
+        cropImage.onload = () => {
+            // Calculate initial scale to fit circle
+            const containerRect = container.getBoundingClientRect();
+            const circleRadius = 140;
+            const circleDiameter = circleRadius * 2;
+            
+            // Scale image so smallest dimension fills the circle
+            const imgAspect = cropImage.naturalWidth / cropImage.naturalHeight;
+            let scale;
+            
+            if (imgAspect > 1) {
+                // Landscape - fit height
+                scale = circleDiameter / cropImage.naturalHeight;
+            } else {
+                // Portrait or square - fit width
+                scale = circleDiameter / cropImage.naturalWidth;
+            }
+            
+            // Add some padding
+            scale *= 1.2;
+            
+            profileCropState = {
+                scale: scale,
+                minScale: scale,
+                maxScale: scale * 3,
+                x: 0,
+                y: 0,
+                isDragging: false,
+                startX: 0,
+                startY: 0,
+                imgWidth: cropImage.naturalWidth,
+                imgHeight: cropImage.naturalHeight
+            };
+            
+            updateCropImageTransform();
+            
+            // Setup drag
+            cropImage.onmousedown = startDrag;
+            cropImage.ontouchstart = startDrag;
+            
+            document.onmousemove = drag;
+            document.ontouchmove = drag;
+            
+            document.onmouseup = endDrag;
+            document.ontouchend = endDrag;
+            
+            // Reset zoom slider
+            const slider = document.getElementById('profile-zoom-slider');
+            slider.min = 1;
+            slider.max = 3;
+            slider.value = 1;
+        };
+        
+        cropImage.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function updateCropImageTransform() {
+    if (!profileCropState) return;
+    const img = document.getElementById('profile-crop-image');
+    if (img) {
+        img.style.transform = `translate(${profileCropState.x}px, ${profileCropState.y}px) scale(${profileCropState.scale})`;
+    }
+}
+
+function startDrag(e) {
+    if (!profileCropState) return;
+    e.preventDefault();
+    profileCropState.isDragging = true;
+    
+    const point = e.touches ? e.touches[0] : e;
+    profileCropState.startX = point.clientX - profileCropState.x;
+    profileCropState.startY = point.clientY - profileCropState.y;
+    
+    const img = document.getElementById('profile-crop-image');
+    if (img) img.style.cursor = 'grabbing';
+}
+
+function drag(e) {
+    if (!profileCropState || !profileCropState.isDragging) return;
+    e.preventDefault();
+    
+    const point = e.touches ? e.touches[0] : e;
+    profileCropState.x = point.clientX - profileCropState.startX;
+    profileCropState.y = point.clientY - profileCropState.startY;
+    
+    updateCropImageTransform();
+}
+
+function endDrag() {
+    if (!profileCropState) return;
+    profileCropState.isDragging = false;
+    
+    const img = document.getElementById('profile-crop-image');
+    if (img) img.style.cursor = 'grab';
+}
+
+function adjustProfileZoom(value) {
+    if (!profileCropState) return;
+    
+    const newScale = profileCropState.minScale * parseFloat(value);
+    profileCropState.scale = newScale;
+    updateCropImageTransform();
+}
+
+function cancelProfileCrop() {
+    profileCropState = null;
+    document.getElementById('profile-crop-step').style.display = 'none';
+    document.getElementById('profile-upload-step').style.display = 'flex';
+    document.getElementById('profile-file-input').value = '';
+}
+
+async function saveProfilePicture() {
+    if (!profileCropState) return;
+    
+    const savingOverlay = document.getElementById('profile-saving-overlay');
+    savingOverlay.style.display = 'flex';
+    
+    try {
+        const img = document.getElementById('profile-crop-image');
+        const container = document.getElementById('crop-container');
+        const containerRect = container.getBoundingClientRect();
+        
+        // Create canvas for the cropped circular area
+        const outputSize = 256;
+        const canvas = document.createElement('canvas');
+        canvas.width = outputSize;
+        canvas.height = outputSize;
+        const ctx = canvas.getContext('2d');
+        
+        // The circle is centered in the container with radius 140
+        const circleRadius = 140;
+        const circleCenterX = containerRect.width / 2;
+        const circleCenterY = containerRect.height / 2;
+        
+        // Calculate where the image is positioned
+        const imgRect = img.getBoundingClientRect();
+        const imgCenterX = imgRect.left - containerRect.left + imgRect.width / 2;
+        const imgCenterY = imgRect.top - containerRect.top + imgRect.height / 2;
+        
+        // Calculate source coordinates on the original image
+        const displayedWidth = img.naturalWidth * profileCropState.scale;
+        const displayedHeight = img.naturalHeight * profileCropState.scale;
+        
+        // Offset from image center to circle center
+        const offsetX = circleCenterX - imgCenterX;
+        const offsetY = circleCenterY - imgCenterY;
+        
+        // Convert to original image coordinates
+        const srcX = (img.naturalWidth / 2) + (offsetX / profileCropState.scale) - (circleRadius / profileCropState.scale);
+        const srcY = (img.naturalHeight / 2) + (offsetY / profileCropState.scale) - (circleRadius / profileCropState.scale);
+        const srcSize = (circleRadius * 2) / profileCropState.scale;
+        
+        // Draw circular clip
+        ctx.beginPath();
+        ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        
+        // Draw the cropped portion
+        ctx.drawImage(
+            img,
+            srcX, srcY, srcSize, srcSize,
+            0, 0, outputSize, outputSize
+        );
+        
+        // Convert to base64
+        const photoURL = canvas.toDataURL('image/jpeg', 0.9);
+        
+        // Save to Firestore if user is logged in and not a guest
+        if (currentUserData && !currentUserData.isGuest && auth.currentUser) {
+            await db.collection('users').doc(auth.currentUser.uid).update({
+                photoURL: photoURL
+            });
+        }
+        
+        // Update local user data
+        if (currentUserData) {
+            currentUserData.photoURL = photoURL;
+        }
+        
+        // Update all avatar displays
+        updateAllAvatars(photoURL);
+        
+        showNotification('Profile picture updated!', 'success');
+        closeProfilePictureModal();
+        
+    } catch (error) {
+        console.error('Error saving profile picture:', error);
+        showNotification('Failed to save photo. Please try again.', 'error');
+        savingOverlay.style.display = 'none';
+    }
+}
+
+async function removeProfilePicture() {
+    if (!confirm('Are you sure you want to remove your profile picture?')) return;
+    
+    try {
+        // Remove from Firestore if user is logged in and not a guest
+        if (currentUserData && !currentUserData.isGuest && auth.currentUser) {
+            await db.collection('users').doc(auth.currentUser.uid).update({
+                photoURL: firebase.firestore.FieldValue.delete()
+            });
+        }
+        
+        // Update local user data
+        if (currentUserData) {
+            currentUserData.photoURL = null;
+        }
+        
+        // Update all avatar displays
+        updateAllAvatars(null);
+        
+        showNotification('Profile picture removed', 'success');
+        closeProfilePictureModal();
+        
+    } catch (error) {
+        console.error('Error removing profile picture:', error);
+        showNotification('Failed to remove photo. Please try again.', 'error');
+    }
+}
+
+function updateAllAvatars(photoURL) {
+    const initials = getInitials(currentUserData?.name || 'U');
+    
+    // Update navbar avatar
+    const navAvatar = document.getElementById('user-avatar');
+    if (navAvatar) {
+        if (photoURL) {
+            navAvatar.innerHTML = `<img src="${photoURL}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        } else {
+            navAvatar.innerHTML = initials;
+        }
+    }
+    
+    // Update dropdown avatar
+    const dropdownAvatar = document.getElementById('dropdown-avatar');
+    const dropdownInitials = document.getElementById('dropdown-avatar-initials');
+    if (dropdownAvatar) {
+        if (photoURL) {
+            dropdownAvatar.innerHTML = `<img src="${photoURL}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        } else {
+            dropdownAvatar.innerHTML = `<span id="dropdown-avatar-initials">${initials}</span>`;
+        }
+    }
+}
+
+function getInitials(name) {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+}
+
+// ==================== END PROFILE PICTURE ====================
 
 function initAdminPickers() {
     const iconContainer = document.getElementById('icon-selector');
@@ -1282,6 +1710,7 @@ function updateUserProfileDropdown() {
     const dropdownName = document.getElementById('dropdown-user-name');
     const dropdownEmail = document.getElementById('dropdown-user-email');
     const dropdownRole = document.getElementById('dropdown-user-role');
+    const dropdownAvatar = document.getElementById('dropdown-avatar');
     
     // Get initials for avatar
     const initials = currentUserData.name
@@ -1291,7 +1720,24 @@ function updateUserProfileDropdown() {
         .toUpperCase()
         .slice(0, 2);
     
-    if (userAvatar) userAvatar.textContent = initials;
+    // Update navbar avatar (with profile picture support)
+    if (userAvatar) {
+        if (currentUserData.photoURL) {
+            userAvatar.innerHTML = `<img src="${currentUserData.photoURL}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        } else {
+            userAvatar.textContent = initials;
+        }
+    }
+    
+    // Update dropdown large avatar (with profile picture support)
+    if (dropdownAvatar) {
+        if (currentUserData.photoURL) {
+            dropdownAvatar.innerHTML = `<img src="${currentUserData.photoURL}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        } else {
+            dropdownAvatar.innerHTML = `<span id="dropdown-avatar-initials">${initials}</span>`;
+        }
+    }
+    
     if (userDisplayName) userDisplayName.textContent = currentUserData.name.split(' ')[0];
     if (dropdownName) dropdownName.textContent = currentUserData.name;
     if (dropdownEmail) dropdownEmail.textContent = currentUserData.email;
@@ -1305,7 +1751,7 @@ function updateUserProfileDropdown() {
         };
         const roleInfo = roleLabels[currentUserData.role] || roleLabels.student;
         dropdownRole.textContent = roleInfo.label;
-        dropdownRole.className = `inline-flex items-center mt-2 px-2 py-0.5 rounded-full text-xs font-medium ${roleInfo.class}`;
+        dropdownRole.className = `inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${roleInfo.class}`;
     }
 }
 
