@@ -45,6 +45,7 @@ let topicsData = []; // Will load from Firestore
 let sessionsData = []; // Will load from Firestore
 let peerMessages = []; // Will load from Firestore
 let currentUserRole = 'student';
+let currentUserData = null; // Store current user info
 let isSignUpMode = false;
 
 // FIXED: Stop browser from scrolling to bottom on reload
@@ -88,13 +89,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userDoc.exists) {
                 const userData = userDoc.data();
                 currentUserRole = userData.role || 'student';
+                currentUserData = {
+                    name: userData.name || 'Student',
+                    email: user.email,
+                    role: currentUserRole
+                };
                 showNotification(`Welcome back, ${userData.name || 'Student'}`, "success");
             } else {
                 // Fallback
                 currentUserRole = 'student';
+                currentUserData = {
+                    name: 'Student',
+                    email: user.email,
+                    role: 'student'
+                };
             }
 
             updateUIForRole(currentUserRole);
+            updateUserProfileDropdown();
 
             // HIDE LOADING SCREEN / LOGIN MODAL
             const loadingScreen = document.getElementById('loading-screen');
@@ -326,6 +338,81 @@ async function deleteTopic(event, id) {
             console.error("Error deleting topic: ", error);
             alert("Failed to delete topic.");
         }
+    }
+}
+
+// ==========================================
+// SUGGEST TOPIC FEATURE
+// ==========================================
+
+function openSuggestTopicModal() {
+    const modal = document.getElementById('suggest-topic-modal');
+    const form = document.getElementById('suggest-topic-form');
+    const success = document.getElementById('suggest-topic-success');
+    
+    if (modal) {
+        // Reset to form state
+        if (form) form.classList.remove('hidden');
+        if (success) success.classList.add('hidden');
+        
+        // Pre-fill email if user is logged in
+        const emailInput = document.getElementById('suggest-topic-email');
+        if (emailInput && currentUserData && currentUserData.email) {
+            emailInput.value = currentUserData.email;
+        }
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeSuggestTopicModal() {
+    const modal = document.getElementById('suggest-topic-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        
+        // Reset form
+        const form = document.getElementById('suggest-topic-form');
+        if (form) form.reset();
+    }
+}
+
+async function handleSuggestTopic(event) {
+    event.preventDefault();
+    
+    const title = document.getElementById('suggest-topic-title').value.trim();
+    const reason = document.getElementById('suggest-topic-reason').value.trim();
+    const email = document.getElementById('suggest-topic-email').value.trim();
+    
+    if (!title) {
+        showNotification("Please enter a topic title", "error");
+        return;
+    }
+    
+    try {
+        // Store suggestion in Firestore
+        await db.collection('topic_suggestions').add({
+            title: title,
+            reason: reason || null,
+            email: email || null,
+            submittedBy: currentUserData ? currentUserData.name : 'Anonymous',
+            status: 'pending',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // Show success state
+        const form = document.getElementById('suggest-topic-form');
+        const success = document.getElementById('suggest-topic-success');
+        
+        if (form) form.classList.add('hidden');
+        if (success) success.classList.remove('hidden');
+        
+        showNotification("Topic suggestion submitted!", "success");
+        
+    } catch (error) {
+        console.error("Error submitting suggestion:", error);
+        showNotification("Failed to submit. Please try again.", "error");
     }
 }
 
@@ -611,6 +698,42 @@ function subscribeToSessions() {
     });
 }
 
+// Helper function to get session status
+function getSessionStatus(session) {
+    const now = new Date();
+    const sessionDate = new Date(session.date);
+    
+    // Parse time (e.g., "13:00" or "1:00 PM")
+    let sessionTime = session.time;
+    let hours, minutes;
+    
+    if (sessionTime.includes(':')) {
+        const timeParts = sessionTime.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+        if (timeParts) {
+            hours = parseInt(timeParts[1]);
+            minutes = parseInt(timeParts[2]);
+            const period = timeParts[3];
+            if (period && period.toUpperCase() === 'PM' && hours !== 12) hours += 12;
+            if (period && period.toUpperCase() === 'AM' && hours === 12) hours = 0;
+        }
+    } else {
+        hours = parseInt(sessionTime);
+        minutes = 0;
+    }
+    
+    sessionDate.setHours(hours || 0, minutes || 0, 0, 0);
+    
+    const sessionEnd = new Date(sessionDate.getTime() + (parseInt(session.duration) || 60) * 60000);
+    
+    if (now > sessionEnd) {
+        return { status: 'past', label: 'Past', class: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400' };
+    } else if (now >= sessionDate && now <= sessionEnd) {
+        return { status: 'live', label: 'Live Now', class: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 animate-pulse' };
+    } else {
+        return { status: 'upcoming', label: 'Upcoming', class: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' };
+    }
+}
+
 function renderSessions() {
     const container = document.getElementById('sessions-container');
     if (!container) return;
@@ -624,33 +747,41 @@ function renderSessions() {
         const dateObj = new Date(session.date);
         const day = dateObj.getDate();
         const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
+        
+        // Get session status
+        const sessionStatus = getSessionStatus(session);
 
         // --- ICON LOGIC FIXED ---
         let platformLogo = '';
 
         if (session.platform === 'Google Meet') {
-            // Use your local SVG file ONLY for Google Meet
             platformLogo = `<img src="google-meet.svg" alt="Meet" class="w-5 h-5 mr-2 inline-block">`;
         } else if (session.platform === 'Zoom') {
-            // Keep the FontAwesome Icon (Blue)
             platformLogo = `<i class="fas fa-video mr-2 text-blue-500 text-lg"></i>`;
         } else if (session.platform === 'Microsoft Teams') {
-            // Keep the FontAwesome Icon (Indigo/Purple)
             platformLogo = `<i class="fas fa-users-rectangle mr-2 text-indigo-500 text-lg"></i>`;
         } else {
-            // Fallback generic icon
             platformLogo = `<i class="fas fa-video mr-2 text-slate-400"></i>`;
         }
-        // ------------------------
 
         let adminControls = currentUserRole === 'admin'
             ? `<button onclick="deleteSession('${session.id}')" class="text-slate-300 hover:text-red-500 ml-2 transition"><i class="fas fa-trash-alt"></i></button>`
             : "";
+        
+        // Determine button based on status
+        let actionButton = '';
+        if (sessionStatus.status === 'past') {
+            actionButton = `<span class="px-5 py-2 bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-lg text-sm font-medium cursor-not-allowed">Ended</span>`;
+        } else if (sessionStatus.status === 'live') {
+            actionButton = `<a href="${session.link}" target="_blank" class="px-5 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-700 transition shadow-md animate-pulse flex items-center gap-2"><span class="w-2 h-2 bg-white rounded-full"></span>Join Live</a>`;
+        } else {
+            actionButton = `<a href="${session.link}" target="_blank" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-bold hover:opacity-90 transition shadow-md">Join</a>`;
+        }
 
         return `
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition items-center group">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition items-center group ${sessionStatus.status === 'past' ? 'opacity-60' : ''}">
             <div class="md:col-span-2 flex items-center gap-3">
-                <div class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl p-2 w-14 text-center border border-slate-200 dark:border-slate-600">
+                <div class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl p-2 w-14 text-center border border-slate-200 dark:border-slate-600 relative">
                     <div class="text-[10px] uppercase tracking-wider">${month}</div>
                     <div class="text-xl leading-none">${day}</div>
                 </div>
@@ -659,7 +790,12 @@ function renderSessions() {
                 </div>
             </div>
             <div class="md:col-span-4">
-                <h4 class="font-bold text-slate-800 dark:text-white text-lg">${escapeHTML(session.title)}</h4>
+                <div class="flex items-center gap-2 mb-1">
+                    <h4 class="font-bold text-slate-800 dark:text-white text-lg">${escapeHTML(session.title)}</h4>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${sessionStatus.class}">
+                        ${sessionStatus.status === 'live' ? '<span class="w-1.5 h-1.5 bg-current rounded-full mr-1"></span>' : ''}${sessionStatus.label}
+                    </span>
+                </div>
                 <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">${escapeHTML(session.desc)}</p>
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">${escapeHTML(session.tag)}</span>
             </div>
@@ -671,7 +807,7 @@ function renderSessions() {
                 </div>
             </div>
             <div class="md:col-span-3 flex items-center justify-end gap-3">
-                <a href="${session.link}" target="_blank" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-bold hover:opacity-90 transition shadow-md">Join</a>
+                ${actionButton}
                 ${adminControls}
             </div>
         </div>`;
@@ -960,7 +1096,12 @@ async function handleAuth(e) {
 // --- DEV ONLY: GUEST MODE ---
 function loginAsGuest() {
     console.log("Logging in as Guest (Dev Mode)");
-    currentUserRole = 'guest'; // Treat as student/guest
+    currentUserRole = 'guest';
+    currentUserData = {
+        name: 'Guest User',
+        email: 'guest@demo.com',
+        role: 'guest'
+    };
 
     // Hide UI
     document.getElementById('login-modal').classList.add('hidden');
@@ -969,6 +1110,7 @@ function loginAsGuest() {
 
     // Update UI
     updateUIForRole(currentUserRole);
+    updateUserProfileDropdown();
     showNotification("Guest Mode Active (Dev)", "success");
 
     // Load Data manually (Firestore Test Mode required)
@@ -985,16 +1127,18 @@ function updateUIForRole(role) {
     const mobPeer = document.getElementById('mobile-peer-link');
     const adminControls = document.getElementById('admin-controls-btn');
     const sessionControls = document.getElementById('admin-session-controls');
+    const profileDropdown = document.getElementById('user-profile-dropdown');
 
     // Hide all privileged elements first
     [navAdmin, navPeer, mobAdmin, mobPeer, adminControls, sessionControls].forEach(el => el && el.classList.add('hidden'));
 
     if (!role) {
-        document.getElementById('logout-btn').classList.add('hidden');
+        if (profileDropdown) profileDropdown.classList.add('hidden');
         return;
     }
 
-    document.getElementById('logout-btn').classList.remove('hidden');
+    // Show profile dropdown when logged in
+    if (profileDropdown) profileDropdown.classList.remove('hidden');
 
     if (role === 'admin') {
         if (navAdmin) navAdmin.classList.remove('hidden');
@@ -1010,6 +1154,59 @@ function updateUIForRole(role) {
         showNotification("Peer Mentor Access Granted", "success");
     }
 }
+
+// Update user profile dropdown with current user info
+function updateUserProfileDropdown() {
+    if (!currentUserData) return;
+    
+    const userAvatar = document.getElementById('user-avatar');
+    const userDisplayName = document.getElementById('user-display-name');
+    const dropdownName = document.getElementById('dropdown-user-name');
+    const dropdownEmail = document.getElementById('dropdown-user-email');
+    const dropdownRole = document.getElementById('dropdown-user-role');
+    
+    // Get initials for avatar
+    const initials = currentUserData.name
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+    
+    if (userAvatar) userAvatar.textContent = initials;
+    if (userDisplayName) userDisplayName.textContent = currentUserData.name.split(' ')[0];
+    if (dropdownName) dropdownName.textContent = currentUserData.name;
+    if (dropdownEmail) dropdownEmail.textContent = currentUserData.email;
+    
+    if (dropdownRole) {
+        const roleLabels = {
+            admin: { label: 'Administrator', class: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
+            peer: { label: 'Peer Mentor', class: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' },
+            student: { label: 'Student', class: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300' },
+            guest: { label: 'Guest', class: 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300' }
+        };
+        const roleInfo = roleLabels[currentUserData.role] || roleLabels.student;
+        dropdownRole.textContent = roleInfo.label;
+        dropdownRole.className = `inline-flex items-center mt-2 px-2 py-0.5 rounded-full text-xs font-medium ${roleInfo.class}`;
+    }
+}
+
+// Toggle profile dropdown visibility
+function toggleProfileDropdown() {
+    const menu = document.getElementById('profile-dropdown-menu');
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('user-profile-dropdown');
+    const menu = document.getElementById('profile-dropdown-menu');
+    if (dropdown && menu && !dropdown.contains(e.target)) {
+        menu.classList.add('hidden');
+    }
+});
 
 function logout() {
     auth.signOut().then(() => {
