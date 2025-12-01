@@ -350,9 +350,9 @@ async function deleteTopic(event, id) {
 function openSuggestTopicModal() {
     // Remove any existing modal
     document.getElementById('dynamic-suggest-modal')?.remove();
-    
+
     const isDark = document.documentElement.classList.contains('dark');
-    
+
     const colors = {
         bg: isDark ? '#1e293b' : '#ffffff',
         text: isDark ? '#f1f5f9' : '#1e293b',
@@ -361,9 +361,9 @@ function openSuggestTopicModal() {
         inputBorder: isDark ? '#475569' : '#cbd5e1',
         border: isDark ? '#475569' : '#e2e8f0'
     };
-    
+
     const prefillEmail = currentUserData && currentUserData.email ? currentUserData.email : '';
-    
+
     const overlay = document.createElement('div');
     overlay.id = 'dynamic-suggest-modal';
     overlay.style.cssText = `
@@ -383,7 +383,7 @@ function openSuggestTopicModal() {
     overlay.onclick = (e) => {
         if (e.target === overlay) closeSuggestTopicModal();
     };
-    
+
     overlay.innerHTML = `
         <div style="background: ${colors.bg}; border-radius: 1rem; max-width: 28rem; width: 100%; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden;">
             <!-- Header -->
@@ -439,7 +439,7 @@ function openSuggestTopicModal() {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(overlay);
 }
 
@@ -451,12 +451,12 @@ async function submitSuggestTopic() {
     const title = document.getElementById('dyn-suggest-title')?.value.trim();
     const reason = document.getElementById('dyn-suggest-reason')?.value.trim();
     const email = document.getElementById('dyn-suggest-email')?.value.trim();
-    
+
     if (!title) {
         showNotification("Please enter a topic title", "error");
         return;
     }
-    
+
     try {
         // Store suggestion in Firestore
         await db.collection('topic_suggestions').add({
@@ -467,16 +467,16 @@ async function submitSuggestTopic() {
             status: 'pending',
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        
+
         // Show success state
         const form = document.getElementById('suggest-form-container');
         const success = document.getElementById('suggest-success-container');
-        
+
         if (form) form.style.display = 'none';
         if (success) success.style.display = 'block';
-        
+
         showNotification("Topic suggestion submitted!", "success");
-        
+
     } catch (error) {
         console.error("Error submitting suggestion:", error);
         showNotification("Failed to submit. Please try again.", "error");
@@ -499,10 +499,10 @@ function openTopicModal(id) {
 function showDynamicModal(topic, theme) {
     // Remove any existing dynamic modal
     document.getElementById('dynamic-topic-modal')?.remove();
-    
+
     // Detect dark mode
     const isDark = document.documentElement.classList.contains('dark');
-    
+
     // Theme-aware colors
     const colors = {
         bg: isDark ? '#1e293b' : '#ffffff',
@@ -514,20 +514,20 @@ function showDynamicModal(topic, theme) {
         actionBg: isDark ? 'rgba(20, 184, 166, 0.15)' : '#f0fdfa',
         iconBg: isDark ? 'rgba(20, 184, 166, 0.2)' : '#ccfbf1'
     };
-    
+
     // Get header color based on theme
-    const headerColor = theme.hex.includes('teal') ? '#14b8a6' : 
-                        theme.hex.includes('blue') ? '#3b82f6' : 
-                        theme.hex.includes('purple') ? '#a855f7' : 
-                        theme.hex.includes('rose') ? '#f43f5e' : 
-                        theme.hex.includes('amber') ? '#f59e0b' : '#6366f1';
-    
-    const iconColor = theme.text.includes('teal') ? '#14b8a6' : 
-                      theme.text.includes('blue') ? '#3b82f6' : 
-                      theme.text.includes('purple') ? '#a855f7' : '#14b8a6';
-    
+    const headerColor = theme.hex.includes('teal') ? '#14b8a6' :
+        theme.hex.includes('blue') ? '#3b82f6' :
+            theme.hex.includes('purple') ? '#a855f7' :
+                theme.hex.includes('rose') ? '#f43f5e' :
+                    theme.hex.includes('amber') ? '#f59e0b' : '#6366f1';
+
+    const iconColor = theme.text.includes('teal') ? '#14b8a6' :
+        theme.text.includes('blue') ? '#3b82f6' :
+            theme.text.includes('purple') ? '#a855f7' : '#14b8a6';
+
     const content = topic.content || {};
-    
+
     // Build bullets HTML
     let bulletsHTML = '';
     if (content.bullets && content.bullets.length > 0) {
@@ -540,7 +540,7 @@ function showDynamicModal(topic, theme) {
             </div>
         `;
     }
-    
+
     // Build action box HTML
     let actionHTML = '';
     if (content.action) {
@@ -551,7 +551,7 @@ function showDynamicModal(topic, theme) {
             </div>
         `;
     }
-    
+
     // Create the modal overlay
     const overlay = document.createElement('div');
     overlay.id = 'dynamic-topic-modal';
@@ -572,7 +572,7 @@ function showDynamicModal(topic, theme) {
     overlay.onclick = (e) => {
         if (e.target === overlay) closeDynamicModal();
     };
-    
+
     // Create the modal content
     overlay.innerHTML = `
         <div style="background: ${colors.bg}; border-radius: 1rem; width: 100%; max-width: 32rem; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
@@ -612,7 +612,7 @@ function showDynamicModal(topic, theme) {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(overlay);
 }
 
@@ -625,10 +625,23 @@ function closeDynamicModal() {
 function openProfilePictureModal() {
     // Remove any existing modal
     document.getElementById('profile-picture-modal')?.remove();
-    
+
     const isDark = document.documentElement.classList.contains('dark');
     const currentAvatar = currentUserData?.photoURL || null;
-    
+
+    // Theme colors
+    const colors = {
+        bg: isDark ? '#1e293b' : '#ffffff',
+        text: isDark ? '#f1f5f9' : '#1e293b',
+        textMuted: isDark ? '#94a3b8' : '#64748b',
+        border: isDark ? '#334155' : '#e2e8f0',
+        btnBg: isDark ? '#334155' : '#f1f5f9',
+        btnText: isDark ? '#f1f5f9' : '#475569',
+        primary: '#14b8a6', // Teal-500
+        primaryHover: '#0d9488', // Teal-600
+        danger: '#ef4444'
+    };
+
     const overlay = document.createElement('div');
     overlay.id = 'profile-picture-modal';
     overlay.style.cssText = `
@@ -637,116 +650,140 @@ function openProfilePictureModal() {
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: #000;
+        background-color: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(4px);
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         z-index: 10000;
+        padding: 1rem;
     `;
-    
+
     overlay.innerHTML = `
-        <!-- Upload Step -->
-        <div id="profile-upload-step" style="display: flex; flex-direction: column; height: 100%;">
-            <!-- Header -->
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #262626;">
-                <button onclick="closeProfilePictureModal()" style="background: none; border: none; color: white; font-size: 1rem; cursor: pointer; padding: 0.5rem;">
-                    <i class="fas fa-times"></i>
-                </button>
-                <h2 style="color: white; font-size: 1rem; font-weight: 600; margin: 0;">Change Profile Photo</h2>
-                <div style="width: 2rem;"></div>
-            </div>
+        <div style="background: ${colors.bg}; border-radius: 1.5rem; width: 100%; max-width: 28rem; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid ${colors.border};">
             
-            <!-- Content -->
-            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem;">
-                <!-- Current Photo -->
-                <div style="width: 9rem; height: 9rem; border-radius: 50%; background: #262626; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 3px solid #363636; margin-bottom: 1.5rem;">
-                    ${currentAvatar 
-                        ? `<img src="${currentAvatar}" style="width: 100%; height: 100%; object-fit: cover;">`
-                        : `<span style="font-size: 3rem; font-weight: 600; color: #a3a3a3;">${getInitials(currentUserData?.name || 'U')}</span>`
-                    }
-                </div>
-                
-                <p style="color: white; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">${currentUserData?.name || 'User'}</p>
-                <p style="color: #a3a3a3; font-size: 0.875rem; margin-bottom: 2rem;">@${(currentUserData?.email || 'user').split('@')[0]}</p>
-                
-                <!-- Buttons -->
-                <label style="display: block; width: 100%; max-width: 20rem; padding: 0.875rem; background: #0095f6; color: white; text-align: center; border-radius: 0.75rem; font-weight: 600; cursor: pointer; margin-bottom: 0.75rem; transition: background 0.2s;" onmouseover="this.style.background='#1877f2';" onmouseout="this.style.background='#0095f6';">
-                    <input type="file" id="profile-file-input" accept="image/*" style="display: none;" onchange="handleProfileImageSelect(event)">
-                    <i class="fas fa-image" style="margin-right: 0.5rem;"></i> Choose from Gallery
-                </label>
-                
-                ${currentAvatar ? `
-                    <button onclick="removeProfilePicture()" style="width: 100%; max-width: 20rem; padding: 0.875rem; background: transparent; color: #ed4956; border: 1px solid #363636; border-radius: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#1c1c1c';" onmouseout="this.style.background='transparent';">
-                        <i class="fas fa-trash-alt" style="margin-right: 0.5rem;"></i> Remove Current Photo
+            <!-- Upload Step -->
+            <div id="profile-upload-step" style="display: flex; flex-direction: column;">
+                <!-- Header -->
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid ${colors.border};">
+                    <h2 style="color: ${colors.text}; font-size: 1.125rem; font-weight: 700; margin: 0;">Edit Profile Photo</h2>
+                    <button onclick="closeProfilePictureModal()" style="background: none; border: none; color: ${colors.textMuted}; font-size: 1.125rem; cursor: pointer; padding: 0.25rem; display: flex; align-items: center; justify-content: center; transition: color 0.2s;" onmouseover="this.style.color='${colors.danger}'" onmouseout="this.style.color='${colors.textMuted}'">
+                        <i class="fas fa-times"></i>
                     </button>
-                ` : ''}
-            </div>
-        </div>
-        
-        <!-- Crop Step - Instagram Style -->
-        <div id="profile-crop-step" style="display: none; flex-direction: column; height: 100%;">
-            <!-- Header -->
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #262626;">
-                <button onclick="cancelProfileCrop()" style="background: none; border: none; color: white; font-size: 1rem; cursor: pointer; padding: 0.5rem;">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h2 style="color: white; font-size: 1rem; font-weight: 600; margin: 0;">Crop</h2>
-                <button onclick="saveProfilePicture()" style="background: none; border: none; color: #0095f6; font-size: 1rem; font-weight: 600; cursor: pointer; padding: 0.5rem;">
-                    Done
-                </button>
-            </div>
-            
-            <!-- Crop Area with Circular Mask -->
-            <div id="crop-container" style="flex: 1; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000;">
-                <!-- The image -->
-                <img id="profile-crop-image" style="position: absolute; transform-origin: center; cursor: grab; user-select: none; -webkit-user-drag: none;">
+                </div>
                 
-                <!-- Circular mask overlay -->
-                <div id="crop-mask" style="position: absolute; inset: 0; pointer-events: none;">
-                    <svg width="100%" height="100%" style="position: absolute;">
-                        <defs>
-                            <mask id="circle-mask">
-                                <rect width="100%" height="100%" fill="white"/>
-                                <circle id="crop-circle" cx="50%" cy="50%" r="140" fill="black"/>
-                            </mask>
-                        </defs>
-                        <rect width="100%" height="100%" fill="rgba(0,0,0,0.7)" mask="url(#circle-mask)"/>
-                        <circle id="crop-circle-border" cx="50%" cy="50%" r="140" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
-                    </svg>
+                <!-- Content -->
+                <div style="padding: 2rem; display: flex; flex-direction: column; align-items: center;">
+                    <!-- Current Photo -->
+                    <div style="width: 8rem; height: 8rem; border-radius: 50%; background: ${colors.btnBg}; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid ${colors.bg}; box-shadow: 0 0 0 2px ${colors.primary}; margin-bottom: 1.5rem;">
+                        ${currentAvatar
+            ? `<img src="${currentAvatar}" style="width: 100%; height: 100%; object-fit: cover;">`
+            : `<span style="font-size: 2.5rem; font-weight: 700; color: ${colors.primary};">${getInitials(currentUserData?.name || 'U')}</span>`
+        }
+                    </div>
+                    
+                    <h3 style="color: ${colors.text}; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem;">${currentUserData?.name || 'User'}</h3>
+                    <p style="color: ${colors.textMuted}; font-size: 0.875rem; margin-bottom: 2rem;">${currentUserData?.email || 'user@rakmhsu.ac.ae'}</p>
+                    
+                    <!-- Buttons -->
+                    <div style="width: 100%; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <label style="display: flex; align-items: center; justify-content: center; width: 100%; padding: 0.875rem; background: ${colors.primary}; color: white; border-radius: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(20, 184, 166, 0.2);" onmouseover="this.style.background='${colors.primaryHover}'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='${colors.primary}'; this.style.transform='translateY(0)'">
+                            <input type="file" id="profile-file-input" accept="image/*" style="display: none;" onchange="handleProfileImageSelect(event)">
+                            <i class="fas fa-camera" style="margin-right: 0.5rem;"></i> Upload New Photo
+                        </label>
+                        
+                        ${currentAvatar ? `
+                            <button onclick="removeProfilePicture()" style="width: 100%; padding: 0.875rem; background: transparent; color: ${colors.danger}; border: 1px solid ${colors.border}; border-radius: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='${isDark ? 'rgba(239, 68, 68, 0.1)' : '#fef2f2'}'" onmouseout="this.style.background='transparent'">
+                                <i class="fas fa-trash-alt" style="margin-right: 0.5rem;"></i> Remove Photo
+                            </button>
+                        ` : ''}
+                    </div>
                 </div>
             </div>
             
-            <!-- Zoom Slider -->
-            <div style="padding: 1.5rem 2rem; background: #000; border-top: 1px solid #262626;">
-                <div style="display: flex; align-items: center; gap: 1rem; max-width: 24rem; margin: 0 auto;">
-                    <i class="fas fa-image" style="color: #a3a3a3; font-size: 0.75rem;"></i>
-                    <input type="range" id="profile-zoom-slider" min="1" max="3" step="0.01" value="1" 
-                        style="flex: 1; height: 3px; -webkit-appearance: none; background: #363636; border-radius: 2px; cursor: pointer;"
-                        oninput="adjustProfileZoom(this.value)">
-                    <i class="fas fa-image" style="color: #a3a3a3; font-size: 1rem;"></i>
+            <!-- Crop Step -->
+            <div id="profile-crop-step" style="display: none; flex-direction: column; height: 100%;">
+                <!-- Header -->
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid ${colors.border}; background: ${colors.bg}; z-index: 10;">
+                    <button onclick="cancelProfileCrop()" style="background: none; border: none; color: ${colors.textMuted}; font-size: 1rem; cursor: pointer; padding: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <h2 style="color: ${colors.text}; font-size: 1rem; font-weight: 700; margin: 0;">Adjust Photo</h2>
+                    <button onclick="saveProfilePicture()" style="background: none; border: none; color: ${colors.primary}; font-size: 1rem; font-weight: 700; cursor: pointer; padding: 0.5rem;">
+                        Save
+                    </button>
+                </div>
+                
+                <!-- Crop Area -->
+                <div id="crop-container" style="position: relative; width: 100%; padding-top: 100%; background: #0f172a; overflow: hidden;">
+                    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
+                        <!-- The image -->
+                        <img id="profile-crop-image" style="position: absolute; transform-origin: center; cursor: grab; user-select: none; -webkit-user-drag: none; max-width: none; max-height: none;">
+                        
+                        <!-- Overlay Mask -->
+                        <div id="crop-mask" style="position: absolute; inset: 0; pointer-events: none; z-index: 20;">
+                            <svg width="100%" height="100%" style="position: absolute;">
+                                <defs>
+                                    <mask id="circle-mask">
+                                        <rect width="100%" height="100%" fill="white"/>
+                                        <circle cx="50%" cy="50%" r="40%" fill="black"/>
+                                    </mask>
+                                </defs>
+                                <rect width="100%" height="100%" fill="rgba(15, 23, 42, 0.7)" mask="url(#circle-mask)"/>
+                                
+                                <!-- Circle Border -->
+                                <circle cx="50%" cy="50%" r="40%" fill="none" stroke="white" stroke-width="2" stroke-opacity="0.8"/>
+                                
+                                <!-- Grid Lines (Vertical) -->
+                                <line x1="33.33%" y1="10%" x2="33.33%" y2="90%" stroke="white" stroke-width="1" stroke-opacity="0.3" />
+                                <line x1="66.66%" y1="10%" x2="66.66%" y2="90%" stroke="white" stroke-width="1" stroke-opacity="0.3" />
+                                
+                                <!-- Grid Lines (Horizontal) -->
+                                <line x1="10%" y1="33.33%" x2="90%" y2="33.33%" stroke="white" stroke-width="1" stroke-opacity="0.3" />
+                                <line x1="10%" y1="66.66%" x2="90%" y2="66.66%" stroke="white" stroke-width="1" stroke-opacity="0.3" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Zoom Control -->
+                <div style="padding: 1.5rem; background: ${colors.bg}; border-top: 1px solid ${colors.border};">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fas fa-minus text-xs" style="color: ${colors.textMuted};"></i>
+                        <input type="range" id="profile-zoom-slider" min="1" max="3" step="0.01" value="1" 
+                            style="flex: 1; height: 4px; -webkit-appearance: none; background: ${colors.border}; border-radius: 2px; cursor: pointer; outline: none;">
+                        <i class="fas fa-plus text-xs" style="color: ${colors.textMuted};"></i>
+                    </div>
                 </div>
             </div>
+            
+            <!-- Saving Overlay -->
+            <div id="profile-saving-overlay" style="display: none; position: absolute; inset: 0; background: rgba(255,255,255,0.9); dark:background: rgba(30, 41, 59, 0.9); align-items: center; justify-content: center; flex-direction: column; gap: 1rem; z-index: 50;">
+                <div style="width: 3rem; height: 3rem; border: 3px solid ${colors.border}; border-top-color: ${colors.primary}; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <p style="color: ${colors.text}; font-weight: 600;">Updating Profile...</p>
+            </div>
+            
+            <style>
+                @keyframes spin { to { transform: rotate(360deg); } }
+                #profile-zoom-slider::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    width: 18px;
+                    height: 18px;
+                    background: ${colors.primary};
+                    border: 2px solid white;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    transition: transform 0.1s;
+                }
+                #profile-zoom-slider::-webkit-slider-thumb:hover {
+                    transform: scale(1.1);
+                }
+                #profile-crop-image { touch-action: none; }
+            </style>
         </div>
-        
-        <!-- Saving Overlay -->
-        <div id="profile-saving-overlay" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; flex-direction: column; gap: 1rem;">
-            <div style="width: 3rem; height: 3rem; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <p style="color: white; font-weight: 500;">Saving...</p>
-        </div>
-        
-        <style>
-            @keyframes spin { to { transform: rotate(360deg); } }
-            #profile-zoom-slider::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                width: 16px;
-                height: 16px;
-                background: white;
-                border-radius: 50%;
-                cursor: pointer;
-            }
-            #profile-crop-image { touch-action: none; }
-        </style>
     `;
-    
+
     document.body.appendChild(overlay);
 }
 
@@ -771,32 +808,32 @@ function handleProfileImageFile(file) {
         showNotification('Please select an image file', 'error');
         return;
     }
-    
+
     // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
         showNotification('Image must be less than 5MB', 'error');
         return;
     }
-    
+
     const reader = new FileReader();
     reader.onload = (e) => {
         // Show crop step
         document.getElementById('profile-upload-step').style.display = 'none';
         document.getElementById('profile-crop-step').style.display = 'flex';
-        
+
         const cropImage = document.getElementById('profile-crop-image');
         const container = document.getElementById('crop-container');
-        
+
         cropImage.onload = () => {
             // Calculate initial scale to fit circle
             const containerRect = container.getBoundingClientRect();
-            const circleRadius = 140;
-            const circleDiameter = circleRadius * 2;
-            
+            // Circle is 40% radius = 80% diameter of container width
+            const circleDiameter = containerRect.width * 0.8;
+
             // Scale image so smallest dimension fills the circle
             const imgAspect = cropImage.naturalWidth / cropImage.naturalHeight;
             let scale;
-            
+
             if (imgAspect > 1) {
                 // Landscape - fit height
                 scale = circleDiameter / cropImage.naturalHeight;
@@ -804,10 +841,10 @@ function handleProfileImageFile(file) {
                 // Portrait or square - fit width
                 scale = circleDiameter / cropImage.naturalWidth;
             }
-            
-            // Add some padding
-            scale *= 1.2;
-            
+
+            // Start at 1.0x (fit to cover) instead of 1.2x
+            // This allows the user to see the full image within the circle bounds immediately
+
             profileCropState = {
                 scale: scale,
                 minScale: scale,
@@ -820,26 +857,32 @@ function handleProfileImageFile(file) {
                 imgWidth: cropImage.naturalWidth,
                 imgHeight: cropImage.naturalHeight
             };
-            
+
             updateCropImageTransform();
-            
+
             // Setup drag
             cropImage.onmousedown = startDrag;
             cropImage.ontouchstart = startDrag;
-            
+
             document.onmousemove = drag;
             document.ontouchmove = drag;
-            
+
             document.onmouseup = endDrag;
             document.ontouchend = endDrag;
-            
+
+            // Add Zoom Support (Wheel/Pinch)
+            container.addEventListener('wheel', handleZoom, { passive: false });
+
             // Reset zoom slider
             const slider = document.getElementById('profile-zoom-slider');
-            slider.min = 1;
-            slider.max = 3;
-            slider.value = 1;
+            if (slider) {
+                slider.min = 1;
+                slider.max = 3;
+                slider.value = 1;
+                slider.oninput = (e) => adjustProfileZoom(e.target.value);
+            }
         };
-        
+
         cropImage.src = e.target.result;
     };
     reader.readAsDataURL(file);
@@ -857,11 +900,11 @@ function startDrag(e) {
     if (!profileCropState) return;
     e.preventDefault();
     profileCropState.isDragging = true;
-    
+
     const point = e.touches ? e.touches[0] : e;
     profileCropState.startX = point.clientX - profileCropState.x;
     profileCropState.startY = point.clientY - profileCropState.y;
-    
+
     const img = document.getElementById('profile-crop-image');
     if (img) img.style.cursor = 'grabbing';
 }
@@ -869,28 +912,57 @@ function startDrag(e) {
 function drag(e) {
     if (!profileCropState || !profileCropState.isDragging) return;
     e.preventDefault();
-    
+
     const point = e.touches ? e.touches[0] : e;
     profileCropState.x = point.clientX - profileCropState.startX;
     profileCropState.y = point.clientY - profileCropState.startY;
-    
+
     updateCropImageTransform();
 }
 
 function endDrag() {
     if (!profileCropState) return;
     profileCropState.isDragging = false;
-    
+
     const img = document.getElementById('profile-crop-image');
     if (img) img.style.cursor = 'grab';
 }
 
 function adjustProfileZoom(value) {
     if (!profileCropState) return;
-    
+
     const newScale = profileCropState.minScale * parseFloat(value);
     profileCropState.scale = newScale;
     updateCropImageTransform();
+}
+
+function handleZoom(e) {
+    if (!profileCropState) return;
+    e.preventDefault();
+
+    // Increased zoom speed for better trackpad response
+    const zoomSpeed = 0.01;
+    const delta = -e.deltaY * zoomSpeed;
+
+    // Calculate new scale factor
+    let scaleFactor = 1 + delta;
+
+    // Calculate new scale
+    let newScale = profileCropState.scale * scaleFactor;
+
+    // Clamp scale
+    newScale = Math.max(profileCropState.minScale, Math.min(profileCropState.maxScale, newScale));
+
+    // Update state
+    profileCropState.scale = newScale;
+    updateCropImageTransform();
+
+    // Update slider UI to match
+    const slider = document.getElementById('profile-zoom-slider');
+    if (slider) {
+        // Slider value is relative to minScale (1 to 3)
+        slider.value = newScale / profileCropState.minScale;
+    }
 }
 
 function cancelProfileCrop() {
@@ -902,79 +974,78 @@ function cancelProfileCrop() {
 
 async function saveProfilePicture() {
     if (!profileCropState) return;
-    
+
     const savingOverlay = document.getElementById('profile-saving-overlay');
     savingOverlay.style.display = 'flex';
-    
+
     try {
         const img = document.getElementById('profile-crop-image');
         const container = document.getElementById('crop-container');
         const containerRect = container.getBoundingClientRect();
-        
+
         // Create canvas for the cropped circular area
         const outputSize = 256;
         const canvas = document.createElement('canvas');
         canvas.width = outputSize;
         canvas.height = outputSize;
         const ctx = canvas.getContext('2d');
-        
-        // The circle is centered in the container with radius 140
-        const circleRadius = 140;
+
+        // The circle is centered in the container with radius 40% of width
+        const circleRadius = containerRect.width * 0.4;
         const circleCenterX = containerRect.width / 2;
         const circleCenterY = containerRect.height / 2;
-        
+
         // Calculate where the image is positioned
         const imgRect = img.getBoundingClientRect();
         const imgCenterX = imgRect.left - containerRect.left + imgRect.width / 2;
         const imgCenterY = imgRect.top - containerRect.top + imgRect.height / 2;
-        
+
         // Calculate source coordinates on the original image
-        const displayedWidth = img.naturalWidth * profileCropState.scale;
-        const displayedHeight = img.naturalHeight * profileCropState.scale;
-        
+        // profileCropState.scale is the visual scale relative to natural size
+
         // Offset from image center to circle center
         const offsetX = circleCenterX - imgCenterX;
         const offsetY = circleCenterY - imgCenterY;
-        
+
         // Convert to original image coordinates
         const srcX = (img.naturalWidth / 2) + (offsetX / profileCropState.scale) - (circleRadius / profileCropState.scale);
         const srcY = (img.naturalHeight / 2) + (offsetY / profileCropState.scale) - (circleRadius / profileCropState.scale);
         const srcSize = (circleRadius * 2) / profileCropState.scale;
-        
+
         // Draw circular clip
         ctx.beginPath();
         ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
         ctx.closePath();
         ctx.clip();
-        
+
         // Draw the cropped portion
         ctx.drawImage(
             img,
             srcX, srcY, srcSize, srcSize,
             0, 0, outputSize, outputSize
         );
-        
+
         // Convert to base64
         const photoURL = canvas.toDataURL('image/jpeg', 0.9);
-        
+
         // Save to Firestore if user is logged in and not a guest
         if (currentUserData && !currentUserData.isGuest && auth.currentUser) {
             await db.collection('users').doc(auth.currentUser.uid).update({
                 photoURL: photoURL
             });
         }
-        
+
         // Update local user data
         if (currentUserData) {
             currentUserData.photoURL = photoURL;
         }
-        
+
         // Update all avatar displays
         updateAllAvatars(photoURL);
-        
+
         showNotification('Profile picture updated!', 'success');
         closeProfilePictureModal();
-        
+
     } catch (error) {
         console.error('Error saving profile picture:', error);
         showNotification('Failed to save photo. Please try again.', 'error');
@@ -984,7 +1055,7 @@ async function saveProfilePicture() {
 
 async function removeProfilePicture() {
     if (!confirm('Are you sure you want to remove your profile picture?')) return;
-    
+
     try {
         // Remove from Firestore if user is logged in and not a guest
         if (currentUserData && !currentUserData.isGuest && auth.currentUser) {
@@ -992,18 +1063,18 @@ async function removeProfilePicture() {
                 photoURL: firebase.firestore.FieldValue.delete()
             });
         }
-        
+
         // Update local user data
         if (currentUserData) {
             currentUserData.photoURL = null;
         }
-        
+
         // Update all avatar displays
         updateAllAvatars(null);
-        
+
         showNotification('Profile picture removed', 'success');
         closeProfilePictureModal();
-        
+
     } catch (error) {
         console.error('Error removing profile picture:', error);
         showNotification('Failed to remove photo. Please try again.', 'error');
@@ -1012,7 +1083,7 @@ async function removeProfilePicture() {
 
 function updateAllAvatars(photoURL) {
     const initials = getInitials(currentUserData?.name || 'U');
-    
+
     // Update navbar avatar
     const navAvatar = document.getElementById('user-avatar');
     if (navAvatar) {
@@ -1022,7 +1093,7 @@ function updateAllAvatars(photoURL) {
             navAvatar.innerHTML = initials;
         }
     }
-    
+
     // Update dropdown avatar
     const dropdownAvatar = document.getElementById('dropdown-avatar');
     const dropdownInitials = document.getElementById('dropdown-avatar-initials');
@@ -1123,9 +1194,9 @@ function renderMentors(filter = 'all') {
 function showMentorEmail(mentorEmail, mentorName) {
     // Remove any existing modal
     document.getElementById('dynamic-mentor-modal')?.remove();
-    
+
     const isDark = document.documentElement.classList.contains('dark');
-    
+
     const colors = {
         bg: isDark ? '#1e293b' : '#ffffff',
         text: isDark ? '#f1f5f9' : '#1e293b',
@@ -1133,7 +1204,7 @@ function showMentorEmail(mentorEmail, mentorName) {
         inputBg: isDark ? '#334155' : '#f1f5f9',
         border: isDark ? '#475569' : '#e2e8f0'
     };
-    
+
     const overlay = document.createElement('div');
     overlay.id = 'dynamic-mentor-modal';
     overlay.style.cssText = `
@@ -1153,7 +1224,7 @@ function showMentorEmail(mentorEmail, mentorName) {
     overlay.onclick = (e) => {
         if (e.target === overlay) closeMentorEmailModal();
     };
-    
+
     overlay.innerHTML = `
         <div style="background: ${colors.bg}; border-radius: 1rem; max-width: 24rem; width: 100%; padding: 2rem; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
             <button onclick="closeMentorEmailModal()" style="position: absolute; top: 1rem; right: 1rem; width: 2rem; height: 2rem; border-radius: 50%; background: ${colors.inputBg}; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: ${colors.textMuted};">
@@ -1178,7 +1249,7 @@ function showMentorEmail(mentorEmail, mentorName) {
             </button>
         </div>
     `;
-    
+
     document.body.appendChild(overlay);
 }
 
@@ -1248,11 +1319,11 @@ function subscribeToSessions() {
 function getSessionStatus(session) {
     const now = new Date();
     const sessionDate = new Date(session.date);
-    
+
     // Parse time (e.g., "13:00" or "1:00 PM")
     let sessionTime = session.time;
     let hours, minutes;
-    
+
     if (sessionTime.includes(':')) {
         const timeParts = sessionTime.match(/(\d+):(\d+)\s*(AM|PM)?/i);
         if (timeParts) {
@@ -1266,11 +1337,11 @@ function getSessionStatus(session) {
         hours = parseInt(sessionTime);
         minutes = 0;
     }
-    
+
     sessionDate.setHours(hours || 0, minutes || 0, 0, 0);
-    
+
     const sessionEnd = new Date(sessionDate.getTime() + (parseInt(session.duration) || 60) * 60000);
-    
+
     if (now > sessionEnd) {
         return { status: 'past', label: 'Past', class: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400' };
     } else if (now >= sessionDate && now <= sessionEnd) {
@@ -1293,7 +1364,7 @@ function renderSessions() {
         const dateObj = new Date(session.date);
         const day = dateObj.getDate();
         const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
-        
+
         // Get session status
         const sessionStatus = getSessionStatus(session);
 
@@ -1313,7 +1384,7 @@ function renderSessions() {
         let adminControls = currentUserRole === 'admin'
             ? `<button onclick="deleteSession('${session.id}')" class="text-slate-300 hover:text-red-500 ml-2 transition"><i class="fas fa-trash-alt"></i></button>`
             : "";
-        
+
         // Determine button based on status
         let actionButton = '';
         if (sessionStatus.status === 'past') {
@@ -1704,14 +1775,14 @@ function updateUIForRole(role) {
 // Update user profile dropdown with current user info
 function updateUserProfileDropdown() {
     if (!currentUserData) return;
-    
+
     const userAvatar = document.getElementById('user-avatar');
     const userDisplayName = document.getElementById('user-display-name');
     const dropdownName = document.getElementById('dropdown-user-name');
     const dropdownEmail = document.getElementById('dropdown-user-email');
     const dropdownRole = document.getElementById('dropdown-user-role');
     const dropdownAvatar = document.getElementById('dropdown-avatar');
-    
+
     // Get initials for avatar
     const initials = currentUserData.name
         .split(' ')
@@ -1719,7 +1790,7 @@ function updateUserProfileDropdown() {
         .join('')
         .toUpperCase()
         .slice(0, 2);
-    
+
     // Update navbar avatar (with profile picture support)
     if (userAvatar) {
         if (currentUserData.photoURL) {
@@ -1728,7 +1799,7 @@ function updateUserProfileDropdown() {
             userAvatar.textContent = initials;
         }
     }
-    
+
     // Update dropdown large avatar (with profile picture support)
     if (dropdownAvatar) {
         if (currentUserData.photoURL) {
@@ -1737,11 +1808,11 @@ function updateUserProfileDropdown() {
             dropdownAvatar.innerHTML = `<span id="dropdown-avatar-initials">${initials}</span>`;
         }
     }
-    
+
     if (userDisplayName) userDisplayName.textContent = currentUserData.name.split(' ')[0];
     if (dropdownName) dropdownName.textContent = currentUserData.name;
     if (dropdownEmail) dropdownEmail.textContent = currentUserData.email;
-    
+
     if (dropdownRole) {
         const roleLabels = {
             admin: { label: 'Administrator', class: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
