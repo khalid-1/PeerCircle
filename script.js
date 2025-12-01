@@ -1635,38 +1635,94 @@ function renderSessions() {
         }
 
         return `
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition items-center group ${sessionStatus.status === 'past' ? 'opacity-60' : ''}">
-            <div class="md:col-span-2 flex items-center gap-3">
-                <div class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl p-2 w-14 text-center border border-slate-200 dark:border-slate-600 relative">
-                    <div class="text-[10px] uppercase tracking-wider">${month}</div>
-                    <div class="text-xl leading-none">${day}</div>
+        <!-- Mobile Card (Visible only on Mobile) -->
+        <div class="md:hidden flex flex-col p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 mb-4 relative overflow-hidden">
+            ${sessionStatus.status === 'past' ? '<div class="absolute inset-0 bg-white/50 dark:bg-slate-900/50 z-10 pointer-events-none"></div>' : ''}
+            
+            <!-- Header: Date & Status -->
+            <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-slate-50 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300 font-bold rounded-xl p-2.5 w-14 text-center border border-slate-200 dark:border-slate-600">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400">${month}</div>
+                        <div class="text-xl leading-none font-extrabold">${day}</div>
+                    </div>
+                    <div>
+                        <div class="font-bold text-slate-800 dark:text-white">${session.time}</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">${session.duration}m duration</div>
+                    </div>
                 </div>
-                <div class="text-sm text-slate-500 dark:text-slate-400">
-                    ${session.time}<br><span class="text-xs opacity-70">${session.duration}m</span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${sessionStatus.class}">
+                    ${sessionStatus.status === 'live' ? '<span class="w-1.5 h-1.5 bg-current rounded-full mr-1"></span>' : ''}${sessionStatus.label}
+                </span>
+            </div>
+
+            <!-- Body: Content -->
+            <div class="mb-5">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight">${escapeHTML(session.title)}</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-3 line-clamp-2 leading-relaxed">${escapeHTML(session.desc)}</p>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">
+                    ${escapeHTML(session.tag)}
+                </span>
+            </div>
+
+            <!-- Footer: Metadata & Action -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-700">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-user-circle text-slate-400 text-lg"></i>
+                        <span class="font-medium truncate max-w-[100px]">${escapeHTML(session.host)}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        ${platformLogo}
+                        <span class="font-medium">${session.platform}</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                     <div class="flex-1">
+                        ${actionButton.replace('class="', 'class="w-full text-center justify-center py-3 text-base ')}
+                    </div>
+                    ${currentUserRole === 'admin' ? `
+                    <button onclick="deleteSession('${session.id}')" class="w-12 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>` : ''}
                 </div>
             </div>
-            <div class="md:col-span-4">
-                <div class="flex items-center gap-2 mb-1">
-                    <h4 class="font-bold text-slate-800 dark:text-white text-lg">${escapeHTML(session.title)}</h4>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${sessionStatus.class}">
-                        ${sessionStatus.status === 'live' ? '<span class="w-1.5 h-1.5 bg-current rounded-full mr-1"></span>' : ''}${sessionStatus.label}
-                    </span>
+        </div>
+
+        <!-- Desktop Row (Visible only on Desktop) -->
+        <div class="hidden md:grid md:grid-cols-12 gap-4 px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition items-center group ${sessionStatus.status === 'past' ? 'opacity-60' : ''} border-b border-slate-100 dark:border-slate-800 last:border-0">
+                <div class="md:col-span-2 flex items-center gap-3">
+                    <div class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl p-2 w-14 text-center border border-slate-200 dark:border-slate-600 relative">
+                        <div class="text-[10px] uppercase tracking-wider">${month}</div>
+                        <div class="text-xl leading-none">${day}</div>
+                    </div>
+                    <div class="text-sm text-slate-500 dark:text-slate-400">
+                        ${session.time}<br><span class="text-xs opacity-70">${session.duration}m</span>
+                    </div>
                 </div>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">${escapeHTML(session.desc)}</p>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">${escapeHTML(session.tag)}</span>
-            </div>
-            <div class="md:col-span-3 flex flex-col justify-center text-sm">
-                <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1"><i class="fas fa-user-circle mr-2 text-slate-400"></i> ${escapeHTML(session.host)}</div>
-                <div class="flex items-center text-slate-600 dark:text-slate-400">
-                    ${platformLogo}
-                    <span>${session.platform}</span>
+                <div class="md:col-span-4">
+                    <div class="flex items-center gap-2 mb-1">
+                        <h4 class="font-bold text-slate-800 dark:text-white text-lg">${escapeHTML(session.title)}</h4>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${sessionStatus.class}">
+                            ${sessionStatus.status === 'live' ? '<span class="w-1.5 h-1.5 bg-current rounded-full mr-1"></span>' : ''}${sessionStatus.label}
+                        </span>
+                    </div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-1 line-clamp-1">${escapeHTML(session.desc)}</p>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">${escapeHTML(session.tag)}</span>
                 </div>
-            </div>
-            <div class="md:col-span-3 flex items-center justify-end gap-3">
-                ${actionButton}
-                ${adminControls}
-            </div>
-        </div>`;
+                <div class="md:col-span-3 flex flex-col justify-center text-sm">
+                    <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1"><i class="fas fa-user-circle mr-2 text-slate-400"></i> ${escapeHTML(session.host)}</div>
+                    <div class="flex items-center text-slate-600 dark:text-slate-400">
+                        ${platformLogo}
+                        <span>${session.platform}</span>
+                    </div>
+                </div>
+                <div class="md:col-span-3 flex items-center justify-end gap-3">
+                    ${actionButton}
+                    ${adminControls}
+                </div>
+            </div>`;
     }).join('');
 }
 
@@ -1775,19 +1831,19 @@ function renderInbox() {
     const activeMessages = peerMessages.filter(msg => msg.status === 'pending');
 
     if (activeMessages.length === 0) {
-        container.innerHTML = `<div class="p-12 text-center text-slate-400 flex flex-col items-center"><i class="fas fa-inbox text-3xl mb-4"></i><p>No new requests.</p></div>`;
+        container.innerHTML = `< div class="p-12 text-center text-slate-400 flex flex-col items-center" ><i class="fas fa-inbox text-3xl mb-4"></i><p>No new requests.</p></div > `;
         return;
     }
 
     container.innerHTML = activeMessages.map(msg => `
-        <div class="flex flex-col md:flex-row gap-4 p-5 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+            < div class="flex flex-col md:flex-row gap-4 p-5 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition" >
             <div class="flex items-start gap-3 md:w-1/3">
                 <div class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex-shrink-0 flex items-center justify-center font-bold text-sm">${msg.name.charAt(0).toUpperCase()}</div>
                 <div><h4 class="font-bold text-slate-800 dark:text-white text-sm">${escapeHTML(msg.name)}</h4><p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${escapeHTML(msg.year)}</p></div>
             </div>
             <div class="md:w-1/4 flex items-center"><span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-600">${escapeHTML(msg.topic)}</span></div>
             <div class="flex-1 flex justify-end items-center"><button onclick="acceptRequest('${msg.id}')" class="bg-teal-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm hover:bg-teal-700 transition">Accept</button></div>
-        </div>`).join('');
+        </div > `).join('');
 }
 
 async function acceptRequest(id) {
