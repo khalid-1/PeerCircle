@@ -1607,6 +1607,13 @@ function renderSessions() {
         // Get session status
         const sessionStatus = getSessionStatus(session);
 
+        // Format time to 12-hour AM/PM
+        const [hours, minutes] = session.time.split(':');
+        const timeObj = new Date();
+        timeObj.setHours(hours);
+        timeObj.setMinutes(minutes);
+        const formattedTime = timeObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
         // --- ICON LOGIC FIXED ---
         let platformLogo = '';
 
@@ -1654,7 +1661,7 @@ function renderSessions() {
                         <div class="text-xl leading-none font-extrabold">${day}</div>
                     </div>
                     <div>
-                        <div class="font-bold text-slate-800 dark:text-white">${session.time}</div>
+                        <div class="font-bold text-slate-800 dark:text-white">${formattedTime}</div>
                         <div class="text-xs text-slate-500 dark:text-slate-400">${session.duration}m duration</div>
                     </div>
                 </div>
@@ -1666,7 +1673,7 @@ function renderSessions() {
             <!-- Body: Content -->
             <div class="mb-5">
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight">${escapeHTML(session.title)}</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mb-3 line-clamp-2 leading-relaxed">${escapeHTML(session.desc)}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">${escapeHTML(session.desc)}</p>
                 <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">
                     ${escapeHTML(session.tag)}
                 </span>
@@ -1676,8 +1683,8 @@ function renderSessions() {
             <div class="space-y-4">
                 <div class="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-700">
                     <div class="flex items-center gap-2">
-                        <i class="fas fa-user-circle text-slate-400 text-lg"></i>
-                        <span class="font-medium truncate max-w-[100px]">${escapeHTML(session.host)}</span>
+                        <i class="fas fa-user-circle text-slate-400 text-xl"></i>
+                        <span class="font-medium">${escapeHTML(session.host)}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         ${platformLogo}
@@ -1704,37 +1711,37 @@ function renderSessions() {
 
         <!-- Desktop Row (Visible only on Desktop) -->
         <div class="hidden md:grid md:grid-cols-12 gap-4 px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition items-center group ${sessionStatus.status === 'past' ? 'opacity-60' : ''} border-b border-slate-100 dark:border-slate-800 last:border-0">
-                <div class="md:col-span-2 flex items-center gap-3">
-                    <div class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl p-2 w-14 text-center border border-slate-200 dark:border-slate-600 relative">
-                        <div class="text-[10px] uppercase tracking-wider">${month}</div>
-                        <div class="text-xl leading-none">${day}</div>
-                    </div>
-                    <div class="text-sm text-slate-500 dark:text-slate-400">
-                        ${session.time}<br><span class="text-xs opacity-70">${session.duration}m</span>
-                    </div>
+            <div class="md:col-span-2 flex items-center gap-3">
+                <div class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl p-2 w-14 text-center border border-slate-200 dark:border-slate-600 relative">
+                    <div class="text-[10px] uppercase tracking-wider">${month}</div>
+                    <div class="text-xl leading-none">${day}</div>
                 </div>
-                <div class="md:col-span-4">
-                    <div class="flex items-center gap-2 mb-1">
-                        <h4 class="font-bold text-slate-800 dark:text-white text-lg">${escapeHTML(session.title)}</h4>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${sessionStatus.class}">
-                            ${sessionStatus.status === 'live' ? '<span class="w-1.5 h-1.5 bg-current rounded-full mr-1"></span>' : ''}${sessionStatus.label}
-                        </span>
-                    </div>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-1 line-clamp-1">${escapeHTML(session.desc)}</p>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">${escapeHTML(session.tag)}</span>
+                <div class="text-sm text-slate-500 dark:text-slate-400">
+                    ${formattedTime}<br><span class="text-xs opacity-70">${session.duration}m</span>
                 </div>
-                <div class="md:col-span-3 flex flex-col justify-center text-sm">
-                    <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1"><i class="fas fa-user-circle mr-2 text-slate-400"></i> ${escapeHTML(session.host)}</div>
-                    <div class="flex items-center text-slate-600 dark:text-slate-400">
-                        ${platformLogo}
-                        <span>${session.platform}</span>
-                    </div>
+            </div>
+            <div class="md:col-span-4">
+                <div class="flex items-center gap-2 mb-1">
+                    <h4 class="font-bold text-slate-800 dark:text-white text-lg">${escapeHTML(session.title)}</h4>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${sessionStatus.class}">
+                        ${sessionStatus.status === 'live' ? '<span class="w-1.5 h-1.5 bg-current rounded-full mr-1"></span>' : ''}${sessionStatus.label}
+                    </span>
                 </div>
-                <div class="md:col-span-3 flex items-center justify-end gap-3">
-                    ${actionButton}
-                    ${adminControls}
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">${escapeHTML(session.desc)}</p>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-800">${escapeHTML(session.tag)}</span>
+            </div>
+            <div class="md:col-span-3 flex flex-col justify-center text-sm">
+                <div class="flex items-center text-slate-700 dark:text-slate-300 mb-1"><i class="fas fa-user-circle mr-2 text-slate-400 text-xl"></i> ${escapeHTML(session.host)}</div>
+                <div class="flex items-center text-slate-600 dark:text-slate-400">
+                    ${platformLogo}
+                    <span>${session.platform}</span>
                 </div>
-            </div>`;
+            </div>
+            <div class="md:col-span-3 flex items-center justify-end gap-3">
+                ${actionButton}
+                ${adminControls}
+            </div>
+        </div>`;
     }).join('');
 
     updateSessionBadge();
