@@ -223,8 +223,11 @@ function openModal(id) {
 }
 
 function closeModal(id) {
-    document.getElementById(id).classList.add('hidden');
-    document.getElementById(id).classList.remove('flex');
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 }
 
 
@@ -244,10 +247,8 @@ const availableColors = [
 
 function subscribeToTopics() {
     db.collection('topics').onSnapshot((snapshot) => {
-        console.log("Topics snapshot received. Docs:", snapshot.docs.length);
-        // FIX: Put 'id: doc.id' LAST so it overrides any number ID inside the data
+        // Spread data first, then override with doc.id to ensure Firestore ID is used
         topicsData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-        console.log("Topics data loaded:", topicsData);
         renderTopics();
         updateDashboard();
     });
@@ -329,69 +330,114 @@ async function deleteTopic(event, id) {
 }
 
 function openTopicModal(id) {
-    console.log("Attempting to open topic ID:", id);
-
-    // FIX: Convert both to String to ensure they match (handles "1" vs 1)
     const topic = topicsData.find(t => String(t.id) === String(id));
 
     if (!topic) {
-        console.error("Error: Topic ID not found.", id, topicsData);
-        alert("Error: Topic content not found. Check console for details.");
+        showNotification("Topic not found", "error");
         return;
     }
 
-    const modal = document.getElementById('modal-dynamic-topic');
-    if (!modal) {
-        console.error("CRITICAL: Modal element 'modal-dynamic-topic' missing in HTML.");
-        return;
-    }
-
-    // Setup Theme
     const theme = availableColors.find(c => c.name === topic.color) || availableColors[0];
+    showDynamicModal(topic, theme);
+}
 
-    // Populate Content
-    const headerBar = document.getElementById('modal-header-bar');
-    if (headerBar) headerBar.className = `h-4 w-full ${theme.hex}`;
-
-    document.getElementById('modal-icon-box').className = `w-12 h-12 rounded-xl flex items-center justify-center text-xl ${theme.light} ${theme.text} dark:bg-opacity-20`;
-    document.getElementById('modal-icon').className = `fas ${topic.icon}`;
-    document.getElementById('modal-title').textContent = topic.title;
-    document.getElementById('modal-title').className = `text-2xl font-bold text-slate-800 dark:text-white`;
-
-    // Content Safety Check
+// Creates a dynamic modal overlay for displaying topic details
+function showDynamicModal(topic, theme) {
+    // Remove any existing dynamic modal
+    document.getElementById('dynamic-topic-modal')?.remove();
+    
     const content = topic.content || {};
-    document.getElementById('modal-intro').textContent = content.intro || topic.desc || "No description.";
-
-    // Bullets
-    const bulletsList = document.getElementById('modal-bullets');
-    const bulletsContainer = document.getElementById('modal-bullets-container');
-    bulletsList.innerHTML = "";
-
+    
+    // Build bullets HTML
+    let bulletsHTML = '';
     if (content.bullets && content.bullets.length > 0) {
-        bulletsContainer.classList.remove('hidden');
-        content.bullets.forEach(b => {
-            const li = document.createElement('li');
-            li.textContent = b;
-            bulletsList.appendChild(li);
-        });
-    } else {
-        bulletsContainer.classList.add('hidden');
+        bulletsHTML = `
+            <div class="mb-4">
+                <h4 class="font-bold text-slate-800 dark:text-white mb-2">Key Signs & Strategies</h4>
+                <ul style="list-style: disc; padding-left: 1.25rem;" class="space-y-1 text-slate-600 dark:text-slate-300">
+                    ${content.bullets.map(b => `<li>${escapeHTML(b)}</li>`).join('')}
+                </ul>
+            </div>
+        `;
     }
-
-    // Action Box
-    const actionBox = document.getElementById('modal-action-box');
+    
+    // Build action box HTML
+    let actionHTML = '';
     if (content.action) {
-        actionBox.classList.remove('hidden');
-        actionBox.className = `p-4 rounded-xl border-l-4 mt-6 ${theme.light} border-${theme.name}-500 dark:bg-opacity-10`;
-        document.getElementById('modal-action-title').className = `font-bold mb-1 ${theme.text}`;
-        document.getElementById('modal-action-text').textContent = content.action;
-    } else {
-        actionBox.classList.add('hidden');
+        actionHTML = `
+            <div style="background: ${theme.name === 'teal' ? '#f0fdfa' : '#f1f5f9'}; padding: 1rem; border-radius: 0.75rem; border-left: 4px solid ${theme.name === 'teal' ? '#14b8a6' : '#64748b'};" class="dark:bg-opacity-20">
+                <h4 style="color: ${theme.name === 'teal' ? '#0d9488' : '#475569'};" class="font-bold mb-1">Try This:</h4>
+                <p class="text-slate-600 dark:text-slate-300">${escapeHTML(content.action)}</p>
+            </div>
+        `;
     }
+    
+    // Create the modal overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'dynamic-topic-modal';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 1rem;
+    `;
+    overlay.onclick = (e) => {
+        if (e.target === overlay) closeDynamicModal();
+    };
+    
+    // Create the modal content
+    overlay.innerHTML = `
+        <div style="background: white; border-radius: 1rem; width: 100%; max-width: 32rem; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);" class="dark:bg-slate-800">
+            
+            <!-- Header bar -->
+            <div style="height: 1rem; width: 100%; background: ${theme.hex.includes('teal') ? '#14b8a6' : theme.hex.includes('blue') ? '#3b82f6' : theme.hex.includes('purple') ? '#a855f7' : theme.hex.includes('rose') ? '#f43f5e' : theme.hex.includes('amber') ? '#f59e0b' : '#6366f1'}; border-radius: 1rem 1rem 0 0;"></div>
+            
+            <!-- Close button -->
+            <button onclick="closeDynamicModal()" style="position: absolute; top: 1.5rem; right: 1rem; width: 2rem; height: 2rem; border-radius: 50%; background: #f1f5f9; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1rem;" class="hover:bg-red-50 hover:text-red-500 dark:bg-slate-700">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <!-- Content -->
+            <div style="padding: 1.5rem 2rem;">
+                <!-- Title with icon -->
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                    <div style="width: 3rem; height: 3rem; border-radius: 0.75rem; background: ${theme.light.includes('teal') ? '#ccfbf1' : '#e0e7ff'}; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: ${theme.text.includes('teal') ? '#0d9488' : '#4f46e5'};" class="dark:bg-opacity-20">
+                        <i class="fas ${topic.icon}"></i>
+                    </div>
+                    <h2 style="font-size: 1.5rem; font-weight: bold; color: #1e293b;" class="dark:text-white">${escapeHTML(topic.title)}</h2>
+                </div>
+                
+                <!-- Intro text -->
+                <p style="color: #475569; margin-bottom: 1.5rem; line-height: 1.6;" class="dark:text-slate-300">
+                    ${escapeHTML(content.intro || topic.desc || 'No description available.')}
+                </p>
+                
+                ${bulletsHTML}
+                ${actionHTML}
+                
+                <!-- Footer -->
+                <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; text-align: right;" class="dark:border-slate-700">
+                    <button onclick="closeDynamicModal()" style="padding: 0.5rem 1.5rem; background: #f1f5f9; color: #475569; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer;" class="hover:bg-slate-200 dark:bg-slate-700 dark:text-white">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+}
 
-    // Show Modal
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
+function closeDynamicModal() {
+    document.getElementById('dynamic-topic-modal')?.remove();
 }
 
 function initAdminPickers() {

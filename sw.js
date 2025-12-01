@@ -1,4 +1,4 @@
-const CACHE_NAME = 'peercircle-v1';
+const CACHE_NAME = 'peercircle-v9';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -11,8 +11,10 @@ const ASSETS_TO_CACHE = [
     './image_b1faa4.png' 
 ];
 
-// 1. Install Event: Cache core files
+// 1. Install Event: Cache core files + force immediate activation
 self.addEventListener('install', (event) => {
+    // Force the waiting service worker to become the active one immediately
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll(ASSETS_TO_CACHE);
@@ -29,13 +31,16 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// 3. Activate Event: Clean up old caches
+// 3. Activate Event: Clean up old caches + claim all clients immediately
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keys) => {
             return Promise.all(
                 keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
             );
+        }).then(() => {
+            // Take control of all pages immediately
+            return self.clients.claim();
         })
     );
 });
