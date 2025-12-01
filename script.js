@@ -1104,6 +1104,9 @@ function updateAllAvatars(photoURL) {
             dropdownAvatar.innerHTML = `<span id="dropdown-avatar-initials">${initials}</span>`;
         }
     }
+
+    // Update mentor list in case the user is a mentor
+    renderMentors();
 }
 
 function getInitials(name) {
@@ -1164,12 +1167,19 @@ function renderMentors(filter = 'all') {
     }
 
     // OPTIMIZATION: Use map/join
-    container.innerHTML = filtered.map(m => `
+    container.innerHTML = filtered.map(m => {
+        const isCurrentUser = currentUserData && currentUserData.email === m.email;
+        const photoURL = isCurrentUser ? currentUserData.photoURL : null;
+
+        return `
         <article class="bg-white dark:bg-slate-800 rounded-2xl border border-teal-100 dark:border-slate-700 shadow-sm hover:shadow-md transition flex flex-col justify-between p-6 animate-[fadeIn_0.3s_ease-out]">
             <header class="flex items-center justify-between mb-4">
                 <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mr-3">
-                        <i class="fas fa-user-nurse text-slate-400"></i>
+                    <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mr-3 overflow-hidden">
+                        ${photoURL
+                ? `<img src="${photoURL}" class="w-full h-full object-cover">`
+                : `<i class="fas fa-user-nurse text-slate-400"></i>`
+            }
                     </div>
                     <div>
                         <h3 class="font-semibold text-slate-800 dark:text-white">${escapeHTML(m.name)}</h3>
@@ -1186,7 +1196,9 @@ function renderMentors(filter = 'all') {
                 <i class="far fa-envelope"></i> Contact Mentor
             </button>
         </article>
-    `).join('');
+
+    `;
+    }).join('');
 }
 
 // --- NEW HELPER FUNCTIONS FOR MODAL ---
