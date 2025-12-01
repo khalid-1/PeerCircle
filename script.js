@@ -239,7 +239,40 @@ window.addEventListener('hashchange', () => {
 });
 
 function toggleMobileMenu() {
-    document.getElementById('mobile-menu').classList.toggle('hidden');
+    const menu = document.getElementById('mobile-menu');
+    const icon = document.querySelector('#mobile-menu-btn i');
+
+    if (menu) {
+        // Toggle Visibility and Animation
+        if (menu.classList.contains('hidden')) {
+            // Open Menu
+            menu.classList.remove('hidden');
+            // Small delay to allow display:block to apply before transition
+            setTimeout(() => {
+                menu.classList.remove('translate-x-full');
+            }, 10);
+
+            // Icon to X
+            if (icon) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            }
+        } else {
+            // Close Menu
+            menu.classList.add('translate-x-full');
+
+            // Wait for transition to finish before hiding
+            setTimeout(() => {
+                menu.classList.add('hidden');
+            }, 300); // Match duration-300
+
+            // Icon to Bars
+            if (icon) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+    }
 }
 document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
 
