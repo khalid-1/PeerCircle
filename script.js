@@ -1724,6 +1724,26 @@ function renderSessions() {
                 </div>
             </div>`;
     }).join('');
+
+    updateSessionBadge();
+}
+
+function updateSessionBadge() {
+    const badge = document.getElementById('mobile-sessions-badge');
+    if (!badge) return;
+
+    // Count upcoming and live sessions
+    const upcomingCount = sessionsData.filter(session => {
+        const status = getSessionStatus(session).status;
+        return status === 'upcoming' || status === 'live';
+    }).length;
+
+    if (upcomingCount > 0) {
+        badge.textContent = upcomingCount;
+        badge.classList.remove('hidden');
+    } else {
+        badge.classList.add('hidden');
+    }
 }
 
 async function handleAddSession(e) {
