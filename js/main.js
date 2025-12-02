@@ -190,32 +190,6 @@ window.toggleAuthMode = UI.toggleAuthMode;
 window.toggleProfileDropdown = UI.toggleProfileDropdown;
 window.toggleBreathing = UI.toggleBreathing;
 
-window.loginAsGuest = () => {
-    console.log("Logging in as Guest");
-    setCurrentUserRole('guest');
-    setCurrentUserData({
-        name: 'Guest User',
-        email: 'guest@demo.com',
-        role: 'guest',
-        photoURL: null
-    });
-
-    document.getElementById('login-modal').classList.add('hidden');
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) loadingScreen.classList.add('hidden');
-
-    UI.updateUIForRole('guest');
-    UI.updateUserProfileDropdown();
-    UI.showNotification("Guest Mode Active", "success");
-
-    Repo.subscribeToTopics(UI.renderTopics);
-    Repo.subscribeToSessions(UI.renderSessions);
-
-    Repo.fetchMentorOverrides(state.mentorsData).then(() => {
-        UI.renderMentors();
-    });
-};
-
 // Requests
 window.handleBooking = UI.handleBooking;
 window.resetChatForm = UI.resetChatForm;

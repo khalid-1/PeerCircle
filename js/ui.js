@@ -587,8 +587,7 @@ export function updateUserProfileDropdown() {
         const roleLabels = {
             admin: { label: 'Administrator', class: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
             peer: { label: 'Peer Mentor', class: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' },
-            student: { label: 'Student', class: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300' },
-            guest: { label: 'Guest', class: 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300' }
+            student: { label: 'Student', class: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300' }
         };
         const roleInfo = roleLabels[state.currentUserData.role] || roleLabels.student;
         dropdownRole.textContent = roleInfo.label;
@@ -1323,12 +1322,7 @@ export function setAuthMode(mode) {
     const nameField = document.getElementById('name-field-container');
     const passField = document.getElementById('password-field-container');
     const forgotBtn = document.getElementById('auth-forgot-btn');
-    const guestBtn = document.getElementById('auth-guest-btn');
-
-    nameField.classList.add('hidden');
-    passField.classList.remove('hidden');
     forgotBtn.classList.remove('hidden');
-    guestBtn.classList.remove('hidden');
 
     if (mode === 'SIGNUP') {
         title.textContent = "Create Account";
@@ -1351,7 +1345,6 @@ export function setAuthMode(mode) {
         btn.textContent = "Send Reset Link";
         passField.classList.add('hidden');
         forgotBtn.classList.add('hidden');
-        guestBtn.classList.add('hidden');
         toggleText.textContent = "Remembered your password?";
         toggleBtn.textContent = "Back to Login";
         toggleBtn.onclick = () => setAuthMode('LOGIN');
@@ -1412,32 +1405,7 @@ export async function handleAuth(e) {
     }
 }
 
-export function loginAsGuest() {
-    console.log("Logging in as Guest (Dev Mode)");
-    // We can't easily fake auth.currentUser, but we can fake the UI state.
-    // However, repo functions rely on auth.currentUser.
-    // Guest mode in script.js just set global vars.
-    // Here we can try to set state.
-    // But Repo functions might fail if they check auth.currentUser.
-    // For now, we'll just update UI.
 
-    // Ideally we should use anonymous auth: auth.signInAnonymously()
-    // But the original script just mocked it.
-    // We'll stick to mocking UI for now.
-
-    document.getElementById('login-modal').classList.add('hidden');
-    document.getElementById('loading-screen')?.classList.add('hidden');
-
-    // We need to export a way to set guest mode in state?
-    // state.currentUserData is read-only from outside (via setters).
-    // We need to import setters in UI.js? No, UI.js imports state.
-    // We should probably move loginAsGuest to main.js where we have access to state setters.
-    // But we are here.
-    // I'll leave a TODO or just do UI updates.
-    // Actually, main.js imports setters. UI.js does not.
-    // I'll move loginAsGuest to main.js.
-    // I'll just export handleAuth and setAuthMode here.
-}
 
 export function toggleProfileDropdown() {
     const menu = document.getElementById('profile-dropdown-menu');
