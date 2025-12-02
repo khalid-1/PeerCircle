@@ -866,7 +866,7 @@ export function openProfilePictureModal() {
             <div id="profile-crop-step" style="display: none; flex-direction: column; height: 500px;">
                 <div style="flex: 1; position: relative; background: #000; overflow: hidden; cursor: grab;" id="crop-container">
                     <img id="profile-crop-image" style="position: absolute; transform-origin: top left; pointer-events: none; user-select: none;">
-                    <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); pointer-events: none;">
+                    <div style="position: absolute; inset: 0; pointer-events: none;">
                         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; padding-bottom: 80%; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);"></div>
                     </div>
                 </div>
@@ -1056,20 +1056,16 @@ export async function saveProfilePicture() {
         canvas.height = outputSize;
         const ctx = canvas.getContext('2d');
 
-        const circleRadius = containerRect.width * 0.4;
-        const circleCenterX = containerRect.width / 2;
-        const circleCenterY = containerRect.height / 2;
+        // Calculate the crop circle's position and size relative to the container
+        const circleDiameter = containerRect.width * 0.8;
+        const cropX = (containerRect.width - circleDiameter) / 2;
+        const cropY = (containerRect.height - circleDiameter) / 2;
 
-        const imgRect = img.getBoundingClientRect();
-        const imgCenterX = imgRect.left - containerRect.left + imgRect.width / 2;
-        const imgCenterY = imgRect.top - containerRect.top + imgRect.height / 2;
-
-        const offsetX = circleCenterX - imgCenterX;
-        const offsetY = circleCenterY - imgCenterY;
-
-        const srcX = (img.naturalWidth / 2) + (offsetX / profileCropState.scale) - (circleRadius / profileCropState.scale);
-        const srcY = (img.naturalHeight / 2) + (offsetY / profileCropState.scale) - (circleRadius / profileCropState.scale);
-        const srcSize = (circleRadius * 2) / profileCropState.scale;
+        // Calculate the source coordinates on the image
+        // srcX = (CropBoxLeft - ImageLeft) / Scale
+        const srcX = (cropX - profileCropState.x) / profileCropState.scale;
+        const srcY = (cropY - profileCropState.y) / profileCropState.scale;
+        const srcSize = circleDiameter / profileCropState.scale;
 
         ctx.beginPath();
         ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
