@@ -877,7 +877,34 @@ export function openProfilePictureModal() {
                     <button onclick="window.cancelProfileCrop()" style="padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; color: ${colors.textMuted}; background: transparent; border: 1px solid ${colors.border}; cursor: pointer;">Cancel</button>
                     <button onclick="window.saveProfilePicture()" style="padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; color: white; background: ${colors.primary}; border: none; cursor: pointer; flex: 1;">Save Photo</button>
                 </div>
+                <div style="padding: 0 1.5rem 1.5rem; background: ${colors.bg};">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fas fa-search-minus" style="color: ${colors.textMuted};"></i>
+                        <input type="range" id="profile-zoom-slider" min="0" max="1.5" step="0.01" value="0" style="width: 100%; accent-color: ${colors.primary};">
+                        <i class="fas fa-search-plus" style="color: ${colors.textMuted};"></i>
+                    </div>
+                </div>
             </div>
+            
+            <!-- Circular Crop Styles -->
+            <style>
+                .cropper-view-box,
+                .cropper-face {
+                    border-radius: 50%;
+                }
+                /* Hide the grid lines for a cleaner look */
+                .cropper-dashed, .cropper-point, .cropper-line {
+                    opacity: 0;
+                }
+                /* Make the drag handle invisible but usable */
+                .cropper-center {
+                    opacity: 0;
+                }
+                /* Dim the outside area more */
+                .cropper-modal {
+                    opacity: 0.8;
+                }
+            </style>
             
             <!-- Saving Overlay -->
             <div id="profile-saving-overlay" style="display: none; position: absolute; inset: 0; background: rgba(255,255,255,0.9); align-items: center; justify-content: center; flex-direction: column; gap: 1rem; z-index: 50;">
@@ -937,7 +964,48 @@ export function handleProfileImageFile(file) {
             cropBoxMovable: false,
             cropBoxResizable: false,
             toggleDragModeOnDblclick: false,
-            background: false
+            background: false,
+            ready() {
+                // Initialize slider
+                const slider = document.getElementById('profile-zoom-slider');
+                if (slider) {
+                    slider.value = 0;
+                    slider.oninput = (e) => {
+                        const zoomValue = parseFloat(e.target.value);
+                        // Cropper zoom is relative, but zoomTo is absolute.
+                        // However, finding the "base" scale is tricky.
+                        // Easier: use relative zoom based on slider delta?
+                        // Or just use zoomTo with a base scale.
+                        // Let's try a simple approach: 
+                        // We want the image to be at least "fit" (which is what it starts at).
+                        // So slider 0 = fit. Slider 1 = 2x zoom.
+
+                        const imageData = currentCropper.getImageData();
+                        const minZoom = imageData.width / imageData.naturalWidth;
+                        // Wait, cropper handles this. 
+                        // Let's just use relative zooming for smoothness or absolute if possible.
+
+                        // Actually, zoomTo is absolute ratio of natural size.
+                        // We need to know the initial "fit" ratio.
+                        // But that changes if window resizes.
+
+                        // Better approach:
+                        // When slider moves, we calculate the target ratio.
+                        // But simpler: just map slider 0-1 to a multiplier of the INITIAL scale.
+                    };
+
+                    // Store initial data for zoom reference
+                    const imageData = currentCropper.getImageData();
+                    const initialRatio = imageData.width / imageData.naturalWidth;
+
+                    slider.oninput = (e) => {
+                        const val = parseFloat(e.target.value);
+                        // Zoom factor: 1 (original) + val
+                        // e.g. val=0 -> 1x initial. val=1 -> 2x initial.
+                        currentCropper.zoomTo(initialRatio * (1 + val));
+                    };
+                }
+            }
         });
     };
     reader.readAsDataURL(file);
