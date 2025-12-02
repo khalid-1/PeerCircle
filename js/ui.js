@@ -1480,3 +1480,23 @@ export async function acceptRequest(id) {
     }
 }
 
+// Email Auto-fill Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const emailInput = document.getElementById('auth-email');
+    const datalist = document.getElementById('email-domains');
+
+    if (emailInput && datalist) {
+        emailInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.includes('@')) {
+                const [prefix, domain] = val.split('@');
+                if (prefix && !domain) {
+                    datalist.innerHTML = `<option value="${prefix}@rakmhsu.ac.ae">`;
+                }
+            } else {
+                datalist.innerHTML = '';
+            }
+        });
+    }
+});
+
