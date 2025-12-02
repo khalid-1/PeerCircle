@@ -870,27 +870,31 @@ export function openProfilePictureModal() {
 
             <!-- Step 2: Crop (Hidden initially) -->
             <div id="profile-crop-step" style="display: none; flex-direction: column; height: 500px;">
-                <div style="flex: 1; background: #000; overflow: hidden; position: relative;" id="crop-container">
+                <div style="flex: 1; background: #0f172a; overflow: hidden; position: relative;" id="crop-container">
                     <img id="profile-crop-image" style="max-width: 100%; display: block;">
                 </div>
-                <div style="padding: 1.5rem; background: ${colors.bg}; border-top: 1px solid ${colors.border}; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-                    <button onclick="window.cancelProfileCrop()" style="padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; color: ${colors.textMuted}; background: transparent; border: 1px solid ${colors.border}; cursor: pointer;">Cancel</button>
-                    <button onclick="window.saveProfilePicture()" style="padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; color: white; background: ${colors.primary}; border: none; cursor: pointer; flex: 1;">Save Photo</button>
-                </div>
-                <div style="padding: 0 1.5rem 1.5rem; background: ${colors.bg};">
+                
+                <!-- Zoom Slider (Moved Up) -->
+                <div style="padding: 1rem 1.5rem 0.5rem; background: ${colors.bg}; border-top: 1px solid ${colors.border};">
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <i class="fas fa-search-minus" style="color: ${colors.textMuted};"></i>
                         <input type="range" id="profile-zoom-slider" min="0" max="1.5" step="0.01" value="0" style="width: 100%; accent-color: ${colors.primary};">
                         <i class="fas fa-search-plus" style="color: ${colors.textMuted};"></i>
                     </div>
                 </div>
+
+                <div style="padding: 1rem 1.5rem 1.5rem; background: ${colors.bg}; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                    <button onclick="window.cancelProfileCrop()" style="padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; color: ${colors.textMuted}; background: transparent; border: 1px solid ${colors.border}; cursor: pointer;">Cancel</button>
+                    <button onclick="window.saveProfilePicture()" style="padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; color: white; background: ${colors.primary}; border: none; cursor: pointer; flex: 1;">Save Photo</button>
+                </div>
             </div>
             
-            <!-- Circular Crop Styles -->
+            <!-- Circular Crop Styles & Teal Branding -->
             <style>
                 .cropper-view-box,
                 .cropper-face {
                     border-radius: 50%;
+                    outline: 2px solid ${colors.primary}; /* Teal Outline */
                 }
                 /* Hide the grid lines for a cleaner look */
                 .cropper-dashed, .cropper-point, .cropper-line {
@@ -902,7 +906,8 @@ export function openProfilePictureModal() {
                 }
                 /* Dim the outside area more */
                 .cropper-modal {
-                    opacity: 0.8;
+                    opacity: 0.85;
+                    background-color: #0f172a; /* Match container bg for seamless look */
                 }
             </style>
             
