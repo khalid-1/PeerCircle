@@ -922,56 +922,66 @@ export function handleProfileImageFile(file) {
         container.style.touchAction = 'none';
 
         cropImage.onload = () => {
-            const containerRect = container.getBoundingClientRect();
-            const circleDiameter = containerRect.width * 0.8;
+            // Use setTimeout to ensure the DOM has updated and container has width
+            setTimeout(() => {
+                const containerRect = container.getBoundingClientRect();
 
-            // Calculate scale to cover the circle area
-            const scaleWidth = circleDiameter / cropImage.naturalWidth;
-            const scaleHeight = circleDiameter / cropImage.naturalHeight;
-            const minScale = Math.max(scaleWidth, scaleHeight);
+                // Safety check: if width is 0, try again shortly
+                if (containerRect.width === 0) {
+                    setTimeout(cropImage.onload, 50);
+                    return;
+                }
 
-            // Initial scale (slightly larger than min to allow some movement)
-            const scale = minScale * 1.1;
+                const circleDiameter = containerRect.width * 0.8;
 
-            // Center the image initially
-            const scaledWidth = cropImage.naturalWidth * scale;
-            const scaledHeight = cropImage.naturalHeight * scale;
-            const x = (containerRect.width - scaledWidth) / 2;
-            const y = (containerRect.height - scaledHeight) / 2;
+                // Calculate scale to cover the circle area
+                const scaleWidth = circleDiameter / cropImage.naturalWidth;
+                const scaleHeight = circleDiameter / cropImage.naturalHeight;
+                const minScale = Math.max(scaleWidth, scaleHeight);
 
-            profileCropState = {
-                scale: scale,
-                minScale: minScale,
-                maxScale: minScale * 4,
-                x: x,
-                y: y,
-                isDragging: false,
-                startX: 0, startY: 0,
-                imgWidth: cropImage.naturalWidth,
-                imgHeight: cropImage.naturalHeight,
-                containerWidth: containerRect.width,
-                containerHeight: containerRect.height
-            };
+                // Initial scale (slightly larger than min to allow some movement)
+                const scale = minScale * 1.1;
 
-            updateCropImageTransform();
+                // Center the image initially
+                const scaledWidth = cropImage.naturalWidth * scale;
+                const scaledHeight = cropImage.naturalHeight * scale;
+                const x = (containerRect.width - scaledWidth) / 2;
+                const y = (containerRect.height - scaledHeight) / 2;
 
-            // Mouse events
-            container.onmousedown = startDrag;
-            document.onmousemove = drag;
-            document.onmouseup = endDrag;
+                profileCropState = {
+                    scale: scale,
+                    minScale: minScale,
+                    maxScale: minScale * 4,
+                    x: x,
+                    y: y,
+                    isDragging: false,
+                    startX: 0, startY: 0,
+                    imgWidth: cropImage.naturalWidth,
+                    imgHeight: cropImage.naturalHeight,
+                    containerWidth: containerRect.width,
+                    containerHeight: containerRect.height
+                };
 
-            // Touch events
-            container.ontouchstart = startDrag;
-            document.ontouchmove = drag;
-            document.ontouchend = endDrag;
+                updateCropImageTransform();
 
-            const slider = document.getElementById('profile-zoom-slider');
-            if (slider) {
-                slider.value = 1.1; // Match initial scale multiplier
-                slider.min = 1;
-                slider.max = 4;
-                slider.oninput = (e) => adjustProfileZoom(e.target.value);
-            }
+                // Mouse events
+                container.onmousedown = startDrag;
+                document.onmousemove = drag;
+                document.onmouseup = endDrag;
+
+                // Touch events
+                container.ontouchstart = startDrag;
+                document.ontouchmove = drag;
+                document.ontouchend = endDrag;
+
+                const slider = document.getElementById('profile-zoom-slider');
+                if (slider) {
+                    slider.value = 1.1; // Match initial scale multiplier
+                    slider.min = 1;
+                    slider.max = 4;
+                    slider.oninput = (e) => adjustProfileZoom(e.target.value);
+                }
+            }, 50); // Small delay to allow layout reflow
         };
         cropImage.src = e.target.result;
     };
