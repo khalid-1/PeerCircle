@@ -922,13 +922,12 @@ export function handleProfileImageFile(file) {
         container.style.touchAction = 'none';
 
         cropImage.onload = () => {
-            // Use setTimeout to ensure the DOM has updated and container has width
-            setTimeout(() => {
+            // Robustly wait for container to have dimensions
+            const initCrop = () => {
                 const containerRect = container.getBoundingClientRect();
 
-                // Safety check: if width is 0, try again shortly
-                if (containerRect.width === 0) {
-                    setTimeout(cropImage.onload, 50);
+                if (containerRect.width === 0 || containerRect.height === 0) {
+                    requestAnimationFrame(initCrop);
                     return;
                 }
 
@@ -981,7 +980,9 @@ export function handleProfileImageFile(file) {
                     slider.max = 4;
                     slider.oninput = (e) => adjustProfileZoom(e.target.value);
                 }
-            }, 50); // Small delay to allow layout reflow
+            };
+
+            requestAnimationFrame(initCrop);
         };
         cropImage.src = e.target.result;
     };
