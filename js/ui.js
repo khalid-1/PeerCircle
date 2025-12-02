@@ -918,34 +918,58 @@ export function handleProfileImageFile(file) {
         const cropImage = document.getElementById('profile-crop-image');
         const container = document.getElementById('crop-container');
 
+        // Prevent default touch actions on container to stop scrolling
+        container.style.touchAction = 'none';
+
         cropImage.onload = () => {
             const containerRect = container.getBoundingClientRect();
             const circleDiameter = containerRect.width * 0.8;
-            const imgAspect = cropImage.naturalWidth / cropImage.naturalHeight;
-            let scale = (imgAspect > 1) ? circleDiameter / cropImage.naturalHeight : circleDiameter / cropImage.naturalWidth;
+
+            // Calculate scale to cover the circle area
+            const scaleWidth = circleDiameter / cropImage.naturalWidth;
+            const scaleHeight = circleDiameter / cropImage.naturalHeight;
+            const minScale = Math.max(scaleWidth, scaleHeight);
+
+            // Initial scale (slightly larger than min to allow some movement)
+            const scale = minScale * 1.1;
+
+            // Center the image initially
+            const scaledWidth = cropImage.naturalWidth * scale;
+            const scaledHeight = cropImage.naturalHeight * scale;
+            const x = (containerRect.width - scaledWidth) / 2;
+            const y = (containerRect.height - scaledHeight) / 2;
 
             profileCropState = {
                 scale: scale,
-                minScale: scale,
-                maxScale: scale * 3,
-                x: 0, y: 0,
+                minScale: minScale,
+                maxScale: minScale * 4,
+                x: x,
+                y: y,
                 isDragging: false,
                 startX: 0, startY: 0,
                 imgWidth: cropImage.naturalWidth,
-                imgHeight: cropImage.naturalHeight
+                imgHeight: cropImage.naturalHeight,
+                containerWidth: containerRect.width,
+                containerHeight: containerRect.height
             };
 
             updateCropImageTransform();
 
-            cropImage.onmousedown = startDrag;
-            cropImage.ontouchstart = startDrag;
+            // Mouse events
+            container.onmousedown = startDrag;
             document.onmousemove = drag;
-            document.ontouchmove = drag;
             document.onmouseup = endDrag;
+
+            // Touch events
+            container.ontouchstart = startDrag;
+            document.ontouchmove = drag;
             document.ontouchend = endDrag;
 
             const slider = document.getElementById('profile-zoom-slider');
             if (slider) {
+                slider.value = 1.1; // Match initial scale multiplier
+                slider.min = 1;
+                slider.max = 4;
                 slider.oninput = (e) => adjustProfileZoom(e.target.value);
             }
         };
@@ -964,7 +988,12 @@ function updateCropImageTransform() {
 
 function startDrag(e) {
     if (!profileCropState) return;
-    e.preventDefault();
+    // Don't prevent default here to allow other interactions if needed, 
+    // but usually for drag we want to.
+    if (e.type === 'touchstart') {
+        // e.preventDefault(); // Prevent scrolling
+    }
+
     profileCropState.isDragging = true;
     const point = e.touches ? e.touches[0] : e;
     profileCropState.startX = point.clientX - profileCropState.x;
@@ -973,7 +1002,7 @@ function startDrag(e) {
 
 function drag(e) {
     if (!profileCropState || !profileCropState.isDragging) return;
-    e.preventDefault();
+    e.preventDefault(); // Prevent scrolling while dragging
     const point = e.touches ? e.touches[0] : e;
     profileCropState.x = point.clientX - profileCropState.startX;
     profileCropState.y = point.clientY - profileCropState.startY;
@@ -987,7 +1016,20 @@ function endDrag() {
 
 function adjustProfileZoom(value) {
     if (!profileCropState) return;
-    profileCropState.scale = profileCropState.minScale * parseFloat(value);
+
+    const oldScale = profileCropState.scale;
+    const newScale = profileCropState.minScale * parseFloat(value);
+
+    // Calculate center of container
+    const cx = profileCropState.containerWidth / 2;
+    const cy = profileCropState.containerHeight / 2;
+
+    // Adjust x and y to zoom relative to center
+    // New position = Center - (Center - OldPosition) * (NewScale / OldScale)
+    profileCropState.x = cx - (cx - profileCropState.x) * (newScale / oldScale);
+    profileCropState.y = cy - (cy - profileCropState.y) * (newScale / oldScale);
+
+    profileCropState.scale = newScale;
     updateCropImageTransform();
 }
 

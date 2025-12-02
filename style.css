@@ -14,36 +14,45 @@ body {
 
 .input-field {
     width: 100%;
-    padding: 12px 16px; /* Comfortable padding */
+    padding: 12px 16px;
+    /* Comfortable padding */
     border-radius: 8px;
     outline: none;
     transition: all 0.2s ease-in-out;
-    
+
     /* LIGHT MODE DEFAULTS */
-    background-color: #f8fafc; /* slate-50 */
-    border: 1px solid #cbd5e1; /* slate-300 */
-    color: #0f172a; /* slate-900 */
+    background-color: #f8fafc;
+    /* slate-50 */
+    border: 1px solid #cbd5e1;
+    /* slate-300 */
+    color: #0f172a;
+    /* slate-900 */
 }
 
 .input-field::placeholder {
-    color: #94a3b8; /* slate-400 */
+    color: #94a3b8;
+    /* slate-400 */
 }
 
 .input-field:focus {
-    border-color: #14b8a6; /* teal-500 */
+    border-color: #14b8a6;
+    /* teal-500 */
     box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
 }
 
 /* DARK MODE OVERRIDES */
 /* This forces the dark grey background you wanted */
 .dark .input-field {
-    background-color: #1e293b; /* slate-800 */
-    border-color: #334155; /* slate-700 */
+    background-color: #1e293b;
+    /* slate-800 */
+    border-color: #334155;
+    /* slate-700 */
     color: #ffffff;
 }
 
 .dark .input-field::placeholder {
-    color: #64748b; /* slate-500 */
+    color: #64748b;
+    /* slate-500 */
 }
 
 /* ==========================================
@@ -60,15 +69,30 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Success Checkmark Animation */
 @keyframes popIn {
-    0% { transform: scale(0); }
-    80% { transform: scale(1.2); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(0);
+    }
+
+    80% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* ==========================================
@@ -117,49 +141,180 @@ body {
 }
 
 /* Animation States */
-.breathing-widget.inhaling .core-circle { animation: inhale 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-.breathing-widget.inhaling .ripple { animation: rippleOut 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+.breathing-widget.inhaling .core-circle {
+    animation: inhale 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.breathing-widget.inhaling .ripple {
+    animation: rippleOut 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
 
 @keyframes pulseHold {
-    0%, 100% { box-shadow: 0 10px 30px rgba(20, 184, 166, 0.3); }
-    50% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); }
+
+    0%,
+    100% {
+        box-shadow: 0 10px 30px rgba(20, 184, 166, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    }
 }
+
 @keyframes pulseHoldDark {
-    0%, 100% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); }
-    50% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8); }
+
+    0%,
+    100% {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    50% {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+    }
 }
 
-.breathing-widget.holding .core-circle { transform: scale(1.25); animation: pulseHold 2s ease-in-out infinite; }
-:is(.dark) .breathing-widget.holding .core-circle { animation-name: pulseHoldDark; }
+.breathing-widget.holding .core-circle {
+    transform: scale(1.25);
+    animation: pulseHold 2s ease-in-out infinite;
+}
 
-@keyframes rippleOut { 0% { width: 140px; height: 140px; opacity: 0.6; } 100% { width: 300px; height: 300px; opacity: 0; } }
-@keyframes rippleIn { 0% { width: 300px; height: 300px; opacity: 0.4; } 100% { width: 140px; height: 140px; opacity: 0; } }
+:is(.dark) .breathing-widget.holding .core-circle {
+    animation-name: pulseHoldDark;
+}
 
-.ripple-1 { animation-delay: 0s; }
-.ripple-2 { animation-delay: 0.8s; }
-.ripple-3 { animation-delay: 1.6s; }
+@keyframes rippleOut {
+    0% {
+        width: 140px;
+        height: 140px;
+        opacity: 0.6;
+    }
+
+    100% {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+}
+
+@keyframes rippleIn {
+    0% {
+        width: 300px;
+        height: 300px;
+        opacity: 0.4;
+    }
+
+    100% {
+        width: 140px;
+        height: 140px;
+        opacity: 0;
+    }
+}
+
+.ripple-1 {
+    animation-delay: 0s;
+}
+
+.ripple-2 {
+    animation-delay: 0.8s;
+}
+
+.ripple-3 {
+    animation-delay: 1.6s;
+}
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-:is(.dark) ::-webkit-scrollbar-thumb { background: #475569; }
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+:is(.dark) ::-webkit-scrollbar-thumb {
+    background: #475569;
+}
 
 /* Admin Pickers */
-.icon-option { display: flex; width: 2.5rem; height: 2.5rem; align-items: center; justify-content: center; border-radius: 0.5rem; background-color: #f8fafc; color: #94a3b8; cursor: pointer; transition: all 0.2s; }
-:is(.dark) .icon-option { background-color: #334155; }
-.icon-option:hover { background-color: #f1f5f9; }
-:is(.dark) .icon-option:hover { background-color: #475569; }
-.icon-option.selected { background-color: #1e293b; color: white; border: 2px solid #94a3b8; }
-:is(.dark) .icon-option.selected { background-color: white; color: #0f172a; border-color: #64748b; }
+.icon-option {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background-color: #f8fafc;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s;
+}
 
-.color-option { width: 2rem; height: 2rem; border-radius: 9999px; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; }
-.color-option:hover { transform: scale(1.1); }
-.color-option.selected { transform: scale(1.1); border-color: #94a3b8; }
-:is(.dark) .color-option.selected { border-color: white; }
+:is(.dark) .icon-option {
+    background-color: #334155;
+}
+
+.icon-option:hover {
+    background-color: #f1f5f9;
+}
+
+:is(.dark) .icon-option:hover {
+    background-color: #475569;
+}
+
+.icon-option.selected {
+    background-color: #1e293b;
+    color: white;
+    border: 2px solid #94a3b8;
+}
+
+:is(.dark) .icon-option.selected {
+    background-color: white;
+    color: #0f172a;
+    border-color: #64748b;
+}
+
+.color-option {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 2px solid transparent;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.selected {
+    transform: scale(1.1);
+    border-color: #94a3b8;
+}
+
+:is(.dark) .color-option.selected {
+    border-color: white;
+}
 
 /* Dark Mode Date Picker Fix */
 input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="time"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; filter: invert(0.5); }
+input[type="time"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    filter: invert(0.5);
+}
+
 :is(.dark) input[type="date"]::-webkit-calendar-picker-indicator,
-:is(.dark) input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+:is(.dark) input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+/* Prevent double-tap to zoom on mobile */
+html,
+body {
+    touch-action: manipulation;
+}
