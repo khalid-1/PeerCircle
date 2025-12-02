@@ -1,6 +1,8 @@
 import { escapeHTML, getInitials } from './utils.js';
 import { state } from './state.js';
 import * as Repo from './firebase-repo.js';
+import Cropper from 'cropperjs';
+import 'cropperjs/dist/cropper.css';
 
 // ==========================================
 // NOTIFICATIONS & MODALS
@@ -819,7 +821,7 @@ export function openTopicModal(id) {
 
 // --- PROFILE PICTURE ---
 
-let profileCropState = null;
+let currentCropper = null;
 
 export function openProfilePictureModal() {
     const overlay = document.createElement('div');
@@ -844,8 +846,12 @@ export function openProfilePictureModal() {
             
             <!-- Step 1: Upload -->
             <div id="profile-upload-step" style="padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
-                <div style="width: 8rem; height: 8rem; border-radius: 50%; background: ${isDark ? '#334155' : '#f1f5f9'}; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: ${colors.textMuted}; border: 2px dashed ${colors.border};">
-                    <i class="fas fa-camera"></i>
+                <div style="width: 8rem; height: 8rem; border-radius: 50%; background: ${isDark ? '#334155' : '#f1f5f9'}; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: ${colors.textMuted}; border: 2px dashed ${colors.border}; overflow: hidden; position: relative;">
+                    ${state.currentUserData?.photoURL ? `
+                        <img src="${state.currentUserData.photoURL}" style="width: 100%; height: 100%; object-fit: cover;">
+                    ` : `
+                        <span style="font-size: 2.5rem; font-weight: 700; color: ${colors.primary};">${getInitials(state.currentUserData?.name || 'U')}</span>
+                    `}
                 </div>
                 <div style="text-align: center;">
                     <p style="color: ${colors.text}; font-weight: 500; margin-bottom: 0.5rem;">Upload a new photo</p>
@@ -864,18 +870,12 @@ export function openProfilePictureModal() {
 
             <!-- Step 2: Crop (Hidden initially) -->
             <div id="profile-crop-step" style="display: none; flex-direction: column; height: 500px;">
-                <div style="flex: 1; position: relative; background: #000; overflow: hidden; cursor: grab;" id="crop-container">
-                    <img id="profile-crop-image" style="position: absolute; transform-origin: top left; pointer-events: none; user-select: none;">
-                    <div style="position: absolute; inset: 0; pointer-events: none;">
-                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; padding-bottom: 80%; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);"></div>
-                    </div>
+                <div style="flex: 1; background: #000; overflow: hidden; position: relative;" id="crop-container">
+                    <img id="profile-crop-image" style="max-width: 100%; display: block;">
                 </div>
                 <div style="padding: 1.5rem; background: ${colors.bg}; border-top: 1px solid ${colors.border}; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
                     <button onclick="window.cancelProfileCrop()" style="padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; color: ${colors.textMuted}; background: transparent; border: 1px solid ${colors.border}; cursor: pointer;">Cancel</button>
                     <button onclick="window.saveProfilePicture()" style="padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; color: white; background: ${colors.primary}; border: none; cursor: pointer; flex: 1;">Save Photo</button>
-                </div>
-                <div style="padding: 0 1.5rem 1.5rem; background: ${colors.bg};">
-                    <input type="range" id="profile-zoom-slider" min="1" max="3" step="0.01" value="1" style="width: 100%;">
                 </div>
             </div>
             
@@ -891,7 +891,10 @@ export function openProfilePictureModal() {
 }
 
 export function closeProfilePictureModal() {
-    profileCropState = null;
+    if (currentCropper) {
+        currentCropper.destroy();
+        currentCropper = null;
+    }
     document.getElementById('profile-picture-modal')?.remove();
 }
 
@@ -916,176 +919,53 @@ export function handleProfileImageFile(file) {
         document.getElementById('profile-crop-step').style.display = 'flex';
 
         const cropImage = document.getElementById('profile-crop-image');
-        const container = document.getElementById('crop-container');
-
-        // Prevent default touch actions on container to stop scrolling
-        container.style.touchAction = 'none';
-
-        cropImage.onload = () => {
-            // Robustly wait for container to have dimensions
-            const initCrop = () => {
-                const containerRect = container.getBoundingClientRect();
-
-                if (containerRect.width === 0 || containerRect.height === 0) {
-                    requestAnimationFrame(initCrop);
-                    return;
-                }
-
-                const circleDiameter = containerRect.width * 0.8;
-
-                // Calculate scale to cover the circle area
-                const scaleWidth = circleDiameter / cropImage.naturalWidth;
-                const scaleHeight = circleDiameter / cropImage.naturalHeight;
-                const minScale = Math.max(scaleWidth, scaleHeight);
-
-                // Initial scale (slightly larger than min to allow some movement)
-                const scale = minScale * 1.1;
-
-                // Center the image initially
-                const scaledWidth = cropImage.naturalWidth * scale;
-                const scaledHeight = cropImage.naturalHeight * scale;
-                const x = (containerRect.width - scaledWidth) / 2;
-                const y = (containerRect.height - scaledHeight) / 2;
-
-                profileCropState = {
-                    scale: scale,
-                    minScale: minScale,
-                    maxScale: minScale * 4,
-                    x: x,
-                    y: y,
-                    isDragging: false,
-                    startX: 0, startY: 0,
-                    imgWidth: cropImage.naturalWidth,
-                    imgHeight: cropImage.naturalHeight,
-                    containerWidth: containerRect.width,
-                    containerHeight: containerRect.height
-                };
-
-                updateCropImageTransform();
-
-                // Mouse events
-                container.onmousedown = startDrag;
-                document.onmousemove = drag;
-                document.onmouseup = endDrag;
-
-                // Touch events
-                container.ontouchstart = startDrag;
-                document.ontouchmove = drag;
-                document.ontouchend = endDrag;
-
-                const slider = document.getElementById('profile-zoom-slider');
-                if (slider) {
-                    slider.value = 1.1; // Match initial scale multiplier
-                    slider.min = 1;
-                    slider.max = 4;
-                    slider.oninput = (e) => adjustProfileZoom(e.target.value);
-                }
-            };
-
-            requestAnimationFrame(initCrop);
-        };
         cropImage.src = e.target.result;
+
+        if (currentCropper) {
+            currentCropper.destroy();
+        }
+
+        currentCropper = new Cropper(cropImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 1,
+            restore: false,
+            guides: false,
+            center: false,
+            highlight: false,
+            cropBoxMovable: false,
+            cropBoxResizable: false,
+            toggleDragModeOnDblclick: false,
+            background: false
+        });
     };
     reader.readAsDataURL(file);
 }
 
-function updateCropImageTransform() {
-    if (!profileCropState) return;
-    const img = document.getElementById('profile-crop-image');
-    if (img) {
-        img.style.transform = `translate(${profileCropState.x}px, ${profileCropState.y}px) scale(${profileCropState.scale})`;
-    }
-}
-
-function startDrag(e) {
-    if (!profileCropState) return;
-    // Don't prevent default here to allow other interactions if needed, 
-    // but usually for drag we want to.
-    if (e.type === 'touchstart') {
-        // e.preventDefault(); // Prevent scrolling
-    }
-
-    profileCropState.isDragging = true;
-    const point = e.touches ? e.touches[0] : e;
-    profileCropState.startX = point.clientX - profileCropState.x;
-    profileCropState.startY = point.clientY - profileCropState.y;
-}
-
-function drag(e) {
-    if (!profileCropState || !profileCropState.isDragging) return;
-    e.preventDefault(); // Prevent scrolling while dragging
-    const point = e.touches ? e.touches[0] : e;
-    profileCropState.x = point.clientX - profileCropState.startX;
-    profileCropState.y = point.clientY - profileCropState.startY;
-    updateCropImageTransform();
-}
-
-function endDrag() {
-    if (!profileCropState) return;
-    profileCropState.isDragging = false;
-}
-
-function adjustProfileZoom(value) {
-    if (!profileCropState) return;
-
-    const oldScale = profileCropState.scale;
-    const newScale = profileCropState.minScale * parseFloat(value);
-
-    // Calculate center of container
-    const cx = profileCropState.containerWidth / 2;
-    const cy = profileCropState.containerHeight / 2;
-
-    // Adjust x and y to zoom relative to center
-    // New position = Center - (Center - OldPosition) * (NewScale / OldScale)
-    profileCropState.x = cx - (cx - profileCropState.x) * (newScale / oldScale);
-    profileCropState.y = cy - (cy - profileCropState.y) * (newScale / oldScale);
-
-    profileCropState.scale = newScale;
-    updateCropImageTransform();
-}
-
 export function cancelProfileCrop() {
-    profileCropState = null;
+    if (currentCropper) {
+        currentCropper.destroy();
+        currentCropper = null;
+    }
     document.getElementById('profile-crop-step').style.display = 'none';
     document.getElementById('profile-upload-step').style.display = 'flex';
     document.getElementById('profile-file-input').value = '';
 }
 
 export async function saveProfilePicture() {
-    if (!profileCropState) return;
+    if (!currentCropper) return;
     const savingOverlay = document.getElementById('profile-saving-overlay');
     savingOverlay.style.display = 'flex';
 
     try {
-        const img = document.getElementById('profile-crop-image');
-        const container = document.getElementById('crop-container');
-        const containerRect = container.getBoundingClientRect();
-
-        const outputSize = 256;
-        const canvas = document.createElement('canvas');
-        canvas.width = outputSize;
-        canvas.height = outputSize;
-        const ctx = canvas.getContext('2d');
-
-        // Calculate the crop circle's position and size relative to the container
-        const circleDiameter = containerRect.width * 0.8;
-        const cropX = (containerRect.width - circleDiameter) / 2;
-        const cropY = (containerRect.height - circleDiameter) / 2;
-
-        // Calculate the source coordinates on the image
-        // srcX = (CropBoxLeft - ImageLeft) / Scale
-        const srcX = (cropX - profileCropState.x) / profileCropState.scale;
-        const srcY = (cropY - profileCropState.y) / profileCropState.scale;
-        const srcSize = circleDiameter / profileCropState.scale;
-
-        ctx.beginPath();
-        ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.clip();
-
-        ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, outputSize, outputSize);
-
-        canvas.toBlob(async (blob) => {
+        currentCropper.getCroppedCanvas({
+            width: 256,
+            height: 256,
+            fillColor: '#fff',
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        }).toBlob(async (blob) => {
             const user = auth.currentUser;
             if (!user) return;
 
