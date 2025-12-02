@@ -243,7 +243,7 @@ export function renderMentors(filter = 'all') {
                     <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mr-3 overflow-hidden">
                         ${photoURL
                 ? `<img src="${photoURL}" class="w-full h-full object-cover">`
-                : `<i class="fas fa-user-nurse text-slate-400"></i>`
+                : `<i class="fas fa-graduation-cap text-slate-400"></i>`
             }
                     </div>
                     <div>
@@ -631,7 +631,7 @@ export function updateAllAvatars(photoURL) {
 function initAdminPickers() {
     const iconContainer = document.getElementById('icon-selector');
     if (iconContainer && iconContainer.innerHTML === "") {
-        const availableIcons = ["fa-lightbulb", "fa-heart-pulse", "fa-brain", "fa-user-nurse", "fa-coffee", "fa-bed", "fa-stopwatch", "fa-users", "fa-book-open", "fa-hand-holding-heart"];
+        const availableIcons = ["fa-lightbulb", "fa-heart-pulse", "fa-brain", "fa-graduation-cap", "fa-coffee", "fa-bed", "fa-stopwatch", "fa-users", "fa-book-open", "fa-hand-holding-heart"];
         availableIcons.forEach(icon => {
             const div = document.createElement('div');
             div.className = `icon-option ${icon === 'fa-lightbulb' ? 'selected' : ''}`;
@@ -1339,12 +1339,15 @@ export function setAuthMode(mode) {
         toggleText.textContent = "New here?";
         toggleBtn.textContent = "Create Account";
         toggleBtn.onclick = () => setAuthMode('SIGNUP');
+        nameField.classList.add('hidden');
+        passField.classList.remove('hidden');
     } else if (mode === 'RESET') {
         title.textContent = "Reset Password";
         desc.textContent = "Enter your email to receive a reset link.";
         btn.textContent = "Send Reset Link";
         passField.classList.add('hidden');
         forgotBtn.classList.add('hidden');
+        nameField.classList.add('hidden');
         toggleText.textContent = "Remembered your password?";
         toggleBtn.textContent = "Back to Login";
         toggleBtn.onclick = () => setAuthMode('LOGIN');
