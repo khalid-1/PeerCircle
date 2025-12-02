@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Peer Support Circles | Nursing Student Wellbeing</title>
 
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
-    <link rel="mask-icon" href="favicon.svg" color="#0d9488">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/favicon.png">
+    <link rel="mask-icon" href="assets/favicon.svg" color="#0d9488">
     <link rel="manifest" href="manifest.json">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,6 +17,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
     <script>
         tailwind.config = {
@@ -1073,124 +1074,12 @@
             </div>
         </div>
 
-        <!-- Mentor Email Modal -->
-        <div id="mentor-email-modal"
-            class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] hidden items-center justify-center p-4">
-            <div
-                class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-8 text-center shadow-2xl border border-slate-100 dark:border-slate-700 animate-[fadeIn_0.2s_ease-out] relative">
-                <button onclick="closeMentorEmailModal()"
-                    class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i
-                        class="fas fa-times"></i></button>
-                <div
-                    class="bg-teal-50 dark:bg-teal-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-teal-600 dark:text-teal-400 text-2xl">
-                    <i class="fas fa-envelope"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Contact <span
-                        id="mentor-email-name">Mentor</span></h2>
-                <p class="text-slate-500 dark:text-slate-400 mb-6 text-sm">Copy the email address below to contact your
-                    mentor.</p>
 
-                <div class="flex flex-col items-center space-y-3">
-                    <p id="mentor-email-display"
-                        class="text-sm font-mono font-semibold text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-700 p-3 rounded-lg w-full whitespace-nowrap overflow-x-auto select-all">
-                    </p>
-                    <input type="text" id="mentor-email-text" class="absolute opacity-0 pointer-events-none" value="">
 
-                    <button id="mentor-copy-button" onclick="copyMentorEmail()"
-                        class="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition shadow-md shadow-teal-200 dark:shadow-none">
-                        <i class="fas fa-copy mr-2"></i> Copy Email
-                    </button>
-                    <button
-                        onclick="window.location.href='mailto:' + document.getElementById('mentor-email-text').value"
-                        class="w-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition border border-slate-200 dark:border-slate-600">
-                        <i class="fas fa-external-link-alt mr-2"></i> Open Email App
-                    </button>
-                </div>
-            </div>
-        </div>
 
-        <!-- Suggest Topic Modal -->
-        <div id="suggest-topic-modal"
-            class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] hidden items-center justify-center p-4">
-            <div
-                class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full shadow-2xl border border-slate-100 dark:border-slate-700 animate-[fadeIn_0.2s_ease-out] relative overflow-hidden">
-
-                <!-- Header -->
-                <div class="bg-gradient-to-r from-teal-500 to-emerald-500 p-6 text-white">
-                    <button onclick="closeSuggestTopicModal()"
-                        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl">
-                            <i class="fas fa-lightbulb"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-bold">Suggest a Topic</h2>
-                            <p class="text-teal-100 text-sm">Help us improve the library</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Form -->
-                <form id="suggest-topic-form" onsubmit="handleSuggestTopic(event)" class="p-6 space-y-4">
-                    <div>
-                        <label
-                            class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
-                            Topic Title *
-                        </label>
-                        <input type="text" id="suggest-topic-title" placeholder="e.g. Managing Clinical Anxiety"
-                            required class="input-field">
-                    </div>
-
-                    <div>
-                        <label
-                            class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
-                            Why is this important?
-                        </label>
-                        <textarea id="suggest-topic-reason"
-                            placeholder="Tell us why this topic would help nursing students..." rows="3"
-                            class="input-field resize-none"></textarea>
-                    </div>
-
-                    <div>
-                        <label
-                            class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
-                            Your Email (Optional)
-                        </label>
-                        <input type="email" id="suggest-topic-email" placeholder="To be notified when published"
-                            class="input-field">
-                    </div>
-
-                    <button type="submit"
-                        class="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition shadow-md flex items-center justify-center gap-2">
-                        <i class="fas fa-paper-plane"></i> Submit Suggestion
-                    </button>
-
-                    <p class="text-center text-xs text-slate-400 dark:text-slate-500">
-                        Your suggestion will be reviewed by our team
-                    </p>
-                </form>
-
-                <!-- Success State -->
-                <div id="suggest-topic-success" class="hidden p-8 text-center">
-                    <div
-                        class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4 text-3xl animate-pop-in">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Thank You!</h3>
-                    <p class="text-slate-500 dark:text-slate-400 mb-6">Your topic suggestion has been submitted. We
-                        appreciate your input!</p>
-                    <button onclick="closeSuggestTopicModal()"
-                        class="px-6 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-white rounded-lg font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition">
-                        Close
-                    </button>
-                </div>
-            </div>
-        </div>
 
         <script src="firebase-config.js"></script>
-        <script src="script.js"></script>
+        <script type="module" src="js/main.js"></script>
 </body>
 
 </html>

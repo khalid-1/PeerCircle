@@ -3,12 +3,16 @@ const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './style.css',
-    './script.js',
-    './favicon.png',
-    './favicon.svg',
-    './google-meet.svg',
+    './js/main.js',
+    './js/ui.js',
+    './js/state.js',
+    './js/utils.js',
+    './js/firebase-repo.js',
+    './assets/favicon.png',
+    './assets/favicon.svg',
+    './assets/google-meet.svg',
     './zoom.svg',
-    './image_b1faa4.png' 
+    './image_b1faa4.png'
 ];
 
 // 1. Install Event: Cache core files + force immediate activation
