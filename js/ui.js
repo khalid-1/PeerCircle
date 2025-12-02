@@ -838,7 +838,7 @@ export function openProfilePictureModal() {
     };
 
     overlay.innerHTML = `
-        <div style="background: ${colors.bg}; border-radius: 1.5rem; max-width: 28rem; width: 100%; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+        <div class="w-full max-w-md md:max-w-2xl rounded-3xl shadow-2xl overflow-hidden transition-all duration-300" style="background: ${colors.bg};">
             <div style="padding: 1.5rem; border-bottom: 1px solid ${colors.border}; display: flex; justify-content: space-between; align-items: center;">
                 <h3 style="font-weight: bold; font-size: 1.25rem; color: ${colors.text};">Update Profile Photo</h3>
                 <button onclick="window.closeProfilePictureModal()" style="color: ${colors.textMuted}; background: none; border: none; cursor: pointer; font-size: 1.25rem;"><i class="fas fa-times"></i></button>
@@ -869,7 +869,7 @@ export function openProfilePictureModal() {
             </div>
 
             <!-- Step 2: Crop (Hidden initially) -->
-            <div id="profile-crop-step" style="display: none; flex-direction: column; height: 500px;">
+            <div id="profile-crop-step" class="flex-col h-[500px] md:h-[600px]" style="display: none;">
                 <div style="flex: 1; background: #0f172a; overflow: hidden; position: relative;" id="crop-container">
                     <img id="profile-crop-image" style="max-width: 100%; display: block;">
                 </div>
