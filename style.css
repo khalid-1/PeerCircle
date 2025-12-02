@@ -120,26 +120,17 @@ body {
 .breathing-widget.inhaling .core-circle { animation: inhale 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 .breathing-widget.inhaling .ripple { animation: rippleOut 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
 
-.breathing-widget.holding .core-circle { transform: scale(1.25); animation: pulseHold 2s ease-in-out infinite; }
-.breathing-widget.holding .ripple { opacity: 0.3; transform: translate(-50%, -50%) scale(1.5); }
-
-.breathing-widget.exhaling .core-circle { animation: exhale 8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-.breathing-widget.exhaling .ripple { animation: rippleIn 8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-
-.breathing-widget.resting .core-circle { transform: scale(1); }
-.breathing-widget.resting .ripple { opacity: 0; }
-
-@keyframes inhale { from { transform: scale(1); } to { transform: scale(1.25); } }
-@keyframes exhale { from { transform: scale(1.25); } to { transform: scale(1); } }
-
 @keyframes pulseHold {
     0%, 100% { box-shadow: 0 10px 30px rgba(20, 184, 166, 0.3); }
     50% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); }
 }
-:is(.dark) @keyframes pulseHold {
+@keyframes pulseHoldDark {
     0%, 100% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); }
     50% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8); }
 }
+
+.breathing-widget.holding .core-circle { transform: scale(1.25); animation: pulseHold 2s ease-in-out infinite; }
+:is(.dark) .breathing-widget.holding .core-circle { animation-name: pulseHoldDark; }
 
 @keyframes rippleOut { 0% { width: 140px; height: 140px; opacity: 0.6; } 100% { width: 300px; height: 300px; opacity: 0; } }
 @keyframes rippleIn { 0% { width: 300px; height: 300px; opacity: 0.4; } 100% { width: 140px; height: 140px; opacity: 0; } }

@@ -1,9 +1,11 @@
+import '../style.css';
 import {
     state,
     setCurrentUserRole,
     setCurrentUserData,
     setIsSignUpMode
 } from './state.js';
+// import { auth } from '../public/firebase-config.js'; // Removed: auth is global
 
 import * as Repo from './firebase-repo.js';
 import * as UI from './ui.js';
@@ -225,11 +227,4 @@ window.addEventListener('hashchange', () => {
     UI.renderSection(hash);
 });
 
-// Service Worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('Service Worker Registered'))
-            .catch(err => console.log('Service Worker Failed:', err));
-    });
-}
+
