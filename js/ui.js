@@ -1324,6 +1324,13 @@ export function setAuthMode(mode) {
     const forgotBtn = document.getElementById('auth-forgot-btn');
     forgotBtn.classList.remove('hidden');
 
+    // Clear previous errors and inputs
+    clearInlineError('auth-email');
+    clearInlineError('auth-password');
+    clearInlineError('auth-name');
+    if (document.getElementById('auth-password')) document.getElementById('auth-password').value = '';
+    if (document.getElementById('auth-name')) document.getElementById('auth-name').value = '';
+
     if (mode === 'SIGNUP') {
         title.textContent = "Create Account";
         desc.textContent = "Join the PeerCircle community.";
@@ -1366,8 +1373,13 @@ export async function handleAuth(e) {
     const name = document.getElementById('auth-name').value;
     const btn = document.getElementById('auth-submit-btn');
 
+    // Clear previous errors
+    clearInlineError('auth-email');
+    clearInlineError('auth-password');
+    clearInlineError('auth-name');
+
     if (!email.endsWith('@rakmhsu.ac.ae')) {
-        alert("Access Restricted: Please use your university email (@rakmhsu.ac.ae).");
+        showInlineError('auth-email', "Access Restricted: Please use your university email (@rakmhsu.ac.ae).");
         return;
     }
 
@@ -1380,14 +1392,14 @@ export async function handleAuth(e) {
             const user = userCredential.user;
             await Repo.createUserProfile(user.uid, { name, email });
             await user.sendEmailVerification();
-            alert("Account created! Please verify your email.");
+            showNotification("Account created! Please verify your email.", "success");
             await auth.signOut();
             setAuthMode('LOGIN');
         } else if (currentAuthMode === 'LOGIN') {
             const userCredential = await auth.signInWithEmailAndPassword(email, password);
             const user = userCredential.user;
             if (!user.emailVerified) {
-                alert("Please verify your email address to log in.");
+                showInlineError('auth-email', "Please verify your email address to log in.");
                 await auth.signOut();
                 btn.disabled = false;
                 btn.textContent = "Sign In";
@@ -1395,12 +1407,39 @@ export async function handleAuth(e) {
             }
         } else if (currentAuthMode === 'RESET') {
             await auth.sendPasswordResetEmail(email);
-            alert("Password reset email sent!");
+            showNotification("Password reset email sent!", "success");
             setAuthMode('LOGIN');
         }
     } catch (error) {
         console.error(error);
-        alert(error.message);
+
+        switch (error.code) {
+            case 'auth/email-already-in-use':
+                showInlineError('auth-email', "This email is already registered. Please sign in instead.");
+                break;
+            case 'auth/invalid-email':
+                showInlineError('auth-email', "Please enter a valid email address.");
+                break;
+            case 'auth/user-not-found':
+                showInlineError('auth-email', "No account found with this email. Please sign up.");
+                break;
+            case 'auth/wrong-password':
+            case 'auth/invalid-credential':
+                showInlineError('auth-password', "Incorrect email or password.");
+                break;
+            case 'auth/weak-password':
+                showInlineError('auth-password', "Password should be at least 6 characters.");
+                break;
+            case 'auth/too-many-requests':
+                showNotification("Too many failed attempts. Please try again later.", "error");
+                break;
+            case 'auth/network-request-failed':
+                showNotification("Network error. Please check your connection.", "error");
+                break;
+            default:
+                showNotification(error.message, "error");
+        }
+
         btn.disabled = false;
         if (currentAuthMode === 'SIGNUP') btn.textContent = "Sign Up";
         else if (currentAuthMode === 'LOGIN') btn.textContent = "Sign In";
@@ -1483,20 +1522,104 @@ export async function acceptRequest(id) {
 // Email Auto-fill Logic
 document.addEventListener('DOMContentLoaded', () => {
     const emailInput = document.getElementById('auth-email');
-    const datalist = document.getElementById('email-domains');
 
-    if (emailInput && datalist) {
+    if (emailInput) {
         emailInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            if (val.includes('@')) {
-                const [prefix, domain] = val.split('@');
-                if (prefix && !domain) {
-                    datalist.innerHTML = `<option value="${prefix}@rakmhsu.ac.ae">`;
+            clearInlineError('auth-email'); // Clear error on input
+
+            // 1. Sanitize: Remove spaces immediately
+            if (emailInput.value.includes(' ')) {
+                emailInput.value = emailInput.value.replace(/\s/g, '');
+            }
+
+            // 2. Auto-complete: Check if the user typed '@' (not pasted, not backspaced)
+            if (e.inputType === 'insertText' && e.data === '@') {
+                const val = emailInput.value;
+                // Ensure we have something before the @ and no domain yet
+                if (val.includes('@') && val.split('@')[1] === '') {
+                    emailInput.value = val + 'rakmhsu.ac.ae';
                 }
-            } else {
-                datalist.innerHTML = '';
+            }
+
+            // 3. Enforce Domain Suffix: Prevent typing after rakmhsu.ac.ae
+            const domain = 'rakmhsu.ac.ae';
+            if (emailInput.value.includes(domain)) {
+                const parts = emailInput.value.split(domain);
+                // If there is anything after the first occurrence of the domain, remove it.
+                // parts[0] is the username (and @), parts[1] would be the extra text.
+                // We reconstruct it to be just username + domain.
+                if (parts.length > 1) {
+                    emailInput.value = parts[0] + domain;
+                }
+            }
+
+        });
+
+        // Fix duplicate domain on blur (if user typed it blindly after auto-fill)
+        emailInput.addEventListener('blur', () => {
+            const val = emailInput.value;
+            const domain = 'rakmhsu.ac.ae';
+            if (val.endsWith(domain + domain)) {
+                emailInput.value = val.slice(0, -domain.length);
+            } else if (val.endsWith('@' + domain + domain)) {
+                emailInput.value = val.slice(0, -domain.length);
+            }
+        });
+    }
+
+    const passwordInput = document.getElementById('auth-password');
+    if (passwordInput) {
+        passwordInput.addEventListener('input', () => {
+            clearInlineError('auth-password');
+        });
+    }
+});
+
+// Password Visibility Toggle Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('toggle-password-btn');
+    const passwordInput = document.getElementById('auth-password');
+
+    if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            const icon = toggleBtn.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+                // Ensure we stay in 'far' (regular) mode if needed, though 'far' is usually on the i tag base class or toggled.
+                // In index.html we set class="far fa-eye".
+                // Toggling fa-eye/fa-eye-slash works.
+                // If we want to ensure it stays 'far', we don't need to change 'far' class.
+                // But just in case 'fas' was there, we can force 'far'.
+                icon.classList.add('far');
+                icon.classList.remove('fas');
             }
         });
     }
 });
+
+function showInlineError(fieldId, message) {
+    const input = document.getElementById(fieldId);
+    const errorText = document.getElementById(fieldId + '-error');
+
+    if (input && errorText) {
+        input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+        errorText.textContent = message;
+        errorText.classList.remove('hidden');
+    }
+}
+
+function clearInlineError(fieldId) {
+    const input = document.getElementById(fieldId);
+    const errorText = document.getElementById(fieldId + '-error');
+
+    if (input && errorText) {
+        input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+        errorText.classList.add('hidden');
+        errorText.textContent = '';
+    }
+}
 
