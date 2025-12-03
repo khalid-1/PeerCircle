@@ -1528,6 +1528,9 @@ export function setAuthMode(mode) {
     if (document.getElementById('auth-password')) document.getElementById('auth-password').value = '';
     if (document.getElementById('auth-name')) document.getElementById('auth-name').value = '';
 
+    const nameInput = document.getElementById('auth-name');
+    const passInput = document.getElementById('auth-password');
+
     if (mode === 'SIGNUP') {
         title.textContent = "Create Account";
         desc.textContent = "Join the PeerCircle community.";
@@ -1535,7 +1538,13 @@ export function setAuthMode(mode) {
         toggleText.textContent = "Already have an account?";
         toggleBtn.textContent = "Sign In";
         toggleBtn.onclick = () => setAuthMode('LOGIN');
+
         nameField.classList.remove('hidden');
+        passField.classList.remove('hidden');
+        forgotBtn.classList.add('hidden');
+
+        nameInput.required = true;
+        passInput.required = true;
     } else if (mode === 'LOGIN') {
         title.textContent = "Welcome Back";
         desc.textContent = "Sign in to access resources.";
@@ -1543,15 +1552,25 @@ export function setAuthMode(mode) {
         toggleText.textContent = "New here?";
         toggleBtn.textContent = "Create Account";
         toggleBtn.onclick = () => setAuthMode('SIGNUP');
+
         nameField.classList.add('hidden');
         passField.classList.remove('hidden');
+        forgotBtn.classList.remove('hidden');
+
+        nameInput.required = false;
+        passInput.required = true;
     } else if (mode === 'RESET') {
         title.textContent = "Reset Password";
         desc.textContent = "Enter your email to receive a reset link.";
         btn.textContent = "Send Reset Link";
+
         passField.classList.add('hidden');
         forgotBtn.classList.add('hidden');
         nameField.classList.add('hidden');
+
+        nameInput.required = false;
+        passInput.required = false;
+
         toggleText.textContent = "Remembered your password?";
         toggleBtn.textContent = "Back to Login";
         toggleBtn.onclick = () => setAuthMode('LOGIN');
