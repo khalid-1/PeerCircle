@@ -1,6 +1,14 @@
 import { escapeHTML, getInitials } from './utils.js';
 import { state } from './state.js';
 import * as Repo from './firebase-repo.js';
+import { auth } from './firebase-init.js';
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    sendPasswordResetEmail,
+    sendEmailVerification
+} from "firebase/auth";
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
 
@@ -1388,25 +1396,25 @@ export async function handleAuth(e) {
 
     try {
         if (currentAuthMode === 'SIGNUP') {
-            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             await Repo.createUserProfile(user.uid, { name, email });
-            await user.sendEmailVerification();
+            await sendEmailVerification(user);
             showNotification("Account created! Please verify your email.", "success");
-            await auth.signOut();
+            await signOut(auth);
             setAuthMode('LOGIN');
         } else if (currentAuthMode === 'LOGIN') {
-            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             if (!user.emailVerified) {
                 showInlineError('auth-email', "Please verify your email address to log in.");
-                await auth.signOut();
+                await signOut(auth);
                 btn.disabled = false;
                 btn.textContent = "Sign In";
                 return;
             }
         } else if (currentAuthMode === 'RESET') {
-            await auth.sendPasswordResetEmail(email);
+            await sendPasswordResetEmail(auth, email);
             showNotification("Password reset email sent!", "success");
             setAuthMode('LOGIN');
         }

@@ -5,7 +5,8 @@ import {
     setCurrentUserData,
     setIsSignUpMode
 } from './state.js';
-// import { auth } from '../public/firebase-config.js'; // Removed: auth is global
+import { auth } from './firebase-init.js';
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 import * as Repo from './firebase-repo.js';
 import * as UI from './ui.js';
@@ -20,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     UI.initTheme();
 
     // Firebase Auth Listener
-    auth.onAuthStateChanged(async (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
             console.log("User logged in:", user.email);
 
@@ -178,7 +179,7 @@ window.deleteSession = async (id) => {
 
 // Auth & Breathing
 window.logout = () => {
-    auth.signOut().then(() => {
+    signOut(auth).then(() => {
         UI.showNotification("Logged Out", "success");
         window.location.reload();
     });

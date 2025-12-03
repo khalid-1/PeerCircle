@@ -5,16 +5,33 @@ import {
     setMentorOverrides,
     state
 } from './state.js';
-
-// We assume db, auth, storage are available globally from firebase-config.js for now.
-// In a full module build, we would import them.
+import { db, auth, storage } from './firebase-init.js';
+import {
+    collection,
+    addDoc,
+    deleteDoc,
+    doc,
+    getDocs,
+    getDoc,
+    updateDoc,
+    setDoc,
+    onSnapshot,
+    query,
+    where,
+    orderBy,
+    limit,
+    serverTimestamp,
+    deleteField
+} from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // ==========================================
 // TOPICS
 // ==========================================
 
 export function subscribeToTopics(onUpdate) {
-    return db.collection('topics').onSnapshot((snapshot) => {
+    const q = collection(db, 'topics');
+    return onSnapshot(q, (snapshot) => {
         const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
         setTopicsData(data);
         if (onUpdate) onUpdate(data);
@@ -22,21 +39,21 @@ export function subscribeToTopics(onUpdate) {
 }
 
 export async function addTopic(topicData) {
-    return await db.collection('topics').add({
+    return await addDoc(collection(db, 'topics'), {
         ...topicData,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: serverTimestamp()
     });
 }
 
 export async function deleteTopic(id) {
-    return await db.collection('topics').doc(id).delete();
+    return await deleteDoc(doc(db, 'topics', id));
 }
 
 export async function addTopicSuggestion(suggestionData) {
-    return await db.collection('topic_suggestions').add({
+    return await addDoc(collection(db, 'topic_suggestions'), {
         ...suggestionData,
         status: 'pending',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: serverTimestamp()
     });
 }
 
@@ -47,20 +64,20 @@ export async function addTopicSuggestion(suggestionData) {
 export async function fetchMentorOverrides(mentorsData) {
     try {
         // 1. Fetch Overrides (Quote/Tags)
-        const snapshot = await db.collection('mentor_profiles').get();
+        const snapshot = await getDocs(collection(db, 'mentor_profiles'));
         const overrides = {};
         snapshot.forEach(doc => {
             overrides[doc.id] = doc.data();
         });
 
         // 2. Fetch Profile Pictures (from 'users' collection)
-        // We need to find the user doc where email matches the mentor email
         const photoPromises = mentorsData.map(async (mentor) => {
             try {
-                // Skip if we already have the photo from mentor_profiles (optimization)
                 if (overrides[mentor.email] && overrides[mentor.email].photoURL) return;
 
-                const userQuery = await db.collection('users').where('email', '==', mentor.email).limit(1).get();
+                const q = query(collection(db, 'users'), where('email', '==', mentor.email), limit(1));
+                const userQuery = await getDocs(q);
+
                 if (!userQuery.empty) {
                     const userData = userQuery.docs[0].data();
                     if (userData.photoURL) {
@@ -83,9 +100,9 @@ export async function fetchMentorOverrides(mentorsData) {
 }
 
 export async function updateMentorProfile(email, data) {
-    return await db.collection('mentor_profiles').doc(email).set({
+    return await setDoc(doc(db, 'mentor_profiles', email), {
         ...data,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        updatedAt: serverTimestamp()
     }, { merge: true });
 }
 
@@ -94,7 +111,8 @@ export async function updateMentorProfile(email, data) {
 // ==========================================
 
 export function subscribeToSessions(onUpdate) {
-    return db.collection('sessions').orderBy('date', 'asc').onSnapshot((snapshot) => {
+    const q = query(collection(db, 'sessions'), orderBy('date', 'asc'));
+    return onSnapshot(q, (snapshot) => {
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setSessionsData(data);
         if (onUpdate) onUpdate(data);
@@ -102,21 +120,21 @@ export function subscribeToSessions(onUpdate) {
 }
 
 export async function addSession(sessionData) {
-    return await db.collection('sessions').add({
+    return await addDoc(collection(db, 'sessions'), {
         ...sessionData,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: serverTimestamp()
     });
 }
 
 export async function updateSession(id, sessionData) {
-    return await db.collection('sessions').doc(id).update({
+    return await updateDoc(doc(db, 'sessions', id), {
         ...sessionData,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        updatedAt: serverTimestamp()
     });
 }
 
 export async function deleteSession(id) {
-    return await db.collection('sessions').doc(id).delete();
+    return await deleteDoc(doc(db, 'sessions', id));
 }
 
 // ==========================================
@@ -124,7 +142,8 @@ export async function deleteSession(id) {
 // ==========================================
 
 export function subscribeToInbox(onUpdate) {
-    return db.collection('requests').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+    const q = query(collection(db, 'requests'), orderBy('createdAt', 'desc'));
+    return onSnapshot(q, (snapshot) => {
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setPeerMessages(data);
         if (onUpdate) onUpdate(data);
@@ -132,18 +151,18 @@ export function subscribeToInbox(onUpdate) {
 }
 
 export async function sendRequest(requestData) {
-    return await db.collection('requests').add({
+    return await addDoc(collection(db, 'requests'), {
         ...requestData,
         status: "pending",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: serverTimestamp()
     });
 }
 
 export async function acceptRequest(id, userId) {
-    return await db.collection('requests').doc(id).update({
+    return await updateDoc(doc(db, 'requests', id), {
         status: 'accepted',
         acceptedBy: userId || 'anonymous',
-        acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
+        acceptedAt: serverTimestamp()
     });
 }
 
@@ -152,28 +171,33 @@ export async function acceptRequest(id, userId) {
 // ==========================================
 
 export async function getUserProfile(uid) {
-    return await db.collection('users').doc(uid).get();
+    return await getDoc(doc(db, 'users', uid));
 }
 
 export async function createUserProfile(uid, data) {
-    return await db.collection('users').doc(uid).set({
+    return await setDoc(doc(db, 'users', uid), {
         ...data,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: serverTimestamp()
     });
 }
 
 export async function updateUserProfile(uid, data) {
-    return await db.collection('users').doc(uid).update(data);
+    return await updateDoc(doc(db, 'users', uid), data);
 }
 
 export async function uploadProfilePicture(uid, blob) {
-    const storageRef = storage.ref().child(`users/${uid}/profile.jpg`);
-    const snapshot = await storageRef.put(blob);
-    return await snapshot.ref.getDownloadURL();
+    const storageRef = ref(storage, `users/${uid}/profile.jpg`);
+    const snapshot = await uploadBytes(storageRef, blob);
+    return await getDownloadURL(snapshot.ref);
 }
 
 export async function deleteProfilePicture(uid) {
-    return await db.collection('users').doc(uid).update({
-        photoURL: firebase.firestore.FieldValue.delete()
+    // Note: FieldValue.delete() is deleteField() in modular
+    // But here we are updating a doc.
+    // We need to import deleteField.
+    // Wait, I missed importing deleteField.
+    // I will add it to imports and use it here.
+    return await updateDoc(doc(db, 'users', uid), {
+        photoURL: deleteField()
     });
 }
