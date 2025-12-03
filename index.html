@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Digital Peer Support Circles | Nursing Student Wellbeing</title>
 
     <link rel="icon" type="image/png" href="assets/favicon.png?v=2">
@@ -154,161 +154,94 @@
                     </div>
                 </div>
 
-                <div class="md:hidden flex items-center space-x-3">
-                    <button onclick="toggleTheme()" class="text-slate-600 dark:text-yellow-400 p-2">
-                        <i class="fas fa-adjust"></i>
+                <div class="md:hidden flex items-center gap-3">
+                    <button onclick="toggleTheme()"
+                        class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 flex items-center justify-center transition-colors active:scale-95">
+                        <i class="fas fa-adjust text-sm"></i>
                     </button>
-                    <button id="mobile-menu-btn" class="text-slate-700 dark:text-slate-200 focus:outline-none p-2">
-                        <i class="fas fa-bars text-2xl"></i>
+                    <button onclick="toggleProfileSheet()" class="relative active:scale-95 transition-transform">
+                        <div id="header-avatar-mobile"
+                            class="w-9 h-9 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold ring-2 ring-white dark:ring-slate-900 shadow-sm overflow-hidden">
+                            <span id="header-initials-mobile">U</span>
+                            <img id="header-img-mobile" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                        </div>
                     </button>
                 </div>
             </div>
-        </div>
-        </div>
         </div>
     </nav>
 
-    <!-- Mobile Menu (Moved outside nav for better z-index/opacity handling) -->
-    <div id="mobile-menu"
-        class="fixed inset-0 z-[100] bg-white dark:bg-slate-900 transform transition-transform duration-300 translate-x-full hidden flex flex-col h-full">
-
-        <!-- Close Button -->
-        <button onclick="toggleMobileMenu()"
-            class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition z-50">
-            <i class="fas fa-times text-xl"></i>
+    <!-- Bottom Navigation Bar (Mobile Only) -->
+    <div
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)] z-40 px-6 py-3 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <button onclick="showSection('home')"
+            class="nav-item flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-teal-500 dark:hover:text-teal-400 transition group w-14">
+            <i class="fas fa-home text-xl group-active:scale-90 transition-transform mb-0.5"></i>
+            <span class="text-[10px] font-medium">Home</span>
         </button>
+        <button onclick="showSection('education')"
+            class="nav-item flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-teal-500 dark:hover:text-teal-400 transition group w-14">
+            <i class="fas fa-book text-xl group-active:scale-90 transition-transform mb-0.5"></i>
+            <span class="text-[10px] font-medium">Library</span>
+        </button>
+        <button onclick="showSection('sessions')"
+            class="nav-item flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-teal-500 dark:hover:text-teal-400 transition group w-14 relative">
+            <i class="fas fa-video text-xl group-active:scale-90 transition-transform mb-0.5"></i>
+            <span class="text-[10px] font-medium">Sessions</span>
+            <span id="mobile-sessions-badge"
+                class="hidden absolute top-0 right-3 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-900"></span>
+        </button>
+        <button onclick="showSection('directory')"
+            class="nav-item flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-teal-500 dark:hover:text-teal-400 transition group w-14">
+            <i class="fas fa-user-friends text-xl group-active:scale-90 transition-transform mb-0.5"></i>
+            <span class="text-[10px] font-medium">Mentors</span>
+        </button>
+    </div>
 
-        <!-- Mobile User Profile (Refined) -->
-        <div id="mobile-user-profile"
-            class="shrink-0 pt-12 pb-6 px-6 border-b border-slate-100 dark:border-slate-800 flex flex-col items-center text-center bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
-            <div class="relative mb-3">
-                <div id="mobile-menu-avatar"
-                    class="w-20 h-20 rounded-full bg-teal-500 text-white flex items-center justify-center text-3xl font-bold overflow-hidden ring-4 ring-white dark:ring-slate-900 shadow-xl">
-                    <span id="mobile-menu-initials">U</span>
+    <!-- Profile Bottom Sheet -->
+    <div id="profile-sheet-overlay" onclick="toggleProfileSheet()"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] hidden transition-opacity duration-300 opacity-0">
+    </div>
+    <div id="profile-sheet"
+        class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-[2rem] z-[70] transform translate-y-full transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.2)] pb-[env(safe-area-inset-bottom)]">
+        <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-3 mb-6"></div>
+
+        <div class="px-6 pb-8">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="relative">
+                    <div id="sheet-avatar"
+                        class="w-16 h-16 rounded-full bg-teal-500 text-white flex items-center justify-center text-2xl font-bold ring-4 ring-slate-50 dark:ring-slate-800 overflow-hidden">
+                        <span id="sheet-initials">U</span>
+                        <img id="sheet-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                    </div>
+                    <button onclick="openProfilePictureModal(); toggleProfileSheet()"
+                        class="absolute bottom-0 right-0 w-6 h-6 bg-slate-800 dark:bg-white text-white dark:text-slate-900 rounded-full flex items-center justify-center text-[10px] shadow-md hover:scale-110 transition-transform">
+                        <i class="fas fa-camera"></i>
+                    </button>
                 </div>
-                <button onclick="openProfilePictureModal(); toggleMobileMenu()"
-                    class="absolute bottom-0 right-0 w-8 h-8 bg-white dark:bg-slate-700 rounded-full shadow-md flex items-center justify-center text-slate-500 dark:text-slate-300 hover:text-teal-500 dark:hover:text-teal-400 border border-slate-100 dark:border-slate-600 transition-transform hover:scale-110">
-                    <i class="fas fa-camera text-xs"></i>
+                <div class="flex-1 min-w-0">
+                    <h3 id="sheet-name" class="font-bold text-xl text-slate-800 dark:text-white truncate">User Name</h3>
+                    <p id="sheet-email" class="text-sm text-slate-500 dark:text-slate-400 truncate">email@example.com
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="toggleTheme(); toggleProfileSheet()"
+                    class="w-full flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-medium active:scale-[0.98] transition-transform">
+                    <span class="flex items-center gap-3"><i class="fas fa-moon text-indigo-500 text-lg w-6"></i> Dark
+                        Mode</span>
+                    <div class="w-10 h-6 bg-slate-200 dark:bg-teal-500 rounded-full relative transition-colors">
+                        <div
+                            class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 dark:left-5 transition-all shadow-sm">
+                        </div>
+                    </div>
                 </button>
-            </div>
-            <div class="w-full min-w-0">
-                <p id="mobile-menu-name" class="font-bold text-xl text-slate-800 dark:text-white truncate mb-1">User
-                    Name</p>
-                <p id="mobile-menu-email"
-                    class="text-sm text-slate-500 dark:text-slate-400 truncate bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full inline-block">
-                    email@example.com</p>
-            </div>
-        </div>
 
-        <!-- Scrollable Navigation Area -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-1">
-            <!-- Navigation Group -->
-            <div class="space-y-1">
-                <p
-                    class="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 mt-2">
-                    Navigation</p>
-
-                <a onclick="showSection('home'); toggleMobileMenu()"
-                    class="mobile-nav-link flex items-center gap-4 p-4 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95">
-                    <div
-                        class="w-10 h-10 rounded-full bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center text-teal-600 dark:text-teal-400 text-lg">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <span class="font-bold text-lg">Home</span>
-                </a>
-
-                <a onclick="showSection('education'); toggleMobileMenu()"
-                    class="mobile-nav-link flex items-center gap-4 p-4 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95">
-                    <div
-                        class="w-10 h-10 rounded-full bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 text-lg">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <span class="font-bold text-lg">Library</span>
-                </a>
-
-                <a onclick="showSection('directory'); toggleMobileMenu()"
-                    class="mobile-nav-link flex items-center gap-4 p-4 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95">
-                    <div
-                        class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 text-lg">
-                        <i class="fas fa-user-friends"></i>
-                    </div>
-                    <span class="font-bold text-lg">Peer Mentors</span>
-                </a>
-
-                <a onclick="showSection('sessions'); toggleMobileMenu()"
-                    class="mobile-nav-link flex items-center gap-4 p-4 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95">
-                    <div
-                        class="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 text-lg">
-                        <i class="fas fa-video"></i>
-                    </div>
-                    <span class="font-bold text-lg flex-1">Sessions</span>
-                    <span id="mobile-sessions-badge"
-                        class="hidden bg-teal-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">0</span>
-                </a>
-
-                <a onclick="showSection('selfhelp'); toggleMobileMenu()"
-                    class="mobile-nav-link flex items-center gap-4 p-4 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95">
-                    <div
-                        class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-rose-600 dark:text-rose-400 text-lg">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <span class="font-bold text-lg">Self-Help</span>
-                </a>
-            </div>
-
-            <!-- Admin/Peer Links -->
-            <a id="mobile-admin-link" onclick="showSection('admin-dashboard'); toggleMobileMenu()"
-                class="mobile-nav-link hidden flex items-center gap-4 p-4 rounded-2xl text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 font-bold mt-2">
-                <div
-                    class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center text-lg">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <span class="font-bold text-lg">Admin Dashboard</span>
-            </a>
-
-            <a id="mobile-peer-link" onclick="showSection('peer-inbox'); toggleMobileMenu()"
-                class="mobile-nav-link hidden flex items-center gap-4 p-4 rounded-2xl text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 font-bold mt-2">
-                <div
-                    class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-lg">
-                    <i class="fas fa-inbox"></i>
-                </div>
-                <span class="font-bold text-lg">Peer Inbox</span>
-            </a>
-
-            <!-- Actions Group -->
-            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4">
-                <p
-                    class="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 mt-2">
-                    Actions</p>
-
-                <a onclick="showSection('chat'); toggleMobileMenu()"
-                    class="flex items-center gap-4 p-4 rounded-2xl text-white bg-teal-500 hover:bg-teal-600 shadow-lg shadow-teal-500/30 font-bold mb-4 transition-all active:scale-95">
-                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-lg">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <span class="font-bold text-lg">Request Support</span>
-                </a>
-
-                <a onclick="logout()"
-                    class="flex items-center gap-4 p-4 rounded-2xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
-                    <div
-                        class="w-10 h-10 rounded-full bg-red-50 dark:bg-red-900/10 flex items-center justify-center text-lg">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </div>
-                    <span class="font-medium text-lg">Logout</span>
-                </a>
-            </div>
-
-            <!-- Menu Footer (Moved inside scrollable area) -->
-            <div class="pt-6 pb-8 text-center">
-                <p class="text-slate-400 text-xs mb-3">© 2025 PeerCircle. Created by <span
-                        class="font-bold text-slate-500 dark:text-slate-300">Khalid Said</span>.</p>
-                <div class="flex justify-center space-x-6">
-                    <a href="#" class="text-slate-400 hover:text-teal-500 transition transform hover:scale-110"><i
-                            class="fab fa-instagram text-xl"></i></a>
-                    <a href="#" class="text-slate-400 hover:text-teal-500 transition transform hover:scale-110"><i
-                            class="fab fa-github text-xl"></i></a>
-                </div>
+                <button onclick="logout()"
+                    class="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold active:scale-[0.98] transition-transform">
+                    <i class="fas fa-sign-out-alt text-lg w-6"></i> Log Out
+                </button>
             </div>
         </div>
     </div>
@@ -318,52 +251,84 @@
             class="relative z-10 max-w-7xl mx-auto bg-white/80 dark:bg-slate-900/60 backdrop-blur-2xl rounded-3xl md:rounded-[2.5rem] overflow-hidden shadow-2xl dark:shadow-teal-900/20 border border-white/60 dark:border-white/10 p-5 md:p-10 min-h-[80vh] transition-all duration-500">
 
             <div id="home" class="section-content active">
-                <div class="text-center py-12 md:py-20">
-                    <div
-                        class="inline-flex items-center justify-center px-3 py-1 mb-4 sm:mb-6 text-[11px] sm:text-xs font-bold tracking-wide text-teal-700 dark:text-teal-300 uppercase bg-teal-100 dark:bg-teal-900/40 rounded-full border border-teal-200 dark:border-teal-800 max-w-xs sm:max-w-none mx-auto">
-                        <span class="hidden sm:inline-block w-2 h-2 bg-teal-500 rounded-full mr-2 animate-pulse"></span>
-                        <span class="text-center">For Nursing Students, By Nursing Students</span>
+                <!-- Greeting Header -->
+                <div class="mb-8 pt-2 md:pt-8">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-bold uppercase tracking-wider mb-1"
+                        id="greeting-date">TODAY</p>
+                    <h1 class="text-2xl md:text-4xl font-extrabold text-slate-800 dark:text-white tracking-tight"
+                        id="greeting-text">Welcome Back</h1>
+                </div>
+
+                <!-- Quick Actions Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <button onclick="showSection('directory')"
+                        class="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-2xl text-left hover:scale-[1.02] transition-transform active:scale-95 border border-blue-100 dark:border-blue-800/30 group">
+                        <div
+                            class="w-10 h-10 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 mb-3 text-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 dark:text-white">Find Mentor</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Connect with seniors</p>
+                    </button>
+
+                    <button onclick="showSection('education')"
+                        class="bg-indigo-50 dark:bg-indigo-900/20 p-5 rounded-2xl text-left hover:scale-[1.02] transition-transform active:scale-95 border border-indigo-100 dark:border-indigo-800/30 group">
+                        <div
+                            class="w-10 h-10 bg-indigo-100 dark:bg-indigo-800 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-300 mb-3 text-lg group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 dark:text-white">Library</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Study guides</p>
+                    </button>
+
+                    <button onclick="showSection('sessions')"
+                        class="bg-purple-50 dark:bg-purple-900/20 p-5 rounded-2xl text-left hover:scale-[1.02] transition-transform active:scale-95 border border-purple-100 dark:border-purple-800/30 group">
+                        <div
+                            class="w-10 h-10 bg-purple-100 dark:bg-purple-800 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-300 mb-3 text-lg group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 dark:text-white">Sessions</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Live workshops</p>
+                    </button>
+
+                    <button onclick="showSection('chat')"
+                        class="bg-teal-50 dark:bg-teal-900/20 p-5 rounded-2xl text-left hover:scale-[1.02] transition-transform active:scale-95 border border-teal-100 dark:border-teal-800/30 group">
+                        <div
+                            class="w-10 h-10 bg-teal-100 dark:bg-teal-800 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-300 mb-3 text-lg group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                            <i class="fas fa-comment-medical"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 dark:text-white">Get Support</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Chat with a peer</p>
+                    </button>
+                </div>
+
+                <!-- Featured Card -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-slate-800 dark:text-white">Daily Insight</h2>
+                        <button onclick="showSection('selfhelp')"
+                            class="text-teal-600 dark:text-teal-400 text-sm font-bold hover:underline">View All</button>
                     </div>
-                    <h1
-                        class="text-3xl sm:text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-4 md:mb-6 leading-tight tracking-tight">
-                        You care for patients. <br> <span
-                            class="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-teal-400">We care for
-                            you.</span>
-                    </h1>
-                    <p class="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
-                        A safe, anonymous digital space for BSN and MSN students to navigate academic stress, clinical
-                        placement anxiety, and the transition to professional practice.
-                    </p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-12 text-left">
-                        <div onclick="showSection('directory')" role="button" tabindex="0"
-                            class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-                            <div
-                                class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                <i class="fas fa-user-friends"></i>
-                            </div>
-                            <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Find a Mentor</h3>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Connect with senior students who have
-                                been in your shoes.</p>
+                    <div
+                        class="bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-800 dark:to-black rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-xl shadow-slate-200 dark:shadow-none">
+                        <div class="absolute top-0 right-0 w-40 h-40 bg-teal-500 rounded-full blur-[80px] opacity-20">
                         </div>
-                        <div onclick="showSection('education')" role="button" tabindex="0"
-                            class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-                            <div
-                                class="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                                <i class="fas fa-book-reader"></i>
-                            </div>
-                            <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Wellbeing Library</h3>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Curated guides on burnout, exam
-                                anxiety, and resilience.</p>
+                        <div
+                            class="absolute bottom-0 left-0 w-32 h-32 bg-purple-500 rounded-full blur-[60px] opacity-20">
                         </div>
-                        <div onclick="showSection('chat')" role="button" tabindex="0"
-                            class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                        <div class="relative z-10">
                             <div
-                                class="w-12 h-12 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-teal-600 group-hover:text-white transition-colors">
-                                <i class="fas fa-comment-medical"></i>
+                                class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold mb-4 backdrop-blur-md border border-white/10">
+                                <i class="fas fa-star text-yellow-400"></i> TIP OF THE DAY
                             </div>
-                            <h3 class="font-bold text-lg mb-2 text-slate-800 dark:text-white">Request Chat</h3>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">Safe, private, asynchronous support
-                                from trained peers.</p>
+                            <h3 class="text-xl md:text-2xl font-bold mb-3 leading-tight">The 4-7-8 Breathing Technique
+                            </h3>
+                            <p class="text-slate-300 text-sm md:text-base mb-6 max-w-lg leading-relaxed">Feeling
+                                overwhelmed? Try this simple breathing exercise to reset your nervous system in minutes.
+                                It helps reduce anxiety and aids sleep.</p>
+                            <button onclick="showSection('selfhelp')"
+                                class="bg-white text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-100 transition shadow-lg active:scale-95 transform">Try
+                                It Now</button>
                         </div>
                     </div>
                 </div>
@@ -647,20 +612,67 @@
                             seconds.</p>
 
                         <div id="breathing-widget" class="breathing-widget">
-                            <div class="ripple ripple-1"></div>
-                            <div class="ripple ripple-2"></div>
-                            <div class="ripple ripple-3"></div>
-                            <div class="core-circle">
-                                <span id="breath-text"
-                                    class="text-xl font-bold text-teal-600 dark:text-teal-400">Ready?</span>
-                                <span id="breath-instruction"
-                                    class="text-xs text-slate-400 dark:text-slate-500 mt-1">Tap Start</span>
+                            <div class="animation-wrapper">
+                                <svg class="progress-ring" width="108" height="108" viewBox="0 0 108 108">
+                                    <circle class="progress-ring__track" cx="54" cy="54" r="52" fill="none"
+                                        stroke-width="4" />
+                                    <circle class="progress-ring__indicator" cx="54" cy="54" r="52" fill="none"
+                                        stroke-width="4" />
+                                </svg>
+                                <div class="core-circle">
+                                    <span id="breath-timer" class="breath-timer"></span>
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="text-center mb-6 h-16">
+                            <div id="breath-text"
+                                class="text-2xl font-bold text-slate-800 dark:text-white transition-opacity duration-300">
+                                Ready?</div>
+                            <div id="breath-instruction"
+                                class="text-sm text-slate-500 dark:text-slate-400 mt-1 transition-opacity duration-300">
+                                Tap Start</div>
                         </div>
 
                         <button id="breath-btn" onclick="toggleBreathing()"
                             class="mt-6 bg-teal-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-700 transition shadow-lg hover:shadow-teal-500/30">
                             Start Exercise
+                        </button>
+                    </div>
+                    <div class="space-y-3">
+                        <button onclick="toggleTheme()"
+                            class="w-full flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                    <i id="mobile-theme-icon" class="fas fa-moon text-lg"></i>
+                                </div>
+                                <span class="font-bold text-slate-700 dark:text-slate-200">Dark Mode</span>
+                            </div>
+                            <div
+                                class="w-12 h-6 bg-slate-200 dark:bg-slate-700 rounded-full relative transition-colors group-hover:bg-slate-300 dark:group-hover:bg-slate-600">
+                                <div
+                                    class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform dark:translate-x-6">
+                                </div>
+                            </div>
+                        </button>
+
+                        <button onclick="openProfilePictureModal(); toggleProfileSheet()"
+                            class="w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
+                            <div
+                                class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                                <i class="fas fa-user-edit text-lg"></i>
+                            </div>
+                            <span class="font-bold text-slate-700 dark:text-slate-200">Edit Profile</span>
+                        </button>
+
+                        <button onclick="showSection('selfhelp'); toggleProfileSheet()"
+                            class="w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                                <i class="fas fa-question-circle text-lg"></i>
+                            </div>
+                            <span class="font-bold text-slate-700 dark:text-slate-200">Help & Support</span>
                         </button>
                     </div>
                     <div class="space-y-6">
@@ -895,9 +907,9 @@
             </div>
         </div>
     </footer>
-
+    <!-- NOTIFICATION TOAST -->
     <div id="notification"
-        class="fixed bottom-6 right-6 transform translate-y-24 opacity-0 transition-all duration-300 z-[100]">
+        class="hidden md:block fixed top-6 right-6 transform -translate-y-[150%] opacity-0 transition-all duration-300 z-[100]">
         <div
             class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-xl shadow-2xl flex items-center font-medium">
             <i class="fas fa-check-circle text-teal-400 dark:text-teal-600 mr-3"></i>
@@ -983,74 +995,6 @@
                 </div>
             </div>
         </div>
-
-        <div id="modal-burnout"
-            class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[70] p-4">
-            <div
-                class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 md:p-8 relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
-                <button onclick="closeModal('modal-burnout')"
-                    class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i
-                        class="fas fa-times"></i></button>
-                <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4 pr-8">Stress & Burnout</h2>
-                <div
-                    class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-4 text-slate-600 dark:text-slate-300">
-                    <p>Nursing burnout is physical, mental, and emotional exhaustion caused by chronic workplace
-                        stress. It
-                        is not your fault.</p>
-                    <div
-                        class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-100 dark:border-red-900/30">
-                        <h4 class="font-bold text-red-700 dark:text-red-300 mb-2">Common Signs</h4>
-                        <ul class="list-disc pl-5 space-y-1">
-                            <li>Dreading clinicals/work.</li>
-                            <li>Feeling cynical with patients.</li>
-                            <li>Physical fatigue after sleeping.</li>
-                        </ul>
-                    </div>
-                    <h4 class="font-bold text-slate-800 dark:text-white">Immediate Action: The "3-Minute Reset"</h4>
-                    <p>Step into a supply room. Drink water slowly. Do one cycle of box breathing. Remind yourself:
-                        "I am
-                        doing my best."</p>
-                </div>
-                <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
-                    <button onclick="closeModal('modal-burnout')"
-                        class="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90">Close</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="modal-exams"
-            class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center z-[70] p-4">
-            <div
-                class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 md:p-8 relative shadow-2xl animate-[fadeIn_0.2s_ease-out]">
-                <button onclick="closeModal('modal-exams')"
-                    class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i
-                        class="fas fa-times"></i></button>
-                <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4 pr-8">Exam Anxiety</h2>
-                <div
-                    class="prose prose-slate dark:prose-invert text-sm leading-relaxed space-y-4 text-slate-600 dark:text-slate-300">
-                    <p>The NCLEX tests critical thinking, not just memory. Anxiety blocks that pathway.</p>
-                    <div
-                        class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-100 dark:border-yellow-900/30">
-                        <h4 class="font-bold text-slate-800 dark:text-white mb-2">The Stop Light Method</h4>
-                        <ul class="space-y-2">
-                            <li><span class="font-bold text-green-600">Green:</span> Know it? Mark it, move on.</li>
-                            <li><span class="font-bold text-yellow-600">Yellow:</span> Narrowed to two? Pick your
-                                gut.</li>
-                            <li><span class="font-bold text-red-500">Red:</span> No idea? Don't panic. Guess. Move
-                                on.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-right">
-                    <button onclick="closeModal('modal-exams')"
-                        class="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90">Close</button>
-                </div>
-            </div>
-        </div>
-
-
-
-
 
         <!-- <script src="firebase-config.js"></script> -->
         <script type="module" src="js/main.js"></script>

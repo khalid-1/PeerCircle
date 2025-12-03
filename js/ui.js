@@ -23,8 +23,8 @@ export function showNotification(msg, type) {
     const msgEl = document.getElementById('notif-message');
     if (msgEl) msgEl.textContent = msg;
 
-    // Remove the class that pushes it down (so it slides UP)
-    notif.classList.remove('translate-y-24', 'opacity-0');
+    // Remove hidden classes (slide down into view)
+    notif.classList.remove('-translate-y-[150%]', 'opacity-0');
 
     // Optional: Change color based on type (success/error)
     if (type === 'error') {
@@ -36,8 +36,8 @@ export function showNotification(msg, type) {
     }
 
     setTimeout(() => {
-        // Add the class back to push it down again
-        notif.classList.add('translate-y-24', 'opacity-0');
+        // Add hidden classes (slide up out of view)
+        notif.classList.add('-translate-y-[150%]', 'opacity-0');
     }, 3000);
 }
 
@@ -115,45 +115,20 @@ function updateNavState(activeId) {
         }
     });
 
-    // Mobile Nav
-    document.querySelectorAll('.mobile-nav-link').forEach(link => {
-        const onClickText = link.getAttribute('onclick');
+    // Mobile Bottom Nav
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        const onClickText = btn.getAttribute('onclick');
         if (onClickText && onClickText.includes(activeId)) {
-            link.classList.add('bg-teal-50', 'dark:bg-teal-900/30', 'text-teal-700', 'dark:text-teal-300');
-            link.classList.remove('text-slate-600', 'dark:text-slate-300');
+            btn.classList.add('text-teal-600', 'dark:text-teal-400');
+            btn.classList.remove('text-slate-400', 'dark:text-slate-500');
         } else {
-            link.classList.remove('bg-teal-50', 'dark:bg-teal-900/30', 'text-teal-700', 'dark:text-teal-300');
-            link.classList.add('text-slate-600', 'dark:text-slate-300');
+            btn.classList.remove('text-teal-600', 'dark:text-teal-400');
+            btn.classList.add('text-slate-400', 'dark:text-slate-500');
         }
     });
 }
 
-export function toggleMobileMenu() {
-    const menu = document.getElementById('mobile-menu');
-    const icon = document.querySelector('#mobile-menu-btn i');
-
-    if (menu) {
-        if (menu.classList.contains('hidden')) {
-            menu.classList.remove('hidden');
-            setTimeout(() => {
-                menu.classList.remove('translate-x-full');
-            }, 10);
-            if (icon) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            }
-        } else {
-            menu.classList.add('translate-x-full');
-            setTimeout(() => {
-                menu.classList.add('hidden');
-            }, 300);
-            if (icon) {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
-        }
-    }
-}
+// toggleMobileMenu removed as it is no longer used with Bottom Nav
 
 // ==========================================
 // TOPICS
@@ -569,8 +544,17 @@ export function updateUserProfileDropdown() {
     const dropdownRole = document.getElementById('dropdown-user-role');
     const dropdownAvatar = document.getElementById('dropdown-avatar');
 
+    // Mobile Header & Sheet Elements
+    const headerInitialsMobile = document.getElementById('header-initials-mobile');
+    const headerImgMobile = document.getElementById('header-img-mobile');
+    const sheetInitials = document.getElementById('sheet-initials');
+    const sheetImg = document.getElementById('sheet-img');
+    const sheetName = document.getElementById('sheet-name');
+    const sheetEmail = document.getElementById('sheet-email');
+
     const initials = getInitials(state.currentUserData.name);
 
+    // Desktop Nav Avatar
     if (userAvatar) {
         if (state.currentUserData.photoURL) {
             userAvatar.innerHTML = `<img src="${state.currentUserData.photoURL}" style="width: 100%; height: 100%; object-fit: cover;">`;
@@ -579,6 +563,33 @@ export function updateUserProfileDropdown() {
         }
     }
 
+    // Mobile Header Avatar
+    if (headerImgMobile && headerInitialsMobile) {
+        if (state.currentUserData.photoURL) {
+            headerImgMobile.src = state.currentUserData.photoURL;
+            headerImgMobile.classList.remove('hidden');
+            headerInitialsMobile.classList.add('hidden');
+        } else {
+            headerInitialsMobile.textContent = initials;
+            headerInitialsMobile.classList.remove('hidden');
+            headerImgMobile.classList.add('hidden');
+        }
+    }
+
+    // Sheet Avatar
+    if (sheetImg && sheetInitials) {
+        if (state.currentUserData.photoURL) {
+            sheetImg.src = state.currentUserData.photoURL;
+            sheetImg.classList.remove('hidden');
+            sheetInitials.classList.add('hidden');
+        } else {
+            sheetInitials.textContent = initials;
+            sheetInitials.classList.remove('hidden');
+            sheetImg.classList.add('hidden');
+        }
+    }
+
+    // Desktop Dropdown Avatar
     if (dropdownAvatar) {
         if (state.currentUserData.photoURL) {
             dropdownAvatar.innerHTML = `<img src="${state.currentUserData.photoURL}" style="width: 100%; height: 100%; object-fit: cover;">`;
@@ -591,6 +602,9 @@ export function updateUserProfileDropdown() {
     if (dropdownName) dropdownName.textContent = state.currentUserData.name;
     if (dropdownEmail) dropdownEmail.textContent = state.currentUserData.email;
 
+    if (sheetName) sheetName.textContent = state.currentUserData.name;
+    if (sheetEmail) sheetEmail.textContent = state.currentUserData.email;
+
     if (dropdownRole) {
         const roleLabels = {
             admin: { label: 'Administrator', class: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
@@ -601,6 +615,8 @@ export function updateUserProfileDropdown() {
         dropdownRole.textContent = roleInfo.label;
         dropdownRole.className = `inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${roleInfo.class}`;
     }
+
+    updateGreeting();
 }
 
 export function updateAllAvatars(photoURL) {
@@ -624,16 +640,137 @@ export function updateAllAvatars(photoURL) {
         }
     }
 
-    const mobileAvatar = document.getElementById('mobile-menu-avatar');
-    if (mobileAvatar) {
+    // Mobile Header Avatar
+    const headerInitialsMobile = document.getElementById('header-initials-mobile');
+    const headerImgMobile = document.getElementById('header-img-mobile');
+    if (headerImgMobile && headerInitialsMobile) {
         if (photoURL) {
-            mobileAvatar.innerHTML = `<img src="${photoURL}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            headerImgMobile.src = photoURL;
+            headerImgMobile.classList.remove('hidden');
+            headerInitialsMobile.classList.add('hidden');
         } else {
-            mobileAvatar.innerHTML = `<span id="mobile-menu-initials">${initials}</span>`;
+            headerInitialsMobile.textContent = initials;
+            headerInitialsMobile.classList.remove('hidden');
+            headerImgMobile.classList.add('hidden');
+        }
+    }
+
+    // Sheet Avatar
+    const sheetInitials = document.getElementById('sheet-initials');
+    const sheetImg = document.getElementById('sheet-img');
+    if (sheetImg && sheetInitials) {
+        if (photoURL) {
+            sheetImg.src = photoURL;
+            sheetImg.classList.remove('hidden');
+            sheetInitials.classList.add('hidden');
+        } else {
+            sheetInitials.textContent = initials;
+            sheetInitials.classList.remove('hidden');
+            sheetImg.classList.add('hidden');
         }
     }
 
     renderMentors();
+}
+
+// Mobile Profile Sheet Logic
+// Mobile Profile Sheet Logic
+export function toggleProfileSheet() {
+    const sheet = document.getElementById('profile-sheet');
+    const overlay = document.getElementById('profile-sheet-overlay');
+    const body = document.body;
+
+    if (!sheet || !overlay) return;
+
+    if (sheet.classList.contains('translate-y-full')) {
+        // Open
+        sheet.classList.remove('translate-y-full');
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        body.style.overflow = 'hidden'; // Lock scroll
+        initSwipeToClose(); // Initialize listeners if needed
+    } else {
+        // Close
+        overlay.classList.add('opacity-0');
+        sheet.classList.add('translate-y-full');
+        setTimeout(() => {
+            overlay.classList.add('pointer-events-none');
+        }, 300);
+        body.style.overflow = ''; // Unlock scroll
+
+        // Reset transform in case it was dragged
+        sheet.style.transform = '';
+    }
+}
+
+// Swipe to Close Logic
+let startY = 0;
+let currentY = 0;
+let isDragging = false;
+
+function initSwipeToClose() {
+    const sheet = document.getElementById('profile-sheet');
+    const handle = sheet.querySelector('.w-12'); // The little bar
+
+    // Only add listeners once
+    if (sheet.dataset.swipeInitialized) return;
+    sheet.dataset.swipeInitialized = 'true';
+
+    sheet.addEventListener('touchstart', (e) => {
+        // Only trigger if touching the top handle area or top of sheet
+        if (sheet.scrollTop === 0) {
+            startY = e.touches[0].clientY;
+            isDragging = true;
+            sheet.classList.add('dragging'); // Disable transition for 1:1 movement
+        }
+    }, { passive: true });
+
+    sheet.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        currentY = e.touches[0].clientY;
+        const deltaY = currentY - startY;
+
+        // Only allow dragging DOWN
+        if (deltaY > 0) {
+            e.preventDefault(); // Prevent scrolling while dragging
+            sheet.style.transform = `translateY(${deltaY}px)`;
+        }
+    }, { passive: false });
+
+    sheet.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        sheet.classList.remove('dragging'); // Re-enable transition
+
+        const deltaY = currentY - startY;
+        if (deltaY > 100) { // Threshold to close
+            toggleProfileSheet(); // Close it
+        } else {
+            sheet.style.transform = ''; // Snap back
+        }
+    });
+}
+
+export function updateGreeting() {
+    const greetingText = document.getElementById('greeting-text');
+    const greetingDate = document.getElementById('greeting-date');
+    if (!greetingText) return;
+
+    const now = new Date();
+    const hour = now.getHours();
+    let greeting = "Welcome Back";
+
+    if (hour < 12) greeting = "Good Morning";
+    else if (hour < 18) greeting = "Good Afternoon";
+    else greeting = "Good Evening";
+
+    if (state.currentUserData && state.currentUserData.name) {
+        greeting += `, ${state.currentUserData.name.split(' ')[0]}`;
+    }
+
+    greetingText.textContent = greeting;
+
+    const options = { weekday: 'long', month: 'short', day: 'numeric' };
+    if (greetingDate) greetingDate.textContent = now.toLocaleDateString('en-US', options).toUpperCase();
 }
 
 function initAdminPickers() {
@@ -1272,6 +1409,10 @@ export function toggleBreathing() {
         isBreathing = false;
         breathingTimeouts.forEach(clearTimeout);
         breathingTimeouts = [];
+        clearInterval(countdownInterval); // Clear timer interval
+        const timerEl = document.getElementById('breath-timer');
+        if (timerEl) timerEl.textContent = ''; // Clear timer text
+
         btn.textContent = "Start Exercise";
         btn.classList.replace('bg-red-500', 'bg-teal-600');
         btn.classList.replace('hover:bg-red-600', 'hover:bg-teal-700');
@@ -1282,31 +1423,75 @@ export function toggleBreathing() {
     }
 }
 
+function fadeText(element, newText) {
+    element.style.opacity = '0';
+    setTimeout(() => {
+        element.textContent = newText;
+        element.style.opacity = '1';
+    }, 300);
+}
+
+let countdownInterval;
+
+function startCountdown(duration) {
+    const timerEl = document.getElementById('breath-timer');
+    if (!timerEl) return;
+
+    let timeLeft = duration;
+    timerEl.textContent = timeLeft;
+
+    clearInterval(countdownInterval);
+    countdownInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+            timerEl.textContent = timeLeft;
+        } else {
+            clearInterval(countdownInterval);
+            timerEl.textContent = ''; // Clear when done
+        }
+    }, 1000);
+}
+
 function runBreathingCycle(widget, text, instruction) {
     if (!isBreathing) return;
+
+    // Inhale (4s)
     widget.className = 'breathing-widget inhaling';
-    text.textContent = "Inhale...";
-    instruction.textContent = "Breathe in slowly through nose (4s)";
+    fadeText(text, "Inhale");
+    fadeText(instruction, "Expand your belly");
+    startCountdown(4);
 
     breathingTimeouts.push(setTimeout(() => {
         if (!isBreathing) return;
+
+        // Hold (7s)
         widget.className = 'breathing-widget holding';
-        text.textContent = "Hold...";
-        instruction.textContent = "Keep lungs full (7s)";
+        fadeText(text, "Hold");
+        fadeText(instruction, "Keep it in");
+        startCountdown(7);
 
         breathingTimeouts.push(setTimeout(() => {
             if (!isBreathing) return;
+
+            // Exhale (8s)
             widget.className = 'breathing-widget exhaling';
-            text.textContent = "Exhale...";
-            instruction.textContent = "Release slowly through mouth (8s)";
+            fadeText(text, "Exhale");
+            fadeText(instruction, "Release slowly");
+            startCountdown(8);
 
             breathingTimeouts.push(setTimeout(() => {
                 if (!isBreathing) return;
+
+                // Rest (3s)
                 widget.className = 'breathing-widget resting';
-                text.textContent = "Rest...";
-                instruction.textContent = "Relax for a moment (3s)";
+                fadeText(text, "Rest");
+                fadeText(instruction, "Relax");
+                startCountdown(3);
+
                 breathingTimeouts.push(setTimeout(() => {
-                    if (isBreathing) runBreathingCycle(widget, text, instruction);
+                    if (!isBreathing) return;
+                    // Loop
+                    runBreathingCycle(widget, text, instruction);
                 }, 3000));
             }, 8000));
         }, 7000));

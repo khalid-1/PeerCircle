@@ -17,6 +17,7 @@ import * as UI from './ui.js';
 document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo(0, 0);
     UI.initTheme();
+    UI.updateGreeting();
 
     // Firebase Auth Listener
     onAuthStateChanged(auth, async (user) => {
@@ -187,6 +188,8 @@ window.handleAuth = UI.handleAuth;
 window.setAuthMode = UI.setAuthMode;
 window.toggleAuthMode = UI.toggleAuthMode;
 window.toggleProfileDropdown = UI.toggleProfileDropdown;
+window.toggleProfileSheet = UI.toggleProfileSheet;
+window.updateGreeting = UI.updateGreeting;
 window.toggleBreathing = UI.toggleBreathing;
 
 // Requests
