@@ -227,7 +227,7 @@
             </div>
 
             <div class="space-y-3">
-                <button onclick="toggleTheme(); toggleProfileSheet()"
+                <button onclick="toggleTheme()"
                     class="w-full flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-medium active:scale-[0.98] transition-transform">
                     <span class="flex items-center gap-3"><i class="fas fa-moon text-indigo-500 text-lg w-6"></i> Dark
                         Mode</span>
@@ -236,6 +236,16 @@
                             class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 dark:left-5 transition-all shadow-sm">
                         </div>
                     </div>
+                </button>
+
+                <button onclick="openProfilePictureModal(); toggleProfileSheet()"
+                    class="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-medium active:scale-[0.98] transition-transform">
+                    <i class="fas fa-user-edit text-teal-500 text-lg w-6"></i> Edit Profile
+                </button>
+
+                <button onclick="showSection('selfhelp'); toggleProfileSheet()"
+                    class="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-medium active:scale-[0.98] transition-transform">
+                    <i class="fas fa-question-circle text-blue-500 text-lg w-6"></i> Help & Support
                 </button>
 
                 <button onclick="logout()"
@@ -639,42 +649,7 @@
                             Start Exercise
                         </button>
                     </div>
-                    <div class="space-y-3">
-                        <button onclick="toggleTheme()"
-                            class="w-full flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group">
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                                    <i id="mobile-theme-icon" class="fas fa-moon text-lg"></i>
-                                </div>
-                                <span class="font-bold text-slate-700 dark:text-slate-200">Dark Mode</span>
-                            </div>
-                            <div
-                                class="w-12 h-6 bg-slate-200 dark:bg-slate-700 rounded-full relative transition-colors group-hover:bg-slate-300 dark:group-hover:bg-slate-600">
-                                <div
-                                    class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform dark:translate-x-6">
-                                </div>
-                            </div>
-                        </button>
 
-                        <button onclick="openProfilePictureModal(); toggleProfileSheet()"
-                            class="w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
-                            <div
-                                class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center">
-                                <i class="fas fa-user-edit text-lg"></i>
-                            </div>
-                            <span class="font-bold text-slate-700 dark:text-slate-200">Edit Profile</span>
-                        </button>
-
-                        <button onclick="showSection('selfhelp'); toggleProfileSheet()"
-                            class="w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left">
-                            <div
-                                class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                                <i class="fas fa-question-circle text-lg"></i>
-                            </div>
-                            <span class="font-bold text-slate-700 dark:text-slate-200">Help & Support</span>
-                        </button>
-                    </div>
                     <div class="space-y-6">
                         <div
                             class="bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-800">

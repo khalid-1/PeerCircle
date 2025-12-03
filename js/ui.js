@@ -684,8 +684,12 @@ export function toggleProfileSheet() {
 
     if (sheet.classList.contains('translate-y-full')) {
         // Open
-        sheet.classList.remove('translate-y-full');
-        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        overlay.classList.remove('hidden');
+        // Small delay to allow display:block to apply before opacity transition
+        requestAnimationFrame(() => {
+            sheet.classList.remove('translate-y-full');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+        });
         body.style.overflow = 'hidden'; // Lock scroll
         initSwipeToClose(); // Initialize listeners if needed
     } else {
@@ -693,7 +697,7 @@ export function toggleProfileSheet() {
         overlay.classList.add('opacity-0');
         sheet.classList.add('translate-y-full');
         setTimeout(() => {
-            overlay.classList.add('pointer-events-none');
+            overlay.classList.add('hidden', 'pointer-events-none');
         }, 300);
         body.style.overflow = ''; // Unlock scroll
 
