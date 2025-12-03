@@ -5,7 +5,7 @@ import {
     setMentorOverrides,
     state
 } from './state.js';
-import { db, auth, storage } from './firebase-init.js';
+import { db, storage } from './firebase-init.js';
 import {
     collection,
     addDoc,

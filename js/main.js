@@ -2,15 +2,13 @@ import '../style.css';
 import {
     state,
     setCurrentUserRole,
-    setCurrentUserData,
-    setIsSignUpMode
+    setCurrentUserData
 } from './state.js';
 import { auth } from './firebase-init.js';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
 import * as Repo from './firebase-repo.js';
 import * as UI from './ui.js';
-import * as Utils from './utils.js';
 
 // ==========================================
 // INITIALIZATION
