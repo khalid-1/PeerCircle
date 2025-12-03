@@ -24,8 +24,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
-  <script type="module" crossorigin src="/PeerCircle/assets/index-BJ0hkB3z.js"></script>
-  <link rel="stylesheet" crossorigin href="/PeerCircle/assets/index-hWIJIIL0.css">
+  <script type="module" crossorigin src="/PeerCircle/assets/index-Cg35pddD.js"></script>
+  <link rel="stylesheet" crossorigin href="/PeerCircle/assets/index-CLapBoEj.css">
 </head>
 
 <body
@@ -921,14 +921,14 @@
             <div class="p-8">
                 <div class="text-center mb-8">
                     <div
-                        class="w-16 h-16 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-4 text-teal-600 dark:text-teal-400 text-2xl">
-                        <i class="fas fa-user-nurse"></i>
+                        class="w-20 h-20 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-teal-600 dark:text-teal-400 text-3xl shadow-sm">
+                        <i class="fas fa-graduation-cap"></i>
                     </div>
                     <h2 id="auth-title" class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Welcome Back</h2>
-                    <p id="auth-desc" class="text-slate-500 dark:text-slate-400 mb-6 text-sm">Sign in to access
+                    <p id="auth-desc" class="text-slate-500 dark:text-slate-400 mb-8 text-base">Sign in to access
                         resources.</p>
 
-                    <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 text-left">
+                    <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-6 text-left">
                         <div id="name-field-container" class="hidden">
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Full
                                 Name</label>
@@ -939,15 +939,24 @@
                                 class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Email</label>
                             <input type="email" id="auth-email" required class="input-field"
                                 placeholder="student@rakmhsu.ac.ae">
+                            <p id="auth-email-error" class="text-red-500 text-xs mt-1 hidden"></p>
                         </div>
                         <div id="password-field-container">
                             <label
                                 class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Password</label>
-                            <input type="password" id="auth-password" class="input-field" placeholder="••••••••">
+                            <div class="relative">
+                                <input type="password" id="auth-password" required class="input-field pr-10"
+                                    placeholder="••••••••">
+                                <button type="button" id="toggle-password-btn"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-teal-600 transition">
+                                    <i class="far fa-eye"></i>
+                                </button>
+                            </div>
+                            <p id="auth-password-error" class="text-red-500 text-xs mt-1 hidden"></p>
                         </div>
 
                         <button type="submit" id="auth-submit-btn"
-                            class="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition shadow-lg shadow-teal-200 dark:shadow-none mb-2">Sign
+                            class="w-full bg-teal-600 text-white py-3.5 rounded-xl font-bold hover:bg-teal-700 transition shadow-lg shadow-teal-200 dark:shadow-none mb-4 text-lg">Sign
                             In</button>
 
                         <div class="text-center mb-4">
@@ -956,16 +965,10 @@
                         </div>
                     </form>
 
-                    <!-- DEV ONLY: Guest Button -->
-                    <button type="button" id="auth-guest-btn" onclick="loginAsGuest()"
-                        class="w-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition mb-6 text-sm mt-2">
-                        <i class="fas fa-user-secret mr-2"></i> Guest Mode (Dev Only)
-                    </button>
-
                     <p class="text-slate-500 dark:text-slate-400 text-sm">
                         <span id="auth-switch-text">New here?</span>
                         <button type="button" onclick="toggleAuthMode()"
-                            class="text-teal-600 dark:text-teal-400 font-bold hover:underline ml-1"
+                            class="text-teal-600 dark:text-teal-400 font-bold hover:underline ml-1 text-base"
                             id="auth-switch-btn">Create Account</button>
                     </p>
 
