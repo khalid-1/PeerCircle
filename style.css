@@ -60,10 +60,11 @@ body {
 /* ==========================================
    ANIMATIONS & UTILS
    ========================================== */
-
 .section-content {
     display: none;
     animation: fadeIn 0.4s ease-in-out;
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+    /* Ensure content clears bottom nav */
 }
 
 .section-content.active {
