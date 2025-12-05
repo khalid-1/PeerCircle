@@ -925,8 +925,8 @@ export async function submitSuggestTopic(e) {
         const container = document.querySelector('#suggest-topic-modal > div');
         container.innerHTML = `
             <div style="padding: 3rem 1.5rem; text-align: center;">
-                <div style="width: 4rem; height: 4rem; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem;">
-                    <i class="fas fa-check"></i>
+                <div style="width: 150px; height: 150px; margin: 0 auto 1rem;">
+                    <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_jbrw3hcz.json" background="transparent" speed="1" style="width: 100%; height: 100%;" autoplay></lottie-player>
                 </div>
                 <h3 style="color: #16a34a; font-weight: bold; font-size: 1.5rem; margin-bottom: 0.5rem;">Thank You!</h3>
                 <p style="color: #64748b; margin-bottom: 1.5rem;">Your suggestion has been sent to the admins.</p>
