@@ -19,6 +19,8 @@ body {
     border-radius: 8px;
     outline: none;
     transition: all 0.2s ease-in-out;
+    font-size: 16px;
+    /* Prevent iOS zoom */
 
     /* LIGHT MODE DEFAULTS */
     background-color: #f8fafc;

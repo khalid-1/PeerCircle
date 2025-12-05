@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
+import autoAnimate from '@formkit/auto-animate';
 
 // ==========================================
 // NOTIFICATIONS & MODALS
@@ -55,6 +56,24 @@ export function closeModal(id) {
         el.classList.add('hidden');
         el.classList.remove('flex');
     }
+}
+
+// ==========================================
+// ANIMATIONS
+// ==========================================
+
+export function initAnimations() {
+    const containers = [
+        'topics-container',
+        'mentors-container',
+        'sessions-container',
+        'inbox-container'
+    ];
+
+    containers.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) autoAnimate(el);
+    });
 }
 
 // ==========================================
@@ -173,6 +192,37 @@ export function renderTopics() {
                 </div>
             </div>`;
     }).join('');
+}
+
+export async function handleAddTopic(e) {
+    e.preventDefault();
+    const title = document.getElementById('new-topic-title').value;
+    const desc = document.getElementById('new-topic-desc').value;
+    const icon = document.getElementById('selected-icon').value;
+    const color = document.getElementById('selected-color').value;
+    const intro = document.getElementById('new-content-intro').value;
+    const bullets = document.getElementById('new-content-bullets').value.split('\n').filter(line => line.trim() !== '');
+    const action = document.getElementById('new-content-action').value;
+
+    try {
+        await Repo.addTopic({
+            title,
+            desc,
+            icon,
+            color,
+            content: {
+                intro,
+                bullets,
+                action
+            }
+        });
+        showNotification("Topic Published!", "success");
+        e.target.reset();
+        document.getElementById('admin-add-topic').classList.add('hidden');
+    } catch (error) {
+        console.error("Error adding topic:", error);
+        showNotification("Failed to add topic.", "error");
+    }
 }
 
 // ==========================================
@@ -829,7 +879,7 @@ export function openSuggestTopicModal() {
                 </div>
                 <h3 style="color: white; font-weight: bold; font-size: 1.25rem; margin-bottom: 0.25rem;">Suggest a Topic</h3>
                 <p style="color: rgba(255,255,255,0.8); font-size: 0.875rem;">Help us improve the learning hub.</p>
-                <button onclick="window.closeSuggestTopicModal()" style="position: absolute; top: 1rem; right: 1rem; color: rgba(255,255,255,0.6); background: none; border: none; cursor: pointer; font-size: 1.25rem;">
+                <button onclick="window.closeSuggestTopicModal()" style="position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.2); border: none; color: white; width: 2.75rem; height: 2.75rem; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -907,7 +957,7 @@ export function showDynamicModal(title, content) {
                     <span class="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center text-sm"><i class="fas fa-book-open"></i></span>
                     ${escapeHTML(title)}
                 </h3>
-                <button onclick="window.closeDynamicModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <button onclick="window.closeDynamicModal()" class="w-11 h-11 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-200 transition">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -989,14 +1039,14 @@ export function openProfilePictureModal() {
         <div class="w-full max-w-md md:max-w-2xl rounded-3xl shadow-2xl overflow-hidden transition-all duration-300" style="background: ${colors.bg};">
             <div style="padding: 1.5rem; border-bottom: 1px solid ${colors.border}; display: flex; justify-content: space-between; align-items: center;">
                 <h3 style="font-weight: bold; font-size: 1.25rem; color: ${colors.text};">Update Profile Photo</h3>
-                <button onclick="window.closeProfilePictureModal()" style="color: ${colors.textMuted}; background: none; border: none; cursor: pointer; font-size: 1.25rem;"><i class="fas fa-times"></i></button>
+                <button onclick="window.closeProfilePictureModal()" style="color: ${colors.textMuted}; background: none; border: none; cursor: pointer; font-size: 1.5rem; padding: 0.5rem;"><i class="fas fa-times"></i></button>
             </div>
             
             <!-- Step 1: Upload -->
             <div id="profile-upload-step" style="padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
                 <div style="width: 8rem; height: 8rem; border-radius: 50%; background: ${isDark ? '#334155' : '#f1f5f9'}; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: ${colors.textMuted}; border: 2px dashed ${colors.border}; overflow: hidden; position: relative;">
                     ${state.currentUserData?.photoURL ? `
-                        <img src="${state.currentUserData.photoURL}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="${state.currentUserData.photoURL}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
                     ` : `
                         <span style="font-size: 2.5rem; font-weight: 700; color: ${colors.primary};">${getInitials(state.currentUserData?.name || 'U')}</span>
                     `}
@@ -1248,7 +1298,7 @@ export function openEditMentorModal(email) {
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-[popIn_0.3s_cubic-bezier(0.175,0.885,0.32,1.275)]">
             <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-800 dark:text-white">Edit Mentor Profile</h3>
-                <button onclick="document.getElementById('edit-mentor-modal').remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"><i class="fas fa-times text-xl"></i></button>
+                <button onclick="document.getElementById('edit-mentor-modal').remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition p-2"><i class="fas fa-times text-xl"></i></button>
             </div>
             <div class="p-6 space-y-4">
                 <div>
@@ -1301,7 +1351,7 @@ export function showMentorEmail(email, name) {
 
     overlay.innerHTML = `
         <div style="background: ${bg}; border-radius: 1rem; max-width: 24rem; width: 100%; padding: 2rem; text-align: center; position: relative;">
-            <button onclick="window.closeMentorEmailModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; cursor: pointer; color: ${text};"><i class="fas fa-times"></i></button>
+            <button onclick="window.closeMentorEmailModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; cursor: pointer; color: ${text}; padding: 0.5rem; font-size: 1.25rem;"><i class="fas fa-times"></i></button>
             <div style="width: 4rem; height: 4rem; border-radius: 50%; background: rgba(20, 184, 166, 0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: #14b8a6; font-size: 1.5rem;"><i class="fas fa-envelope"></i></div>
             <h2 style="font-size: 1.5rem; font-weight: bold; color: ${text}; margin-bottom: 0.5rem;">Contact ${escapeHTML(name.split(' ')[0])}</h2>
             <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem;">Copy the email address below.</p>

@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo(0, 0);
     UI.initTheme();
     UI.updateGreeting();
+    UI.initAnimations();
 
     // Firebase Auth Listener
     onAuthStateChanged(auth, async (user) => {
@@ -131,6 +132,7 @@ window.openSuggestTopicModal = UI.openSuggestTopicModal;
 window.closeSuggestTopicModal = UI.closeSuggestTopicModal;
 window.submitSuggestTopic = UI.submitSuggestTopic;
 window.closeDynamicModal = UI.closeDynamicModal;
+window.handleAddTopic = UI.handleAddTopic;
 window.deleteTopic = async (event, id) => {
     event.stopPropagation();
     if (confirm("Delete this topic?")) {
