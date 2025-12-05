@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     role: userData.role || 'student',
                     photoURL: userData.photoURL || null
                 });
-                UI.showNotification(`Welcome back, ${userData.name || 'Student'}`, "success");
+                // Notification moved to after splash screen
             } else {
                 // Fallback
                 setCurrentUserRole('student');
@@ -66,11 +66,27 @@ document.addEventListener('DOMContentLoaded', () => {
             UI.updateUIForRole(state.currentUserRole);
             UI.updateUserProfileDropdown();
 
+            // Preload Profile Image before hiding splash screen
+            if (state.currentUserData?.photoURL) {
+                const img = new Image();
+                img.src = state.currentUserData.photoURL;
+                await new Promise(resolve => {
+                    img.onload = resolve;
+                    img.onerror = resolve; // Proceed even if image fails
+                });
+            }
+
             // Hide Loading / Login
             const loadingScreen = document.getElementById('loading-screen');
             if (loadingScreen) {
                 loadingScreen.classList.add('opacity-0');
-                setTimeout(() => loadingScreen.classList.add('hidden'), 500);
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                    // Show notification AFTER splash screen is gone
+                    if (state.currentUserData) {
+                        UI.showNotification(`Welcome back, ${state.currentUserData.name}`, "success");
+                    }
+                }, 500);
             }
             document.getElementById('login-modal').classList.add('hidden');
 

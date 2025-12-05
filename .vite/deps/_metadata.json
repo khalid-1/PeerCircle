@@ -1,0 +1,49 @@
+{
+  "hash": "049e762c",
+  "configHash": "370d357f",
+  "lockfileHash": "e3b0c442",
+  "browserHash": "74861c6a",
+  "optimized": {
+    "@formkit/auto-animate": {
+      "src": "../../legacy_v1/node_modules/@formkit/auto-animate/index.mjs",
+      "file": "@formkit_auto-animate.js",
+      "fileHash": "0b126527",
+      "needsInterop": false
+    },
+    "cropperjs": {
+      "src": "../../legacy_v1/node_modules/cropperjs/dist/cropper.esm.js",
+      "file": "cropperjs.js",
+      "fileHash": "8c7bd8b5",
+      "needsInterop": false
+    },
+    "firebase/app": {
+      "src": "../../legacy_v1/node_modules/firebase/app/dist/esm/index.esm.js",
+      "file": "firebase_app.js",
+      "fileHash": "2bcb17a2",
+      "needsInterop": false
+    },
+    "firebase/auth": {
+      "src": "../../legacy_v1/node_modules/firebase/auth/dist/esm/index.esm.js",
+      "file": "firebase_auth.js",
+      "fileHash": "683486dd",
+      "needsInterop": false
+    },
+    "firebase/firestore": {
+      "src": "../../legacy_v1/node_modules/firebase/firestore/dist/esm/index.esm.js",
+      "file": "firebase_firestore.js",
+      "fileHash": "0dd9e3fc",
+      "needsInterop": false
+    },
+    "firebase/storage": {
+      "src": "../../legacy_v1/node_modules/firebase/storage/dist/esm/index.esm.js",
+      "file": "firebase_storage.js",
+      "fileHash": "3193e4f5",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-OS4DR5NS": {
+      "file": "chunk-OS4DR5NS.js"
+    }
+  }
+}

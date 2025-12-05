@@ -392,3 +392,24 @@ html,
 body {
     touch-action: manipulation;
 }
+
+/* Toast Notification Styles */
+.toast-notification {
+    margin-bottom: env(safe-area-inset-bottom, 20px) !important;
+    width: fit-content !important;
+    max-width: 90vw !important;
+    margin-inline: auto !important;
+}
+
+@media (min-width: 768px) {
+    .toast-notification {
+        max-width: 400px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .toast-notification {
+        margin-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+        /* Clear bottom nav */
+    }
+}

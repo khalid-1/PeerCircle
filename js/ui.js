@@ -12,34 +12,35 @@ import {
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
 import autoAnimate from '@formkit/auto-animate';
+import Toastify from 'toastify-js';
+import "toastify-js/src/toastify.css";
 
 // ==========================================
 // NOTIFICATIONS & MODALS
 // ==========================================
 
-export function showNotification(msg, type) {
-    const notif = document.getElementById('notification');
-    if (!notif) return;
+export function showNotification(msg, type = 'info') {
+    let bg = "#1e293b"; // Default slate-900
+    if (type === 'error') bg = "#dc2626"; // red-600
+    if (type === 'success') bg = "#0d9488"; // teal-600
 
-    const msgEl = document.getElementById('notif-message');
-    if (msgEl) msgEl.textContent = msg;
-
-    // Remove hidden classes (slide down into view)
-    notif.classList.remove('-translate-y-[150%]', 'opacity-0');
-
-    // Optional: Change color based on type (success/error)
-    if (type === 'error') {
-        notif.classList.remove('bg-slate-900');
-        notif.classList.add('bg-red-600');
-    } else {
-        notif.classList.add('bg-slate-900');
-        notif.classList.remove('bg-red-600');
-    }
-
-    setTimeout(() => {
-        // Add hidden classes (slide up out of view)
-        notif.classList.add('-translate-y-[150%]', 'opacity-0');
-    }, 3000);
+    Toastify({
+        text: msg,
+        duration: 1500, // Faster dismiss (1.5s)
+        gravity: "bottom", // Moved to bottom for better mobile UX
+        position: "center", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        className: "toast-notification",
+        style: {
+            background: bg,
+            borderRadius: "50px", // Pill shape
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            padding: "12px 24px",
+            fontWeight: "600",
+            fontSize: "14px"
+        },
+        onClick: function () { } // Callback after click
+    }).showToast();
 }
 
 export function openModal(id) {
@@ -557,12 +558,10 @@ export function updateUIForRole(role) {
         if (adminControls) adminControls.classList.remove('hidden');
         if (sessionControls) sessionControls.classList.remove('hidden');
         initAdminPickers();
-        showNotification("Admin Access Granted", "success");
     } else if (role === 'peer') {
         if (navPeer) navPeer.classList.remove('hidden');
         if (mobPeer) mobPeer.classList.remove('hidden');
         renderInbox();
-        showNotification("Peer Mentor Access Granted", "success");
     }
 
     if (state.currentUserData) {
@@ -1570,6 +1569,9 @@ export function setAuthMode(mode) {
     const passField = document.getElementById('password-field-container');
     const forgotBtn = document.getElementById('auth-forgot-btn');
     forgotBtn.classList.remove('hidden');
+
+    // Reset button state
+    btn.disabled = false;
 
     // Clear previous errors and inputs
     clearInlineError('auth-email');
