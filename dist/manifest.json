@@ -1,21 +1,46 @@
 {
     "name": "PeerCircle | Nursing Student Wellbeing",
     "short_name": "PeerCircle",
+    "description": "A digital peer support platform for nursing students to connect, share resources, and find mentors.",
     "start_url": "./index.html",
     "display": "standalone",
-    "background_color": "#1e293b",
+    "background_color": "#0f172a",
     "theme_color": "#0d9488",
     "orientation": "portrait",
+    "categories": [
+        "education",
+        "health",
+        "medical",
+        "social"
+    ],
     "icons": [
         {
             "src": "assets/favicon.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         },
         {
             "src": "assets/favicon.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "assets/screenshot-mobile.png",
+            "sizes": "1170x2532",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "PeerCircle Mobile Home"
+        },
+        {
+            "src": "assets/screenshot-desktop.png",
+            "sizes": "2880x1800",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "PeerCircle Desktop Dashboard"
         }
     ]
 }

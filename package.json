@@ -32,8 +32,15 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.9.0",
     "@lottiefiles/dotlottie-web": "^0.57.0",
+    "@vitejs/plugin-react": "^5.1.2",
     "cropperjs": "^1.6.2",
     "firebase": "^12.6.0",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.3",
+    "react-cropper": "^2.3.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.11.0",
+    "react-toastify": "^11.0.5",
     "toastify-js": "^1.12.0"
   }
 }

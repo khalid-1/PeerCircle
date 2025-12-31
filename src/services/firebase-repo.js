@@ -49,14 +49,6 @@ export async function deleteTopic(id) {
     return await deleteDoc(doc(db, 'topics', id));
 }
 
-export async function addTopicSuggestion(suggestionData) {
-    return await addDoc(collection(db, 'topic_suggestions'), {
-        ...suggestionData,
-        status: 'pending',
-        createdAt: serverTimestamp()
-    });
-}
-
 // ==========================================
 // MENTORS
 // ==========================================
@@ -99,13 +91,6 @@ export async function fetchMentorOverrides(mentorsData) {
     }
 }
 
-export async function updateMentorProfile(email, data) {
-    return await setDoc(doc(db, 'mentor_profiles', email), {
-        ...data,
-        updatedAt: serverTimestamp()
-    }, { merge: true });
-}
-
 // ==========================================
 // SESSIONS
 // ==========================================
@@ -126,13 +111,6 @@ export async function addSession(sessionData) {
     });
 }
 
-export async function updateSession(id, sessionData) {
-    return await updateDoc(doc(db, 'sessions', id), {
-        ...sessionData,
-        updatedAt: serverTimestamp()
-    });
-}
-
 export async function deleteSession(id) {
     return await deleteDoc(doc(db, 'sessions', id));
 }
@@ -150,7 +128,7 @@ export function subscribeToInbox(onUpdate) {
     });
 }
 
-export async function sendRequest(requestData) {
+export async function handleBookingRequest(requestData) {
     return await addDoc(collection(db, 'requests'), {
         ...requestData,
         status: "pending",
@@ -158,10 +136,9 @@ export async function sendRequest(requestData) {
     });
 }
 
-export async function acceptRequest(id, userId) {
+export async function acceptPeerRequest(id) {
     return await updateDoc(doc(db, 'requests', id), {
         status: 'accepted',
-        acceptedBy: userId || 'anonymous',
         acceptedAt: serverTimestamp()
     });
 }
@@ -178,26 +155,5 @@ export async function createUserProfile(uid, data) {
     return await setDoc(doc(db, 'users', uid), {
         ...data,
         createdAt: serverTimestamp()
-    });
-}
-
-export async function updateUserProfile(uid, data) {
-    return await updateDoc(doc(db, 'users', uid), data);
-}
-
-export async function uploadProfilePicture(uid, blob) {
-    const storageRef = ref(storage, `users/${uid}/profile.jpg`);
-    const snapshot = await uploadBytes(storageRef, blob);
-    return await getDownloadURL(snapshot.ref);
-}
-
-export async function deleteProfilePicture(uid) {
-    // Note: FieldValue.delete() is deleteField() in modular
-    // But here we are updating a doc.
-    // We need to import deleteField.
-    // Wait, I missed importing deleteField.
-    // I will add it to imports and use it here.
-    return await updateDoc(doc(db, 'users', uid), {
-        photoURL: deleteField()
     });
 }
